@@ -10,7 +10,8 @@
       "name": "Launch Program",
       // "program": "${workspaceRoot}\\index.js",
       "program": "${workspaceRoot}/bin/www",
-      "cwd": "${workspaceRoot}"
+      "cwd": "${workspaceRoot}",
+      "sourceMaps": true
     },
     {
       "type": "node",
