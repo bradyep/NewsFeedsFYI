@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "sourceMap": true,
+        "allowJs": false,
+        "target": "es2015"
+    },
+    // "include": [
+    //     "./**/*"
+    // ],
+    "exclude": [
+        "node_modules",
+        "bower_components",
+        "**/*.spec.ts"
+    ]
+}
