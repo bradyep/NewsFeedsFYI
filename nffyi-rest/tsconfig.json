@@ -3,7 +3,8 @@
         "module": "commonjs",
         "sourceMap": true,
         "allowJs": false,
-        "target": "es2015"
+        "target": "es2015",
+        "alwaysStrict": true
     },
     // "include": [
     //     "./**/*"

@@ -1,6 +1,8 @@
+/*
 interface Error {
     status?: number;
 }
+*/
 
 // var express = require('express');
 import express = require("express");
@@ -15,11 +17,17 @@ import cookieParser = require("cookie-parser");
 // var bodyParser = require('body-parser');
 import bodyParser = require("body-parser");
 
+// Define Routes
 // TODO: Convert to TS Module syntax once these are defined
-var index = require('./routes/index');
-var users = require('./routes/users');
+// var index = require('./routes/index');
+import index = require('./routes/index');
+// var users = require('./routes/users');
+import users = require('./routes/users');
+import test = require('./routes/test');
 
 var app = express();
+var thing = 'whee';
+console.log(thing);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,13 +41,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Use Routes
 app.use('/', index);
 app.use('/users', users);
+app.use('/test', test);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  let err:any;
+  err = new Error('Not Found');
   err.status = 404;
+  // err[status] = 404;
   // res.status(404);
   next(err);
 });
@@ -51,6 +63,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
+  // res.status(err[status] || 500);
   res.status(err.status || 500);
   // res.status(res.status || 500);
   res.render('error');
