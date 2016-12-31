@@ -7,5 +7,5 @@
   "args": ["-p", "."],
   "showOutput": "silent",
   "problemMatcher": "$tsc",
-  "isWatching": false
+  "isWatching": true
 }
