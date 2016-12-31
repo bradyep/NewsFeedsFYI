@@ -58,7 +58,8 @@ export function update(userID, userName, password, email) {
         return SQUser.find({ where: { userID } })
         .then(user => {
             if (!user) {
-                throw new Error("No User found for userID " + userID);
+                // throw new Error("No User found for userID " + userID);
+                return null;
             } else {
                 return user.updateAttributes({
                     userName,
@@ -71,13 +72,15 @@ export function update(userID, userName, password, email) {
     });
 };
 
+/** Get one User from the Database */
 export function read(userID) {
     return connectDB()
     .then(SQUser => {
         return SQUser.find({ where: { userID } })
         .then(user => {
             if (!user) {
-                throw new Error("No user found for " + userID);
+                // throw new Error("No user found for " + userID);
+                return null;
             } else {
                 return new User(user.userID, user.userName, user.password, user.email, user.lastAccessDate);
                 // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
@@ -101,7 +104,8 @@ export function destroy(userID) {
     .then(SQUser => {
         return SQUser.find({ where: { userID } })
         .then(user => {
-            return user.destroy();
+            if (!user) return null;
+            else return user.destroy();
         });
     });
 };

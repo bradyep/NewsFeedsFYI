@@ -57,7 +57,8 @@ function update(userID, userName, password, email) {
         return SQUser.find({ where: { userID } })
             .then(user => {
             if (!user) {
-                throw new Error("No User found for userID " + userID);
+                // throw new Error("No User found for userID " + userID);
+                return null;
             }
             else {
                 return user.updateAttributes({
@@ -72,13 +73,15 @@ function update(userID, userName, password, email) {
 }
 exports.update = update;
 ;
+/** Get one User from the Database */
 function read(userID) {
     return connectDB()
         .then(SQUser => {
         return SQUser.find({ where: { userID } })
             .then(user => {
             if (!user) {
-                throw new Error("No user found for " + userID);
+                // throw new Error("No user found for " + userID);
+                return null;
             }
             else {
                 return new User(user.userID, user.userName, user.password, user.email, user.lastAccessDate);
@@ -93,7 +96,10 @@ function destroy(userID) {
         .then(SQUser => {
         return SQUser.find({ where: { userID } })
             .then(user => {
-            return user.destroy();
+            if (!user)
+                return null;
+            else
+                return user.destroy();
         });
     });
 }

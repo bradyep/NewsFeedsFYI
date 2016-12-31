@@ -22,8 +22,8 @@ const index = require("./routes/index");
 const users = require("./routes/users");
 const test = require("./routes/test");
 var app = express();
-var thing = 'whee - this is a thino! here is some more text. I feel I am being watched!';
-console.log(thing);
+// var thing = 'whee - this is a thino! here is some more text. I feel I am being watched!';
+// console.log(thing);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

@@ -13,12 +13,6 @@ router.get('/', function (req, res, next) {
     // var userlist;
     getKeyList()
         .then(userlist => {
-        // var user = req.user ? req.user : undefined;
-        // res.render('test', {
-        // title: 'User List',
-        // userlist,
-        // user: user
-        // });
         res.json(userlist);
     })
         .catch(err => { error('test page ' + err); next(err); });
@@ -40,24 +34,45 @@ var getKeyList = function () {
         return Promise.all(keyPromises);
     });
 };
-/*
-router.get('/', function(req, res, next) {
-  // res.send('respond with a resource');
-  res.json({ message: 'welcome to the users API'});
+// GET single User
+router.get('/:userid', (req, res, next) => {
+    usersModel.read(req.params.userid)
+        .then(user => {
+        if (!user)
+            next();
+        else
+            res.json(user);
+    })
+        .catch(err => { next(err); });
 });
-*/
+// Update existing User
+router.put('/:userid', (req, res, next) => {
+    usersModel.update(req.params.userid, req.body.userName, req.body.password, req.body.email)
+        .then(user => {
+        if (!user)
+            next();
+        else
+            res.json(user);
+    })
+        .catch(err => { next(err); });
+});
 // POST new users
 router.post('/', function (req, res, next) {
-    /*
-    let user = new User();
-    user.userName = req.body.userName;
-    user.password = req.body.password;
-    user.email = req.body.email;
-  */
     usersModel.create(req.body.userName, req.body.password, req.body.email)
         .then(user => {
         log('Attempted to create User: ' + util.inspect(user));
         res.json(user);
+    })
+        .catch(err => { next(err); });
+});
+// DELETE existing User
+router.delete('/:userid', (req, res, next) => {
+    usersModel.destroy(req.params.userid)
+        .then(user => {
+        if (!user)
+            next();
+        else
+            res.json(user);
     })
         .catch(err => { next(err); });
 });
