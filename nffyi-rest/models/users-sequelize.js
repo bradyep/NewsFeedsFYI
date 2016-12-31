@@ -44,7 +44,8 @@ function create(userName, password, email) {
         return SQUser.create({
             userName,
             password,
-            email
+            email,
+            lastAccessDate: Date()
         });
     });
 }
