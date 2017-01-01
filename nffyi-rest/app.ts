@@ -1,27 +1,16 @@
-/*
-interface Error {
-    status?: number;
-}
-*/
-
-// var express = require('express');
 import express = require("express");
-// var path = require('path');
 import path = require("path");
-// var favicon = require('serve-favicon');
 import favicon = require("serve-favicon");
-// var logger = require('morgan');
 import logger = require("morgan");
-// var cookieParser = require('cookie-parser');
 import cookieParser = require("cookie-parser");
-// var bodyParser = require('body-parser');
 import bodyParser = require("body-parser");
 
+import session = require('express-session')
+import FileStoreModule = require('session-file-store');
+  const FileStore = FileStoreModule(session);
+
 // Define Routes
-// TODO: Convert to TS Module syntax once these are defined
-// var index = require('./routes/index');
 import index = require('./routes/index');
-// var users = require('./routes/users');
 import users = require('./routes/users');
 import test = require('./routes/test');
 import authenticate = require('./routes/authenticate');
@@ -41,6 +30,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  store: new FileStore({
+    path: "sessions"
+  }),
+  secret: 'this is a picture',
+  resave: true,
+  saveUninitialized: true
+}));
 
 authenticate.initPassport(app);
 

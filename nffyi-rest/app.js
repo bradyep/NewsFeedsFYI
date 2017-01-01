@@ -1,24 +1,14 @@
-/*
-interface Error {
-    status?: number;
-}
-*/
 "use strict";
-// var express = require('express');
 const express = require("express");
-// var path = require('path');
 const path = require("path");
-// var logger = require('morgan');
 const logger = require("morgan");
-// var cookieParser = require('cookie-parser');
 const cookieParser = require("cookie-parser");
-// var bodyParser = require('body-parser');
 const bodyParser = require("body-parser");
+const session = require("express-session");
+const FileStoreModule = require("session-file-store");
+const FileStore = FileStoreModule(session);
 // Define Routes
-// TODO: Convert to TS Module syntax once these are defined
-// var index = require('./routes/index');
 const index = require("./routes/index");
-// var users = require('./routes/users');
 const users = require("./routes/users");
 const test = require("./routes/test");
 const authenticate = require("./routes/authenticate");
@@ -35,6 +25,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    store: new FileStore({
+        path: "sessions"
+    }),
+    secret: 'this is a picture',
+    resave: true,
+    saveUninitialized: true
+}));
 authenticate.initPassport(app);
 // Use Routes
 app.use('/', index);

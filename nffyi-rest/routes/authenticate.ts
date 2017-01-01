@@ -1,3 +1,4 @@
+import util  = require('util');
 import express = require("express");
 export var router = express.Router();
 import usersModel = require('../models/users-sequelize');
@@ -14,27 +15,55 @@ export function initPassport(app) {
   app.use(passport.session());
 };
 
+export function ensureAuthenticated (req, res, next) {
+  // req.user is set by Passport in the deserialize function
+  if (req.user) next();
+  else { 
+        // res.redirect('/users/login');
+        let err:any;
+        err = new Error('Not Authenticated');
+        err.status = 403;
+        next(err);
+   }
+};
+
 router.post('/',
   passport.authenticate('local'),
   function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-    res.redirect('/users/' + req.user.username);
+    res.redirect('/users/' + req.user.id);
   });
 
-var getKeyTitlesList = function() {
-    return usersModel.keylist()
-    .then(keylist => {
-        var keyPromises = keylist.map(key => {
-            return usersModel.read(key).then(user => {
-                return { userID: user.userID, userName: user.userName };
-            });
-        });
-        return Promise.all(keyPromises);
-    });
-};
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    log('pasport used:'+ username +'/'+ password);
+    usersModel.userPasswordCheck(username, password)
+    .then(check => {
+      if (check.check) {
+        done(null, { id: check.userid, username: check.username });
+      } else {
+        done(null, false, check.message);
+      }
+      return check;
+    })
+    .catch(err => done(err));
+  }
+));
 
-// exports.router = router;
-// export.router = router;
-// export router;
-// export = router;
+passport.serializeUser(function(user, done) {
+  log('serializeUser: '+ util.inspect(user));
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  log('deserializeUser: '+ id);
+  usersModel.read(id)
+  .then(user => {
+    log('... found user '+ util.inspect(user));
+    done(null, user);
+  })
+  .catch(err => done(err));
+});
+
+// export var router = express.Router();

@@ -4,7 +4,7 @@ import jsyaml = require('js-yaml');
 import Sequelize = require("sequelize");
 
 import logModule = require('debug');
-  const log = logModule('users:users-model');
+  const log = logModule('nffyi-rest:users-model');
 import errorModule = require('debug');
   const error = errorModule('users:error');
 
@@ -128,5 +128,23 @@ export function count() {
             log('COUNT ' + count);
             return count;
         });
+    });
+};
+
+/** Check if supplied credentials are valid */
+export function userPasswordCheck(username, password) {
+    return connectDB().then(SQUser => {
+        return SQUser.find({ where: { userName: username } })
+    })
+    .then(user => {
+        // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
+        log('userPasswordCheck query: ' + username + '/' + password);
+        if (!user) {
+            return { check: false, userid: 0, username, message: "Could not find user" };
+        } else if (user.userName === username && user.password === password) {
+            return { check: true, userid: user.userID, username: user.userName };
+        } else {
+            return { check: false, userid: 0, username: username, message: "Incorrect password" };
+        }
     });
 };
