@@ -6,7 +6,7 @@ import logModule = require('debug');
   const log = logModule('nffyi-rest:router-authenticate');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
-const passport = require('passport');
+import passport = require('passport');
 import LocalStrategyModule = require('passport-local');
   const LocalStrategy = LocalStrategyModule.Strategy;
 
@@ -35,6 +35,13 @@ router.post('/',
     res.redirect('/users/' + req.user.id);
   });
 
+/*
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  res.redirect('/');
+});
+*/
+
 passport.use(new LocalStrategy(
   function(username, password, done) {
     log('pasport used: '+ username +'/'+ password);
@@ -53,17 +60,18 @@ passport.use(new LocalStrategy(
 
 passport.serializeUser(function(user, done) {
   log('serializeUser: '+ util.inspect(user));
-  done(null, user.id);
+  done(null, user);
 });
 
-passport.deserializeUser(function(id, done) {
-  log('deserializeUser: '+ id);
-  usersModel.read(id)
+// passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function(user:any, done) {
+  log('deserializeUser: '+ util.inspect(user));
+  usersModel.read(user.id)
   .then(user => {
     log('... found user '+ util.inspect(user));
     done(null, user);
   })
-  .catch(err => done(err));
+  .catch(err => done(err, user));
 });
 
 // export var router = express.Router();

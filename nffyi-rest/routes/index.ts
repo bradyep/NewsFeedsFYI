@@ -8,9 +8,16 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/logout', function(req, res, next) {
+  req.session.destroy(function (err) {
+    // res.clearCookie('connect.sid');
+    res.redirect('/'); //Inside a callback… bulletproof!
+  });
+/*
   req.logout();
   res.redirect('/');
+  */
 });
+
 
 // module.exports = router;
 export = router;

@@ -7,7 +7,7 @@ const logModule = require("debug");
 const log = logModule('nffyi-rest:router-authenticate');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
-const passport = require('passport');
+const passport = require("passport");
 const LocalStrategyModule = require("passport-local");
 const LocalStrategy = LocalStrategyModule.Strategy;
 function initPassport(app) {
@@ -35,6 +35,12 @@ exports.router.post('/', passport.authenticate('local'), function (req, res) {
     // `req.user` contains the authenticated user.
     res.redirect('/users/' + req.user.id);
 });
+/*
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  res.redirect('/');
+});
+*/
 passport.use(new LocalStrategy(function (username, password, done) {
     log('pasport used: ' + username + '/' + password);
     usersModel.userPasswordCheck(username, password)
@@ -51,16 +57,17 @@ passport.use(new LocalStrategy(function (username, password, done) {
 }));
 passport.serializeUser(function (user, done) {
     log('serializeUser: ' + util.inspect(user));
-    done(null, user.id);
+    done(null, user);
 });
-passport.deserializeUser(function (id, done) {
-    log('deserializeUser: ' + id);
-    usersModel.read(id)
+// passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function (user, done) {
+    log('deserializeUser: ' + util.inspect(user));
+    usersModel.read(user.id)
         .then(user => {
         log('... found user ' + util.inspect(user));
         done(null, user);
     })
-        .catch(err => done(err));
+        .catch(err => done(err, user));
 });
 // export var router = express.Router();
 //# sourceMappingURL=authenticate.js.map

@@ -7,9 +7,14 @@ import logModule = require('debug');
   const log = logModule('nffyi-rest:router-users');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
+import authRouter = require('./authenticate');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
+    // Must be an admin for full User listing, otherwise display 
+    // User data for requesting User
+
+
     // var userlist;
     getKeyList()
     .then(userlist => {
@@ -38,6 +43,9 @@ var getKeyList = function() {
 
 // GET single User
 router.get('/:userid', (req, res, next) => {
+  // Must be Admin to see another User's data
+
+
   usersModel.read(req.params.userid)
   .then(user => {
     if (!user) next();
@@ -48,6 +56,9 @@ router.get('/:userid', (req, res, next) => {
 
 // Update existing User
 router.put('/:userid', (req, res, next) => {
+  // Must be admin to update any User than oneself
+
+
   usersModel.update(req.params.userid, req.body.username, req.body.password, req.body.email)
   .then(user => {
     if (!user) next();
@@ -58,6 +69,10 @@ router.put('/:userid', (req, res, next) => {
 
 // POST new users
 router.post('/', function(req, res, next) {
+  // We should authorize this action in order to prevent new
+  // User spam
+
+
   usersModel.create(req.body.username, req.body.password, req.body.email)
   .then(user => {
     log('Attempted to create User: ' + util.inspect(user));
@@ -68,6 +83,9 @@ router.post('/', function(req, res, next) {
 
 // DELETE existing User
 router.delete('/:userid', (req, res, next) => {
+  // Must be Admin to delete Users other than oneself
+  
+
   usersModel.destroy(req.params.userid)
   .then(user => {
     if (!user) next();
