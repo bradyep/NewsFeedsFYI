@@ -21,6 +21,7 @@ const index = require("./routes/index");
 // var users = require('./routes/users');
 const users = require("./routes/users");
 const test = require("./routes/test");
+const authenticate = require("./routes/authenticate");
 var app = express();
 // var thing = 'whee - this is a thino! here is some more text. I feel I am being watched!';
 // console.log(thing);
@@ -34,10 +35,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+authenticate.initPassport(app);
 // Use Routes
 app.use('/', index);
 app.use('/users', users);
 app.use('/test', test);
+app.use('/authenticate', authenticate);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     let err;
