@@ -5,7 +5,7 @@ const Sequelize = require("sequelize");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:users-model');
 const errorModule = require("debug");
-const error = errorModule('users:error');
+const error = errorModule('nffyi-rest:error');
 const User = require("./User");
 var SQUser;
 var sequlz;
@@ -28,7 +28,7 @@ function connectDB() {
         sequlz = new Sequelize(params.dbname, params.username, params.password, params.params);
         SQUser = sequlz.define('User', {
             userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-            userName: Sequelize.STRING,
+            username: Sequelize.STRING,
             password: Sequelize.STRING,
             email: Sequelize.STRING,
             lastAccessDate: Sequelize.DATE
@@ -38,11 +38,11 @@ function connectDB() {
 }
 exports.connectDB = connectDB;
 ; // /function connectDB
-function create(userName, password, email) {
+function create(username, password, email) {
     return connectDB()
         .then(SQUser => {
         return SQUser.create({
-            userName,
+            username,
             password,
             email,
             lastAccessDate: Date()
@@ -51,7 +51,7 @@ function create(userName, password, email) {
 }
 exports.create = create;
 ;
-function update(userID, userName, password, email) {
+function update(userID, username, password, email) {
     return connectDB()
         .then(SQUser => {
         return SQUser.find({ where: { userID } })
@@ -62,7 +62,7 @@ function update(userID, userName, password, email) {
             }
             else {
                 return user.updateAttributes({
-                    userName,
+                    username,
                     password,
                     email,
                     lastAccessDate: Date()
@@ -84,7 +84,7 @@ function read(userID) {
                 return null;
             }
             else {
-                return new User(user.userID, user.userName, user.password, user.email, user.lastAccessDate);
+                return new User(user.userID, user.username, user.password, user.email, user.lastAccessDate);
             }
         });
     });
@@ -131,7 +131,7 @@ exports.count = count;
 /** Check if supplied credentials are valid */
 function userPasswordCheck(username, password) {
     return connectDB().then(SQUser => {
-        return SQUser.find({ where: { userName: username } });
+        return SQUser.find({ where: { username } });
     })
         .then(user => {
         // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
@@ -139,8 +139,8 @@ function userPasswordCheck(username, password) {
         if (!user) {
             return { check: false, userid: 0, username, message: "Could not find user" };
         }
-        else if (user.userName === username && user.password === password) {
-            return { check: true, userid: user.userID, username: user.userName };
+        else if (user.username === username && user.password === password) {
+            return { check: true, userid: user.userID, username: user.username };
         }
         else {
             return { check: false, userid: 0, username: username, message: "Incorrect password" };

@@ -6,7 +6,7 @@ import Sequelize = require("sequelize");
 import logModule = require('debug');
   const log = logModule('nffyi-rest:users-model');
 import errorModule = require('debug');
-  const error = errorModule('users:error');
+  const error = errorModule('nffyi-rest:error');
 
 import User = require('./User');
 
@@ -31,7 +31,7 @@ export function connectDB() {
         sequlz = new Sequelize(params.dbname, params.username, params.password, params.params);
         SQUser = sequlz.define('User', {
             userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-            userName: Sequelize.STRING,
+            username: Sequelize.STRING,
             password: Sequelize.STRING,
             email: Sequelize.STRING,
             lastAccessDate: Sequelize.DATE
@@ -40,11 +40,11 @@ export function connectDB() {
     });
 }; // /function connectDB
 
-export function create(userName, password, email) {
+export function create(username, password, email) {
     return connectDB()
     .then(SQUser => {
         return SQUser.create({
-            userName,
+            username,
             password,
             email,
             lastAccessDate: Date()
@@ -52,7 +52,7 @@ export function create(userName, password, email) {
     });
 };
 
-export function update(userID, userName, password, email) {
+export function update(userID, username, password, email) {
     return connectDB()
     .then(SQUser => {
         return SQUser.find({ where: { userID } })
@@ -62,7 +62,7 @@ export function update(userID, userName, password, email) {
                 return null;
             } else {
                 return user.updateAttributes({
-                    userName,
+                    username,
                     password,
                     email,
                     lastAccessDate: Date()
@@ -82,7 +82,7 @@ export function read(userID) {
                 // throw new Error("No user found for " + userID);
                 return null;
             } else {
-                return new User(user.userID, user.userName, user.password, user.email, user.lastAccessDate);
+                return new User(user.userID, user.username, user.password, user.email, user.lastAccessDate);
                 // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
                 // var test = new User();
 /*
@@ -134,15 +134,15 @@ export function count() {
 /** Check if supplied credentials are valid */
 export function userPasswordCheck(username, password) {
     return connectDB().then(SQUser => {
-        return SQUser.find({ where: { userName: username } })
+        return SQUser.find({ where: { username } })
     })
     .then(user => {
         // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
         log('userPasswordCheck query: ' + username + '/' + password);
         if (!user) {
             return { check: false, userid: 0, username, message: "Could not find user" };
-        } else if (user.userName === username && user.password === password) {
-            return { check: true, userid: user.userID, username: user.userName };
+        } else if (user.username === username && user.password === password) {
+            return { check: true, userid: user.userID, username: user.username };
         } else {
             return { check: false, userid: 0, username: username, message: "Incorrect password" };
         }

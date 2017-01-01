@@ -36,7 +36,7 @@ exports.router.post('/', passport.authenticate('local'), function (req, res) {
     res.redirect('/users/' + req.user.id);
 });
 passport.use(new LocalStrategy(function (username, password, done) {
-    log('pasport used:' + username + '/' + password);
+    log('pasport used: ' + username + '/' + password);
     usersModel.userPasswordCheck(username, password)
         .then(check => {
         if (check.check) {

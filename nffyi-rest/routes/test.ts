@@ -3,7 +3,7 @@ import express = require("express");
 var router = express.Router();
 import usersModel = require('../models/users-sequelize');
 import logModule = require('debug');
-  const log = logModule('nffyi-rest:router-home');
+  const log = logModule('nffyi-rest:router-test');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
@@ -27,7 +27,7 @@ var getKeyTitlesList = function() {
     .then(keylist => {
         var keyPromises = keylist.map(key => {
             return usersModel.read(key).then(user => {
-                return { userID: user.userID, userName: user.userName };
+                return { userID: user.userID, username: user.username };
             });
         });
         return Promise.all(keyPromises);

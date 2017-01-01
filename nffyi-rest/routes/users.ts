@@ -4,7 +4,7 @@ import util = require('util');
 // import User = require('../models/User');
 import usersModel = require('../models/users-sequelize');
 import logModule = require('debug');
-  const log = logModule('nffyi-rest:users');
+  const log = logModule('nffyi-rest:router-users');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
@@ -25,7 +25,7 @@ var getKeyList = function() {
             return usersModel.read(key).then(user => {
                 return { 
                   userID: user.userID, 
-                  userName: user.userName,
+                  username: user.username,
                   password: user.password,
                   email: user.email,
                   lastAccessDate: user.lastAccessDate
@@ -48,7 +48,7 @@ router.get('/:userid', (req, res, next) => {
 
 // Update existing User
 router.put('/:userid', (req, res, next) => {
-  usersModel.update(req.params.userid, req.body.userName, req.body.password, req.body.email)
+  usersModel.update(req.params.userid, req.body.username, req.body.password, req.body.email)
   .then(user => {
     if (!user) next();
     else res.json(user);
@@ -58,7 +58,7 @@ router.put('/:userid', (req, res, next) => {
 
 // POST new users
 router.post('/', function(req, res, next) {
-  usersModel.create(req.body.userName, req.body.password, req.body.email)
+  usersModel.create(req.body.username, req.body.password, req.body.email)
   .then(user => {
     log('Attempted to create User: ' + util.inspect(user));
     res.json(user);
