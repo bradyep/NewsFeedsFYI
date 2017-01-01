@@ -1,5 +1,5 @@
 import express = require("express");
-var router = express.Router();
+export var router = express.Router();
 import usersModel = require('../models/users-sequelize');
 import logModule = require('debug');
   const log = logModule('nffyi-rest:router-authenticate');
@@ -34,5 +34,7 @@ var getKeyTitlesList = function() {
     });
 };
 
-// module.exports = router;
+// exports.router = router;
+// export.router = router;
+// export router;
 // export = router;

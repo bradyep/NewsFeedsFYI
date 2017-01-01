@@ -1,6 +1,6 @@
 "use strict";
 const express = require("express");
-var router = express.Router();
+exports.router = express.Router();
 const usersModel = require("../models/users-sequelize");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:router-authenticate');
@@ -15,7 +15,7 @@ function initPassport(app) {
 }
 exports.initPassport = initPassport;
 ;
-router.post('/', passport.authenticate('local'), function (req, res) {
+exports.router.post('/', passport.authenticate('local'), function (req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
     res.redirect('/users/' + req.user.username);
@@ -31,6 +31,8 @@ var getKeyTitlesList = function () {
         return Promise.all(keyPromises);
     });
 };
-// module.exports = router;
-// export = router;
+// exports.router = router;
+// export.router = router;
+// export router;
+// export = router; 
 //# sourceMappingURL=authenticate.js.map

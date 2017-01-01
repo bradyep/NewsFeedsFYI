@@ -40,7 +40,7 @@ authenticate.initPassport(app);
 app.use('/', index);
 app.use('/users', users);
 app.use('/test', test);
-app.use('/authenticate', authenticate);
+app.use('/authenticate', authenticate.router);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     let err;
