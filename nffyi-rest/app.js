@@ -31,7 +31,8 @@ app.use(session({
     }),
     secret: 'this is a picture',
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    name: 'connect.sid'
 }));
 authenticate.initPassport(app);
 // Use Routes

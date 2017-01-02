@@ -9,6 +9,7 @@ import errorModule = require('debug');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+/*
     // var userlist;
     getKeyTitlesList()
     .then(userlist => {
@@ -20,6 +21,9 @@ router.get('/', function(req, res, next) {
         });
     })
     .catch(err => { error('test page '+ err); next(err); });
+    */
+    if (req.user) res.json(req.user);
+    else res.json({ reqDotUser: null });
 });
 
 var getKeyTitlesList = function() {
