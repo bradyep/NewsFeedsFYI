@@ -12,7 +12,7 @@ import FileStoreModule = require('session-file-store');
 // Define Routes
 import index = require('./routes/index');
 import users = require('./routes/users');
-import test = require('./routes/test');
+// import test = require('./routes/test');
 import authenticate = require('./routes/authenticate');
 
 var app = express();
@@ -33,7 +33,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   store: new FileStore({
-    path: "sessions"
+    path: "sessions",
+    logFn: function(){}
   }),
   secret: 'this is a picture',
   resave: true,
@@ -46,7 +47,7 @@ authenticate.initPassport(app);
 // Use Routes
 app.use('/', index);
 app.use('/users', users);
-app.use('/test', test);
+// app.use('/test', test);
 app.use('/authenticate', authenticate.router);
 
 // catch 404 and forward to error handler

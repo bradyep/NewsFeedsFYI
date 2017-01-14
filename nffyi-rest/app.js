@@ -10,7 +10,7 @@ const FileStore = FileStoreModule(session);
 // Define Routes
 const index = require("./routes/index");
 const users = require("./routes/users");
-const test = require("./routes/test");
+// import test = require('./routes/test');
 const authenticate = require("./routes/authenticate");
 var app = express();
 // var thing = 'whee - this is a thino! here is some more text. I feel I am being watched!';
@@ -27,7 +27,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     store: new FileStore({
-        path: "sessions"
+        path: "sessions",
+        logFn: function () { }
     }),
     secret: 'this is a picture',
     resave: true,
@@ -38,7 +39,7 @@ authenticate.initPassport(app);
 // Use Routes
 app.use('/', index);
 app.use('/users', users);
-app.use('/test', test);
+// app.use('/test', test);
 app.use('/authenticate', authenticate.router);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

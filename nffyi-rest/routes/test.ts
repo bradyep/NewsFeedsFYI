@@ -1,3 +1,6 @@
+// IMPORTANT: This route should no longer be needed!
+
+
 // var express = require('express');
 import express = require("express");
 var router = express.Router();

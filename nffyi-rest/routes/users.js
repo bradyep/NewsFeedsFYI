@@ -38,7 +38,7 @@ var getKeyList = function () {
     });
 };
 // GET single User
-router.get('/:userid', (req, res, next) => {
+router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
     // Must be Admin to see another User's data
     usersModel.read(req.params.userid)
         .then(user => {
@@ -50,7 +50,7 @@ router.get('/:userid', (req, res, next) => {
         .catch(err => { next(err); });
 });
 // Update existing User
-router.put('/:userid', (req, res, next) => {
+router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
     // Must be admin to update any User than oneself
     usersModel.update(req.params.userid, req.body.username, req.body.password, req.body.email)
         .then(user => {
@@ -62,7 +62,7 @@ router.put('/:userid', (req, res, next) => {
         .catch(err => { next(err); });
 });
 // POST new users
-router.post('/', function (req, res, next) {
+router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     // We should authorize this action in order to prevent new
     // User spam
     usersModel.create(req.body.username, req.body.password, req.body.email)
@@ -73,7 +73,7 @@ router.post('/', function (req, res, next) {
         .catch(err => { next(err); });
 });
 // DELETE existing User
-router.delete('/:userid', (req, res, next) => {
+router.delete('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
     // Must be Admin to delete Users other than oneself
     usersModel.destroy(req.params.userid)
         .then(user => {

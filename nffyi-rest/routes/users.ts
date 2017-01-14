@@ -42,7 +42,7 @@ var getKeyList = function() {
 };
 
 // GET single User
-router.get('/:userid', (req, res, next) => {
+router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to see another User's data
 
 
@@ -55,7 +55,7 @@ router.get('/:userid', (req, res, next) => {
 });
 
 // Update existing User
-router.put('/:userid', (req, res, next) => {
+router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be admin to update any User than oneself
 
 
@@ -68,7 +68,7 @@ router.put('/:userid', (req, res, next) => {
 });
 
 // POST new users
-router.post('/', function(req, res, next) {
+router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   // We should authorize this action in order to prevent new
   // User spam
 
@@ -82,7 +82,7 @@ router.post('/', function(req, res, next) {
 });
 
 // DELETE existing User
-router.delete('/:userid', (req, res, next) => {
+router.delete('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to delete Users other than oneself
   
 

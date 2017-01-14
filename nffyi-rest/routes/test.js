@@ -1,3 +1,4 @@
+// IMPORTANT: This route should no longer be needed!
 "use strict";
 // var express = require('express');
 const express = require("express");

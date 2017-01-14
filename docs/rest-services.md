@@ -27,10 +27,17 @@ auth = Do not allow for guest, authorize for user, just do it for admin
 #### Get Entire Page 
 * /pages/:id -> GET -> allow
 * this grabs all UserFeeds+FeedSources+CachedNewsItems for the specified page
+  * I wonder if it might be better to do this asynchonously so the User sees their page populate with feeds one-by-one
+  * If we went this route, we could just display the out-dated data until the request came back 
+  * Also, this REST request would just return a list of UserFeeds
+  * So this basically grabs all the cached data and then once it arrives, the client looks for out-dated feeds and calls
+  * /userfeeds:id to update them 
+  * There should probably be some visual indication that a feed is being updated
 
 ## 2. Page Lifecycle
 * For a NewsFeed that gets old on the User's screen we need GET UpdatedNewsFeed
 * /userfeeds/:id -> GET -> allow
+* This will return an object built from FeedSources and CachedNewsItems
 
 ## 3. User-Driven Events
 
@@ -72,6 +79,7 @@ auth = Do not allow for guest, authorize for user, just do it for admin
 
 #### Add Feed
 * /userfeeds -> POST -> auth
+  * then /userfeeds:id -> GET -> allow
 * After we create the page we will have to check and work with the FeedSources and probably return the UserFeed to the client
 
 #### Change Feed (Move to Page, Reordering, Update data)

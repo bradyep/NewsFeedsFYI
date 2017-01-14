@@ -42,7 +42,7 @@ router.get('/logout', function(req, res, next) {
 });
 */
 passport.use(new LocalStrategy(function (username, password, done) {
-    log('pasport used: ' + username + '/' + password);
+    log('passport used: ' + username + '/' + password);
     usersModel.userPasswordCheck(username, password)
         .then(check => {
         if (check.check) {
