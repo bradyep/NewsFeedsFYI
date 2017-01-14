@@ -34,12 +34,27 @@ export function connectDB() {
             username: Sequelize.STRING,
             password: Sequelize.STRING,
             email: Sequelize.STRING,
-            lastAccessDate: Sequelize.DATE
+            lastAccessDate: Sequelize.DATE,
+            role: Sequelize.STRING
         });
         return SQUser.sync();
     });
 }; // /function connectDB
 
+export function create(user:User) {
+    return connectDB()
+    .then(SQUser => {
+        return SQUser.create({
+            username: user.username,
+            password: user.password,
+            email: user.email,
+            lastAccessDate: Date(),
+            role: user.role
+        });
+    });
+};
+
+/*
 export function create(username, password, email) {
     return connectDB()
     .then(SQUser => {
@@ -51,6 +66,7 @@ export function create(username, password, email) {
         });
     });
 };
+*/
 
 export function update(userID, username, password, email) {
     return connectDB()

@@ -31,16 +31,32 @@ function connectDB() {
             username: Sequelize.STRING,
             password: Sequelize.STRING,
             email: Sequelize.STRING,
-            lastAccessDate: Sequelize.DATE
+            lastAccessDate: Sequelize.DATE,
+            role: Sequelize.STRING
         });
         return SQUser.sync();
     });
 }
 exports.connectDB = connectDB;
 ; // /function connectDB
-function create(username, password, email) {
+function create(user) {
     return connectDB()
         .then(SQUser => {
+        return SQUser.create({
+            username: user.username,
+            password: user.password,
+            email: user.email,
+            lastAccessDate: Date(),
+            role: user.role
+        });
+    });
+}
+exports.create = create;
+;
+/*
+export function create(username, password, email) {
+    return connectDB()
+    .then(SQUser => {
         return SQUser.create({
             username,
             password,
@@ -48,9 +64,8 @@ function create(username, password, email) {
             lastAccessDate: Date()
         });
     });
-}
-exports.create = create;
-;
+};
+*/
 function update(userID, username, password, email) {
     return connectDB()
         .then(SQUser => {
