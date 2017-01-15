@@ -1,3 +1,5 @@
+// Will need to rename this to nffyi-sequelize
+
 import util = require('util');
 import fs = require('fs-extra');
 import jsyaml = require('js-yaml');
@@ -11,12 +13,18 @@ import errorModule = require('debug');
 import User = require('./User');
 
 var SQUser;
-var sequlz;
+var SQLink;
+var sequelize;
 
-// exports.connectDB = function() {
+// Need parameter to indicate which model? 
 export function connectDB() {
     
+    // Maybe have a switch statement here? 
+
+    // See if ANY of our models is defined?
+    // Return a made-up Promise with requested model here? 
     if (SQUser) return SQUser.sync();
+    // if (SQUser) return SQUser; // doesn't work
     
     return new Promise((resolve, reject) => {
         fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8', (err, data) => {
@@ -28,18 +36,33 @@ export function connectDB() {
         return jsyaml.safeLoad(yamltext, 'utf8');
     })
     .then(params => {
-        sequlz = new Sequelize(params.dbname, params.username, params.password, params.params);
-        SQUser = sequlz.define('User', {
+        sequelize = new Sequelize(params.dbname, params.username, params.password, params.params);
+        SQUser = sequelize.define('User', {
             userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
             username: Sequelize.STRING,
             password: Sequelize.STRING,
             email: Sequelize.STRING,
             lastAccessDate: Sequelize.DATE,
             role: Sequelize.STRING
-        });
+        }); // /SQUser
+/*
+        SQLink = sequelize.define('Link', {
+            linkID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            url: Sequelize.STRING,
+            name: Sequelize.STRING,
+            displayOrder: Sequelize.INTEGER
+        }); // /SQLink
+        */
+
+        // We should call sequelize.sync(), not on individual models
+
+        // Return model that User asked for 
         return SQUser.sync();
+        // return SQUser.sync() && SQLink.sync();
     });
 }; // /function connectDB
+
+// Move everything below to users-sequelize
 
 export function create(user:User) {
     return connectDB()
@@ -53,20 +76,6 @@ export function create(user:User) {
         });
     });
 };
-
-/*
-export function create(username, password, email) {
-    return connectDB()
-    .then(SQUser => {
-        return SQUser.create({
-            username,
-            password,
-            email,
-            lastAccessDate: Date()
-        });
-    });
-};
-*/
 
 export function update(userID, username, password, email) {
     return connectDB()
@@ -98,7 +107,7 @@ export function read(userID) {
                 // throw new Error("No user found for " + userID);
                 return null;
             } else {
-                return new User(user.userID, user.username, user.password, user.email, user.lastAccessDate);
+                return new User(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
                 // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
                 // var test = new User();
 /*

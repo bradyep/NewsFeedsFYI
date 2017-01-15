@@ -34,7 +34,8 @@ var getKeyList = function() {
                   username: user.username,
                   password: user.password,
                   email: user.email,
-                  lastAccessDate: user.lastAccessDate
+                  lastAccessDate: user.lastAccessDate,
+                  role: user.role
                  };
             });
         });
