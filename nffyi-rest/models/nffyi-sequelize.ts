@@ -40,6 +40,7 @@ export function connectDB(modelRequested:string) {
     })
     .then(params => {
         sequelize = new Sequelize(params.dbname, params.username, params.password, params.params);
+
         models.SQUser = sequelize.define('User', {
             userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
             username: Sequelize.STRING,
@@ -48,14 +49,46 @@ export function connectDB(modelRequested:string) {
             lastAccessDate: Sequelize.DATE,
             role: Sequelize.STRING
         }); // /SQUser
-/*
-        SQLink = sequelize.define('Link', {
+
+        models.SQLink = sequelize.define('Link', {
             linkID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
             url: Sequelize.STRING,
             name: Sequelize.STRING,
             displayOrder: Sequelize.INTEGER
         }); // /SQLink
-        */
+        models.SQLink.belongsTo(models.SQUser, { foreignKey: 'UserID' });
+
+        models.SQPage = sequelize.define('Page', {
+            pageID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            name: Sequelize.STRING,
+            displayOrder: Sequelize.INTEGER
+        }); // /SQPage
+        models.SQPage.belongsTo(models.SQUser, { foreignKey: 'UserID' });
+
+        models.SQFeedSource = sequelize.define('FeedSource', {
+            feedSourceID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            feedSourceURL: Sequelize.STRING,
+            cachedTitle: Sequelize.STRING,
+            cachedWebsiteURL: Sequelize.STRING,
+            lastCachedDate: Sequelize.DATE
+        }); // /SQFeedSource
+
+        models.SQUserFeed = sequelize.define('UserFeed', {
+            columnNumber: Sequelize.INTEGER,
+            displayOrder: Sequelize.INTEGER,
+            userFeedName: Sequelize.STRING,
+            itemDisplayCount: Sequelize.INTEGER
+        }); // /SQUserFeed
+        models.SQUserFeed.belongsTo(models.SQFeedSource, { foreignKey: 'FeedSourceID' });
+        models.SQUserFeed.belongsTo(models.SQPage, { foreignKey: 'PageID' });
+
+        models.SQCachedNewsItem = sequelize.define('CachedNewsItem', {
+            cachedNewsItemID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            title: Sequelize.STRING,
+            link: Sequelize.STRING,
+            description: Sequelize.STRING
+        }); // /SQCachedNewsItem
+        models.SQCachedNewsItem.belongsTo(models.SQFeedSource, { foreignKey: 'FeedSourceID' });
 
         // We should call sequelize.sync(), not on individual models
         log('Calling sequelize.sync()');
