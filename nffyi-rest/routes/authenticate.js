@@ -17,10 +17,14 @@ function initPassport(app) {
 exports.initPassport = initPassport;
 ;
 function ensureAuthenticated(req, res, next) {
+    log('*****Attempting Authentication with: ' + req.user);
     // req.user is set by Passport in the deserialize function
     if (req.user)
         next();
     else {
+        // setTimeout(() => {
+        // log('Giving it another chance');
+        // if (req.user) next();
         // res.redirect('/users/login');
         let err;
         err = new Error('Not Authenticated');
@@ -46,6 +50,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
     usersModel.userPasswordCheck(username, password)
         .then(check => {
         if (check.check) {
+            log('******Supplied Credentials are Valid*********');
             done(null, { id: check.userid, username: check.username });
         }
         else {

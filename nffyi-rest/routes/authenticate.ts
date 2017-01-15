@@ -16,14 +16,19 @@ export function initPassport(app) {
 };
 
 export function ensureAuthenticated (req, res, next) {
+  log('*****Attempting Authentication with: ' + req.user);
   // req.user is set by Passport in the deserialize function
   if (req.user) next();
-  else { 
+  else {
+        // setTimeout(() => {
+        // log('Giving it another chance');
+        // if (req.user) next();
         // res.redirect('/users/login');
         let err:any;
         err = new Error('Not Authenticated');
         err.status = 403;
         next(err);
+        // }, 1000);
    }
 };
 
@@ -48,6 +53,7 @@ passport.use(new LocalStrategy(
     usersModel.userPasswordCheck(username, password)
     .then(check => {
       if (check.check) {
+        log('******Supplied Credentials are Valid*********');
         done(null, { id: check.userid, username: check.username });
       } else {
         done(null, false, check.message);

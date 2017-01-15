@@ -31,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/*
 app.use(session({
   store: new FileStore({
     path: "sessions",
@@ -41,6 +42,13 @@ app.use(session({
   saveUninitialized: true,
   name: 'connect.sid'
 }));
+*/
+
+app.use(session({ 
+  secret: 'this is a picture', 
+  resave: true,
+  saveUninitialized: true
+ }));
 
 authenticate.initPassport(app);
 

@@ -1,73 +1,22 @@
-// Will need to rename this to nffyi-sequelize
-
-import util = require('util');
-import fs = require('fs-extra');
-import jsyaml = require('js-yaml');
-import Sequelize = require("sequelize");
+// import util = require('util');
+// import fs = require('fs-extra');
+// import jsyaml = require('js-yaml');
+// import Sequelize = require("sequelize");
 
 import logModule = require('debug');
   const log = logModule('nffyi-rest:users-model');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
+import modelDef = require('./nffyi-sequelize');
 import User = require('./User');
-
-var SQUser;
-var SQLink;
-var sequelize;
-
-// Need parameter to indicate which model? 
-export function connectDB() {
-    
-    // Maybe have a switch statement here? 
-
-    // See if ANY of our models is defined?
-    // Return a made-up Promise with requested model here? 
-    if (SQUser) return SQUser.sync();
-    // if (SQUser) return SQUser; // doesn't work
-    
-    return new Promise((resolve, reject) => {
-        fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8', (err, data) => {
-            if (err) reject(err);
-            else resolve(data);
-        });
-    })
-    .then(yamltext => {
-        return jsyaml.safeLoad(yamltext, 'utf8');
-    })
-    .then(params => {
-        sequelize = new Sequelize(params.dbname, params.username, params.password, params.params);
-        SQUser = sequelize.define('User', {
-            userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-            username: Sequelize.STRING,
-            password: Sequelize.STRING,
-            email: Sequelize.STRING,
-            lastAccessDate: Sequelize.DATE,
-            role: Sequelize.STRING
-        }); // /SQUser
-/*
-        SQLink = sequelize.define('Link', {
-            linkID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-            url: Sequelize.STRING,
-            name: Sequelize.STRING,
-            displayOrder: Sequelize.INTEGER
-        }); // /SQLink
-        */
-
-        // We should call sequelize.sync(), not on individual models
-
-        // Return model that User asked for 
-        return SQUser.sync();
-        // return SQUser.sync() && SQLink.sync();
-    });
-}; // /function connectDB
 
 // Move everything below to users-sequelize
 
 export function create(user:User) {
-    return connectDB()
+    return modelDef.connectDB('SQUser')
     .then(SQUser => {
-        return SQUser.create({
+        return SQUser['create']({
             username: user.username,
             password: user.password,
             email: user.email,
@@ -78,9 +27,9 @@ export function create(user:User) {
 };
 
 export function update(userID, username, password, email) {
-    return connectDB()
+    return modelDef.connectDB('SQUser')
     .then(SQUser => {
-        return SQUser.find({ where: { userID } })
+        return SQUser['find']({ where: { userID } })
         .then(user => {
             if (!user) {
                 // throw new Error("No User found for userID " + userID);
@@ -99,9 +48,9 @@ export function update(userID, username, password, email) {
 
 /** Get one User from the Database */
 export function read(userID) {
-    return connectDB()
+    return modelDef.connectDB('SQUser')
     .then(SQUser => {
-        return SQUser.find({ where: { userID } })
+        return SQUser['find']({ where: { userID } })
         .then(user => {
             if (!user) {
                 // throw new Error("No user found for " + userID);
@@ -125,9 +74,9 @@ export function read(userID) {
 };
 
 export function destroy(userID) {
-    return connectDB()
+    return modelDef.connectDB('SQUser')
     .then(SQUser => {
-        return SQUser.find({ where: { userID } })
+        return SQUser['find']({ where: { userID } })
         .then(user => {
             if (!user) return null;
             else return user.destroy();
@@ -136,9 +85,9 @@ export function destroy(userID) {
 };
 
 export function keylist() {
-    return connectDB()
+    return modelDef.connectDB('SQUser')
     .then(SQUser => {
-        return SQUser.findAll({ attributes: [ 'userID' ] })
+        return SQUser['findAll']({ attributes: [ 'userID' ] })
         .then(users => {
             return users.map(user => user.userID);
         });
@@ -146,9 +95,9 @@ export function keylist() {
 };
 
 export function count() {
-    return connectDB()
+    return modelDef.connectDB('SQUser')
     .then(SQUser => {
-        return SQUser.count()
+        return SQUser['count']()
         .then(count => {
             log('COUNT ' + count);
             return count;
@@ -158,8 +107,8 @@ export function count() {
 
 /** Check if supplied credentials are valid */
 export function userPasswordCheck(username, password) {
-    return connectDB().then(SQUser => {
-        return SQUser.find({ where: { username } })
+    return modelDef.connectDB('SQUser').then(SQUser => {
+        return SQUser['find']({ where: { username } })
     })
     .then(user => {
         // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
