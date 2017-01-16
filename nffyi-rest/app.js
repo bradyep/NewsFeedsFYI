@@ -5,11 +5,12 @@ const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const FileStoreModule = require("session-file-store");
-const FileStore = FileStoreModule(session);
+// import FileStoreModule = require('session-file-store');
+// const FileStore = FileStoreModule(session);
 // Define Routes
 const index = require("./routes/index");
 const users = require("./routes/users");
+const links = require("./routes/links");
 // import test = require('./routes/test');
 const authenticate = require("./routes/authenticate");
 var app = express();
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 /*
+// session-file-store is garbage!
 app.use(session({
   store: new FileStore({
     path: "sessions",
@@ -46,6 +48,7 @@ authenticate.initPassport(app);
 // Use Routes
 app.use('/', index);
 app.use('/users', users);
+app.use('/links', links);
 // app.use('/test', test);
 app.use('/authenticate', authenticate.router);
 // catch 404 and forward to error handler

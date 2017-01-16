@@ -21,7 +21,7 @@ class User {
     }
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var user = new User(data.userID, data.username, data.password, data.email, data.lastAccessDate, data.role);
+        var user = new User(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);
         log(json + ' => ' + util.inspect(user));
         return user;
     }

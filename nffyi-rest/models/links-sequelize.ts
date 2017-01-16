@@ -1,0 +1,86 @@
+import logModule = require('debug');
+  const log = logModule('nffyi-rest:links-model');
+import errorModule = require('debug');
+  const error = errorModule('nffyi-rest:error');
+
+import modelDef = require('./nffyi-sequelize');
+import Link = require('./link');
+
+export function create(link:Link) {
+    return modelDef.connectDB('SQLink')
+    .then(SQLink => {
+        return SQLink['create']({
+            linkID: link.linkID,
+            userID: link.userID,
+            url: link.url,
+            name: link.name,
+            displayOrder: link.displayOrder
+        });
+    });
+};
+
+export function update(link:Link) {
+    return modelDef.connectDB('SQLink')
+    .then(SQLink => {
+        return SQLink['find']({ where: { linkID: link.linkID } })
+        .then(link => {
+            if (!link) {
+                // throw new Error("No link found for linkID " + linkID);
+                return null;
+            } else {
+                return link.updateAttributes({
+                    url: link.url,
+                    name: link.name,
+                    displayOrder: link.displayOrder,
+                });
+            }
+        });
+    });
+};
+
+export function read(linkID) {
+    return modelDef.connectDB('SQLink')
+    .then(SQLink => {
+        return SQLink['find']({ where: { linkID } })
+        .then(link => {
+            if (!link) {
+                // throw new Error("No link found for " + linkID);
+                return null;
+            } else {
+                return new Link(link.url, link.name, link.displayOrder, link.linkID, link.userID);
+            }
+        });
+    });
+};
+
+export function destroy(linkID) {
+    return modelDef.connectDB('SQLink')
+    .then(SQLink => {
+        return SQLink['find']({ where: { linkID } })
+        .then(link => {
+            if (!link) return null;
+            else return link.destroy();
+        });
+    });
+};
+
+export function keylist(userID:number) {
+    return modelDef.connectDB('SQLink')
+    .then(SQLink => {
+        return SQLink['findAll']({ where: { userID }, attributes: [ 'linkID' ] })
+        .then(links => {
+            return links.map(link => link.linkID);
+        });
+    });
+};
+
+export function count() {
+    return modelDef.connectDB('SQLink')
+    .then(SQLink => {
+        return SQLink['count']()
+        .then(count => {
+            log('COUNT ' + count);
+            return count;
+        });
+    });
+};

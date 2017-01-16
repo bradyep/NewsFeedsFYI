@@ -6,12 +6,13 @@ import cookieParser = require("cookie-parser");
 import bodyParser = require("body-parser");
 
 import session = require('express-session')
-import FileStoreModule = require('session-file-store');
-  const FileStore = FileStoreModule(session);
+// import FileStoreModule = require('session-file-store');
+  // const FileStore = FileStoreModule(session);
 
 // Define Routes
 import index = require('./routes/index');
 import users = require('./routes/users');
+import links = require('./routes/links');
 // import test = require('./routes/test');
 import authenticate = require('./routes/authenticate');
 
@@ -32,6 +33,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 /*
+// session-file-store is garbage!
 app.use(session({
   store: new FileStore({
     path: "sessions",
@@ -55,6 +57,7 @@ authenticate.initPassport(app);
 // Use Routes
 app.use('/', index);
 app.use('/users', users);
+app.use('/links', links);
 // app.use('/test', test);
 app.use('/authenticate', authenticate.router);
 

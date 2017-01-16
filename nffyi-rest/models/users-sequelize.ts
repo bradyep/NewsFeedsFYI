@@ -1,8 +1,3 @@
-// import util = require('util');
-// import fs = require('fs-extra');
-// import jsyaml = require('js-yaml');
-// import Sequelize = require("sequelize");
-
 import logModule = require('debug');
   const log = logModule('nffyi-rest:users-model');
 import errorModule = require('debug');
@@ -10,8 +5,6 @@ import errorModule = require('debug');
 
 import modelDef = require('./nffyi-sequelize');
 import User = require('./User');
-
-// Move everything below to users-sequelize
 
 export function create(user:User) {
     return modelDef.connectDB('SQUser')
