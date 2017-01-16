@@ -9,7 +9,7 @@ function create(link) {
     return modelDef.connectDB('SQLink')
         .then(SQLink => {
         return SQLink['create']({
-            linkID: link.linkID,
+            // linkID: link.linkID, // Auto-Generated
             userID: link.userID,
             url: link.url,
             name: link.name,

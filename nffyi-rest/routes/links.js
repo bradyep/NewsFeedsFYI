@@ -1,6 +1,7 @@
 "use strict";
 const express = require("express");
 var router = express.Router();
+const util = require("util");
 // import User = require('../models/User');
 const linksModel = require("../models/links-sequelize");
 const logModule = require("debug");
@@ -48,9 +49,49 @@ router.get('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
 router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
     let userID = req.user ? req.user.userID : 1;
     // Authorize
-    if (userID === req.body.userID) {
+    if (userID === req.body.userID || req.user.userID === 2) {
         let updateLink = new Link(req.body.url, req.body.name, req.body.displayOrder, req.params.linkID, req.body.userID);
         linksModel.update(updateLink)
+            .then(link => {
+            if (!link)
+                next();
+            else
+                res.json(link);
+        })
+            .catch(err => { next(err); });
+    }
+    else {
+        let err;
+        err = new Error('Not Authenticated');
+        err.status = 403;
+        next(err);
+    }
+});
+// POST new Link
+router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
+    let userID = req.user ? req.user.userID : 1;
+    // Authorize
+    if (userID === req.body.userID || req.user.userID === 2) {
+        linksModel.create(new Link(req.body.url, req.body.name, req.body.displayOrder, null, userID))
+            .then(link => {
+            log('Attempted to create Link: ' + util.inspect(link));
+            res.json(link);
+        })
+            .catch(err => { next(err); });
+    }
+    else {
+        let err;
+        err = new Error('Not Authenticated');
+        err.status = 403;
+        next(err);
+    }
+});
+// DELETE existing Link
+router.delete('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
+    let userID = req.user ? req.user.userID : 1;
+    // Authorize
+    if (userID === req.body.userID || req.user.userID === 2) {
+        linksModel.destroy(req.params.linkid)
             .then(link => {
             if (!link)
                 next();
