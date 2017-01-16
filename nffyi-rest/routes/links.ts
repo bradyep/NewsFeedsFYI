@@ -55,7 +55,6 @@ router.get('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
 });
 */
 
-
 // Update existing Link
 router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
   let userID:number = req.user ? req.user.userID : 1;
