@@ -13,6 +13,7 @@ import session = require('express-session')
 import index = require('./routes/index');
 import users = require('./routes/users');
 import links = require('./routes/links');
+import pages = require('./routes/pages');
 // import test = require('./routes/test');
 import authenticate = require('./routes/authenticate');
 
@@ -58,6 +59,7 @@ authenticate.initPassport(app);
 app.use('/', index);
 app.use('/users', users);
 app.use('/links', links);
+app.use('/pages', pages);
 // app.use('/test', test);
 app.use('/authenticate', authenticate.router);
 

@@ -27,4 +27,4 @@ class Link {
 }
 ; // /class Link
 module.exports = Link;
-//# sourceMappingURL=Link.js.map
+//# sourceMappingURL=link.js.map
