@@ -56,7 +56,7 @@ function connectDB(modelRequested) {
         models.SQUser.hasMany(models.SQPage, { as: 'Pages', foreignKey: 'userID' });
         models.SQFeedSource = sequelize.define('FeedSource', {
             feedSourceID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-            feedSourceURL: Sequelize.STRING,
+            url: Sequelize.STRING,
             cachedTitle: Sequelize.STRING,
             cachedWebsiteURL: Sequelize.STRING,
             lastCachedDate: Sequelize.DATE
@@ -87,6 +87,7 @@ function connectDB(modelRequested) {
         // return SQUser.sync() && SQLink.sync();
     }) // /params Promise
         .then(() => {
+        // Auto-Populate Database Here?
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });

@@ -17,5 +17,6 @@ usersModel.create(guestUser)
     .catch(err => { console.error(err); });
 // Create Links
 // Create Pages
+// Create FeedSources
 // Create UserFeeds
 //# sourceMappingURL=init-data.js.map

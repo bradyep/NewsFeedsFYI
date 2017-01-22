@@ -61,7 +61,7 @@ export function connectDB(modelRequested:string) {
 
         models.SQFeedSource = sequelize.define('FeedSource', {
             feedSourceID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-            feedSourceURL: Sequelize.STRING,
+            url: Sequelize.STRING,
             cachedTitle: Sequelize.STRING,
             cachedWebsiteURL: Sequelize.STRING,
             lastCachedDate: Sequelize.DATE
@@ -96,6 +96,8 @@ export function connectDB(modelRequested:string) {
         // return SQUser.sync() && SQLink.sync();
     }) // /params Promise
     .then(() => {
+        // Auto-Populate Database Here?
+
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });
