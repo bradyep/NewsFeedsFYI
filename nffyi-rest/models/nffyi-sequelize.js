@@ -88,6 +88,19 @@ function connectDB(modelRequested) {
     }) // /params Promise
         .then(() => {
         // Auto-Populate Database Here?
+        /*
+        models.SQUser['create']({
+          username: 'admin',
+          password: 'Passw0rd',
+          email: 'admin@newsfeeds.fyi',
+          lastAccessDate: Date(),
+          role: 'admin'
+        })
+        .then(user => {
+          console.log('Attempted to create User: ' + util.inspect(user));
+        })
+        .catch(err => { console.error(err); });
+        */
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });
