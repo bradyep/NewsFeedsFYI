@@ -26,7 +26,7 @@ export function ensureAuthenticated (req, res, next) {
         // res.redirect('/users/login');
         let err:any;
         err = new Error('Not Authenticated');
-        err.status = 403;
+        err.status = 401;
         next(err);
         // }, 1000);
    }

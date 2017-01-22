@@ -68,9 +68,9 @@ export function connectDB(modelRequested:string) {
         }); // /SQFeedSource
 
         models.SQUserFeed = sequelize.define('UserFeed', {
-            columnNumber: Sequelize.INTEGER,
+            column: Sequelize.INTEGER,
             displayOrder: Sequelize.INTEGER,
-            userFeedName: Sequelize.STRING,
+            name: Sequelize.STRING,
             itemDisplayCount: Sequelize.INTEGER
         }); // /SQUserFeed
         models.SQUserFeed.belongsTo(models.SQFeedSource, { foreignKey: 'feedSourceID' });

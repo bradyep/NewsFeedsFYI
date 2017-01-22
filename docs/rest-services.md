@@ -58,6 +58,19 @@ auth = Do not allow for guest, authorize for user, just do it for admin
 * /logout -> GET
 * Maybe reload the page on the front-end? 
 
+### Links
+
+#### Delete Link
+
+* /links:id -> DELETE -> auth
+
+#### Create Link
+
+* links -> POST -> auth
+
+#### Change Link (name, order)
+* /links:id -> PUT -> AUTH
+
 ### Pages
 
 #### Delete Page

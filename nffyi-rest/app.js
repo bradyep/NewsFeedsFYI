@@ -12,6 +12,7 @@ const index = require("./routes/index");
 const users = require("./routes/users");
 const links = require("./routes/links");
 const pages = require("./routes/pages");
+const userFeeds = require("./routes/user-feeds");
 // import test = require('./routes/test');
 const authenticate = require("./routes/authenticate");
 var app = express();
@@ -51,6 +52,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/links', links);
 app.use('/pages', pages);
+app.use('/userfeeds', userFeeds);
 // app.use('/test', test);
 app.use('/authenticate', authenticate.router);
 // catch 404 and forward to error handler
