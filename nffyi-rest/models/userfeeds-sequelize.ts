@@ -2,6 +2,8 @@ import logModule = require('debug');
   const log = logModule('nffyi-rest:userFeeds-model');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
+// import FeedHandler = require('./FeedHandler');
+import FeedHandler from './FeedHandler';
 
 import modelDef = require('./nffyi-sequelize');
 import UserFeed = require('./UserFeed');
@@ -52,6 +54,20 @@ export function read(feedSourceID, pageID) {
                 // throw new Error("No userFeed found for " + userFeedID);
                 return null;
             } else {
+                // Since we are asking for a UserFeed, we probably also want the actual
+                // feed itself
+                
+                // Need to get the feed's URL here
+                var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
+                
+                FeedHandler.parse(url).then(function (items:Array<any>) {
+                    items.forEach(function (item) {
+                    console.log('title: ', item.title);
+                    });
+                }).catch(function (error) {
+                    console.log('error: ', error);
+                });
+                
                 return new UserFeed(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
             }
         });
