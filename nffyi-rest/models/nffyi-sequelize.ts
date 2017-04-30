@@ -232,7 +232,135 @@ export function connectDB(modelRequested:string) {
             }
         })
     })
-    // Auto-Populate Database with Cached News Items ???
+    // Auto-Populate Database with Cached News Items 
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(BBC 1)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 1, feedSourceID: 1
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Donald Trump: N Korea's Kim Jong-un a 'smart cookie'", link: 'http://www.bbc.co.uk/news/world-asia-39764834', description: "The US president reflects on the young leader's rise and says 'we'll see' about US military options.", feedSourceID: 1
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(BBC 2)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 2, feedSourceID: 1
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Dozens of Yazidis enslaved by IS in Iraq now free", link: 'http://www.bbc.co.uk/news/world-middle-east-39762790', description: "The 36 men, women and children were held by IS in Iraq for nearly three years.", feedSourceID: 1
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(BBC 3)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 3, feedSourceID: 1
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Ueli Steck: Everest preparation claims 'Swiss Machine' climber", link: 'http://www.bbc.co.uk/news/world-asia-39761904', description: "'Swiss Machine' Ueli Steck dies in an accident while acclimatising for an attempt on a new route.", feedSourceID: 1
+            }
+        })
+    })
+
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(NYTimes 1)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 4, feedSourceID: 2
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Trump’s ‘Very Friendly’ Talk With Duterte Stuns Aides and Critics Alike", link: 'https://www.nytimes.com/2017/04/30/us/politics/trump-duterte.html?partner=rss&emc=rss', description: "The administration is bracing for an avalanche of criticism after the president embraced Rodrigo Duterte, who has led a deadly crackdown on drugs in the Philippines.", feedSourceID: 2
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(NYTimes 2)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 5, feedSourceID: 2
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Becoming Duterte: The Making of a Philippine Strongman", link: 'http://www.nytimes.com/2017/03/21/world/asia/rodrigo-duterte-philippines-president-strongman.html?partner=rss&emc=rss', description: "He is a child of privilege turned populist politician, an antidrug crusader who has struggled with drug abuse. Obsessed with death, he has turned his violent vision into national policy.", feedSourceID: 2
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(NYTimes 3)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 6, feedSourceID: 2
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "News Analysis: On Trade, a Politically Feisty Trump Risks Economic Damage", link: 'https://www.nytimes.com/2017/04/30/business/trump-nafta-trade-economy.html?partner=rss&emc=rss', description: "Trucks waiting to enter the United States at the border crossing in Tijuana, Mexico, in February.", feedSourceID: 2
+            }
+        })
+    })
+
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(ESPN 1)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 7, feedSourceID: 3
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Jazz hold off Clippers to win series", link: 'http://www.espn.com/nba/recap?gameId=400950426', description: "Jazz hold off Clippers to win series", feedSourceID: 3
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(ESPN 2)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 8, feedSourceID: 3
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Nats' Rendon goes 6-for-6, with 3 HRs, 10 RBIs", link: 'http://www.espn.com/mlb/story/_/id/19281935/anthony-rendon-washington-nationals-goes-6-6-3-hrs-10-rbis', description: "Nats' Rendon goes 6-for-6, with 3 HRs, 10 RBIs", feedSourceID: 3
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: CachedNewsItem(ESPN 3)--');
+        return models.SQCachedNewsItem.findOrCreate({
+            where: {
+                cachedNewsItemID: 9, feedSourceID: 3
+            },
+            defaults: { // set the default properties if it doesn't exist
+                title: "Toothless Thomas: C's star eyes fast dental fix", link: 'http://www.espn.com/nba/story/_/id/19282028/isaiah-thomas-boston-celtics-loses-tooth-game-1-win-washington-wizards', description: "Toothless Thomas: C's star eyes fast dental fix", feedSourceID: 3
+            }
+        })
+    })
 
     // Auto-Populate Database with User Feeds
     .then(function([instance, created]) {
