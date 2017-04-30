@@ -11,7 +11,7 @@ import authRouter = require('./authenticate');
 import Link = require('../models/Link');
 import User = require('../models/User');
 
-/* GET all Links for requesting User */
+/* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function(req, res, next) {
   let userID:number = req.user ? req.user.userID : 1;
   getKeyList(userID)

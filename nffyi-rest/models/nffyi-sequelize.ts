@@ -90,7 +90,7 @@ export function connectDB(modelRequested:string) {
         return sequelize.sync();
     }) // /params Promise
     .then(() => {
-        // Auto-Populate Database 
+        // Auto-Populate Database with Users
         log('--Creating Initial Data: Guest User--');
         
         return models.SQUser.findOrCreate({
@@ -101,18 +101,10 @@ export function connectDB(modelRequested:string) {
                 username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
             }
         })
-/*
-        .spread(function(user, created) {
-            log(user.get({
-                plain: true
-            }))
-            log(created);
-        })
-        */
     })
-    .then(function([user, created]) {
+    .then(function([instance, created]) {
         // Understand results of last findOrCreate
-        log(user.get({ plain: true }));
+        log(instance.get({ plain: true }));
         log(created);
 
         log('--Creating Initial Data: Admin User--');
@@ -124,18 +116,171 @@ export function connectDB(modelRequested:string) {
                 username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
             }
         })
-/*
-        .spread(function(user, created) {
-            log(user.get({
-                plain: true
-            }))
-            log(created);
-        })
-        */
     })
-    .then(function([user, created]) {
+    // Auto-Populate Database with Links
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: Link(Google Mail)--');
+        return models.SQLink.findOrCreate({
+            where: {
+                url: 'https://mail.google.com/'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                userID: 1, url: 'https://mail.google.com/', name: 'GMail', displayOrder: 1
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: Link(Google News)--');
+        return models.SQLink.findOrCreate({
+            where: {
+                url: 'https://news.google.com/'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                userID: 1, url: 'https://news.google.com/', name: 'Google News', displayOrder: 2
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: Link(Google Drive)--');
+        return models.SQLink.findOrCreate({
+            where: {
+                url: 'https://drive.google.com/'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                userID: 1, url: 'https://drive.google.com/', name: 'Google Drive', displayOrder: 3
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: Link(Google Keep)--');
+        return models.SQLink.findOrCreate({
+            where: {
+                url: 'https://keep.google.com/'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                userID: 1, url: 'https://keep.google.com/', name: 'Google Keep', displayOrder: 4
+            }
+        })
+    })
+    // Auto-Populate Database with Pages
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: Page(Guest Page One)--');
+        return models.SQPage.findOrCreate({
+            where: {
+                pageID: 1, Name: 'Guest Page One'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                userID: 1, name: 'Guest Page One', displayOrder: 1
+            }
+        })
+    })
+    // Auto-Populate Database with Feed Sources
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: FeedSource(BBC World News)--');
+        return models.SQFeedSource.findOrCreate({
+            where: {
+                url: 'http://feeds.bbci.co.uk/news/world/rss.xml', feedSourceID: 1
+            },
+            defaults: { // set the default properties if it doesn't exist
+                cachedTitle: 'BBC World News', url: 'http://feeds.bbci.co.uk/news/world/rss.xml', cachedWebsiteURL: 'http://www.bbc.com/news/world', lastCachedDate: Date()
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: FeedSource(NYTimes US News)--');
+        return models.SQFeedSource.findOrCreate({
+            where: {
+                url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', feedSourceID: 2
+            },
+            defaults: { // set the default properties if it doesn't exist
+                cachedTitle: 'NYTimes US News', url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', cachedWebsiteURL: 'https://www.nytimes.com/section/us', lastCachedDate: Date()
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: FeedSource(ESPN)--');
+        return models.SQFeedSource.findOrCreate({
+            where: {
+                url: 'http://sports-ak.espn.go.com/espn/rss/news', feedSourceID: 3
+            },
+            defaults: { // set the default properties if it doesn't exist
+                cachedTitle: 'ESPN', url: 'http://sports-ak.espn.go.com/espn/rss/news', cachedWebsiteURL: 'http://www.espn.com/', lastCachedDate: Date()
+            }
+        })
+    })
+    // Auto-Populate Database with Cached News Items ???
+
+    // Auto-Populate Database with User Feeds
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: UserFeed(BBC World News)--');
+        return models.SQUserFeed.findOrCreate({
+            where: {
+                pageID: 1, Name: 'BBC World News'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                pageID: 1, feedSourceID: 1, name: 'BBC World News', column: 1, displayOrder: 1, itemDisplayCount: 3
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: UserFeed(NYTimes US News)--');
+        return models.SQUserFeed.findOrCreate({
+            where: {
+                pageID: 1, Name: 'NYTimes US News'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                pageID: 1, feedSourceID: 2,  name: 'NYTimes US News', column: 2, displayOrder: 1, itemDisplayCount: 3
+            }
+        })
+    })
+    .then(function([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+
+        log('--Creating Initial Data: UserFeed(ESPN)--');
+        return models.SQUserFeed.findOrCreate({
+            where: {
+                pageID: 1, Name: 'ESPN'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                pageID: 1, feedSourceID: 3,  name: 'ESPN', column: 3, displayOrder: 1, itemDisplayCount: 3
+            }
+        })
+    })
+    // Return the entire model
+    .then(function([instance, created]) {
         // Understand results of last findOrCreate
-        log(user.get({ plain: true }));
+        log(instance.get({ plain: true }));
         log(created);
 
         return new Promise((resolve, reject) => {

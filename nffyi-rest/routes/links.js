@@ -10,7 +10,7 @@ const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 const Link = require("../models/Link");
-/* GET all Links for requesting User */
+/* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function (req, res, next) {
     let userID = req.user ? req.user.userID : 1;
     getKeyList(userID)

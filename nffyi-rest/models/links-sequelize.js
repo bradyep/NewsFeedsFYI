@@ -74,10 +74,19 @@ exports.destroy = destroy;
 function keylist(userID) {
     return modelDef.connectDB('SQLink')
         .then(SQLink => {
-        return SQLink['findAll']({ where: { userID }, attributes: ['linkID'] })
-            .then(links => {
-            return links.map(link => link.linkID);
-        });
+        // Admin User gets ALL Links
+        if (userID === 2) {
+            return SQLink['findAll']({ attributes: ['linkID'] })
+                .then(links => {
+                return links.map(link => link.linkID);
+            });
+        }
+        else {
+            return SQLink['findAll']({ where: { userID }, attributes: ['linkID'] })
+                .then(links => {
+                return links.map(link => link.linkID);
+            });
+        }
     });
 }
 exports.keylist = keylist;

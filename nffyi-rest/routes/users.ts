@@ -15,8 +15,6 @@ router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
     // Must be an admin for full User listing, otherwise display 
     // User data for requesting User
 
-
-    // var userlist;
     getKeyList()
     .then(userlist => {
         res.json(userlist);
