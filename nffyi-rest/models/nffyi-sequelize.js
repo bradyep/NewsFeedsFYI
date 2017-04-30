@@ -8,6 +8,7 @@ const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 var sequelize;
 var models = { SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
+2;
 function connectDB(modelRequested) {
     log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
     if (models[modelRequested]) {
@@ -88,6 +89,21 @@ function connectDB(modelRequested) {
     }) // /params Promise
         .then(() => {
         // Auto-Populate Database Here?
+        log('--Creating Initial Data--');
+        models.SQUser.findOrCreate({
+            where: {
+                username: 'guest'
+            },
+            defaults: {
+                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+            }
+        })
+            .spread(function (user, created) {
+            log(user.get({
+                plain: true
+            }));
+            log(created);
+        });
         /*
         models.SQUser['create']({
           username: 'admin',
@@ -99,8 +115,26 @@ function connectDB(modelRequested) {
         .then(user => {
           console.log('Attempted to create User: ' + util.inspect(user));
         })
-        .catch(err => { console.error(err); });
+        .catch(err => { error(err); });
         */
+    })
+        .then(() => {
+        models.SQUser.findOrCreate({
+            where: {
+                username: 'admin'
+            },
+            defaults: {
+                username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+            }
+        })
+            .spread(function (user, created) {
+            log(user.get({
+                plain: true
+            }));
+            log(created);
+        });
+    })
+        .then(() => {
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });

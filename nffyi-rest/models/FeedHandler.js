@@ -1,12 +1,14 @@
 "use strict";
 // import request from 'request';
 const request = require("request");
-const feedparser_1 = require("feedparser");
+const FeedParser = require("feedparser");
 class FeedHandler {
+    // thing:string;
+    // test () { return ""; }
     static parse(url) {
         return new Promise((resolve, reject) => {
-            const items = [];
-            const feedparser = new feedparser_1.default();
+            var items = [];
+            const feedparser = new FeedParser();
             feedparser.on('error', (err) => {
                 reject(err);
             });

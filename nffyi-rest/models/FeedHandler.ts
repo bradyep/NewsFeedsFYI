@@ -7,7 +7,7 @@ export default class FeedHandler {
   // test () { return ""; }
   static parse (url:string) {
     return new Promise( (resolve, reject) => {
-      var items = [];
+      var items:Array<any> = [];
       const feedparser = new FeedParser();
 
       feedparser.on('error', (err) => {

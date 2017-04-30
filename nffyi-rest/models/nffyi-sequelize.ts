@@ -10,7 +10,7 @@ import errorModule = require('debug');
 
 var sequelize;
 var models = {SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null};
-
+2
 export function connectDB(modelRequested:string) {
     log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
     if (models[modelRequested]) {
@@ -97,6 +97,22 @@ export function connectDB(modelRequested:string) {
     }) // /params Promise
     .then(() => {
         // Auto-Populate Database Here?
+        log('--Creating Initial Data--');
+        
+        models.SQUser.findOrCreate({
+            where: {
+                username: 'guest'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+            }
+        })
+        .spread(function(user, created) {
+            log(user.get({
+                plain: true
+            }))
+            log(created);
+        })
 
         /*
         models.SQUser['create']({
@@ -109,9 +125,28 @@ export function connectDB(modelRequested:string) {
         .then(user => {
           console.log('Attempted to create User: ' + util.inspect(user));
         })
-        .catch(err => { console.error(err); });
+        .catch(err => { error(err); });
         */
 
+
+    })
+    .then(() => {
+        models.SQUser.findOrCreate({
+            where: {
+                username: 'admin'
+            },
+            defaults: { // set the default properties if it doesn't exist
+                username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+            }
+        })
+        .spread(function(user, created) {
+            log(user.get({
+                plain: true
+            }))
+            log(created);
+        })
+    })
+    .then(() => {
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });
