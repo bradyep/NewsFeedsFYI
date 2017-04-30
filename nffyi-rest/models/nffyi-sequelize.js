@@ -8,16 +8,13 @@ const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 var sequelize;
 var models = { SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
-2;
 function connectDB(modelRequested) {
     log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
     if (models[modelRequested]) {
-        // return SQUser.sync();
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });
     }
-    // if (SQUser) return SQUser; // doesn't work
     log('--Setting Up Database Connection--');
     return new Promise((resolve, reject) => {
         fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8', (err, data) => {
@@ -83,58 +80,53 @@ function connectDB(modelRequested) {
         // We should call sequelize.sync(), not on individual models
         log('Calling sequelize.sync()');
         return sequelize.sync();
-        // Return model that User asked for 
-        // return SQUser.sync();
-        // return SQUser.sync() && SQLink.sync();
     }) // /params Promise
         .then(() => {
-        // Auto-Populate Database Here?
-        log('--Creating Initial Data--');
-        models.SQUser.findOrCreate({
+        // Auto-Populate Database 
+        log('--Creating Initial Data: Guest User--');
+        return models.SQUser.findOrCreate({
             where: {
                 username: 'guest'
             },
             defaults: {
                 username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
             }
-        })
-            .spread(function (user, created) {
-            log(user.get({
-                plain: true
-            }));
-            log(created);
         });
         /*
-        models.SQUser['create']({
-          username: 'admin',
-          password: 'Passw0rd',
-          email: 'admin@newsfeeds.fyi',
-          lastAccessDate: Date(),
-          role: 'admin'
-        })
-        .then(user => {
-          console.log('Attempted to create User: ' + util.inspect(user));
-        })
-        .catch(err => { error(err); });
-        */
+                .spread(function(user, created) {
+                    log(user.get({
+                        plain: true
+                    }))
+                    log(created);
+                })
+                */
     })
-        .then(() => {
-        models.SQUser.findOrCreate({
+        .then(function ([user, created]) {
+        // Understand results of last findOrCreate
+        log(user.get({ plain: true }));
+        log(created);
+        log('--Creating Initial Data: Admin User--');
+        return models.SQUser.findOrCreate({
             where: {
                 username: 'admin'
             },
             defaults: {
                 username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
             }
-        })
-            .spread(function (user, created) {
-            log(user.get({
-                plain: true
-            }));
-            log(created);
         });
+        /*
+                .spread(function(user, created) {
+                    log(user.get({
+                        plain: true
+                    }))
+                    log(created);
+                })
+                */
     })
-        .then(() => {
+        .then(function ([user, created]) {
+        // Understand results of last findOrCreate
+        log(user.get({ plain: true }));
+        log(created);
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });
