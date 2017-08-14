@@ -12,6 +12,7 @@ There's nothing 'un-RESTful' about containing either lots or very little data wi
 Also don't be afraid to add qualifiers in the routes that differentiate the REST calls
 
 allow = get generic for guest, authorize for user
+
 auth = Do not allow for guest, authorize for user, just do it for admin
 
 ## 1. View Page
