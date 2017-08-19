@@ -8,7 +8,7 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import Link = require('../models/Link');
+import LinkModel = require('../models/Link');
 import User = require('../models/User');
 
 /* GET all Links for requesting User - Admin gets all Links */
@@ -26,7 +26,7 @@ var getKeyList = function(userID:number) {
     .then(keylist => {
         var keyPromises = keylist.map(key => {
             return linksModel.read(key).then(link => {
-                return new Link ( 
+                return new LinkModel ( 
                   link.url, 
                   link.name,
                   link.displayOrder,
@@ -60,7 +60,7 @@ router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
   if (userID === req.body.userID || req.user.userID === 2) {
-    let updateLink = new Link(req.body.url, req.body.name, req.body.displayOrder, req.params.linkID, req.body.userID);
+    let updateLink = new LinkModel(req.body.url, req.body.name, req.body.displayOrder, req.params.linkID, req.body.userID);
     linksModel.update(updateLink)
     .then(link => {
       if (!link) next();
@@ -80,7 +80,7 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
   if (userID === req.body.userID || req.user.userID === 2) {
-    linksModel.create(new Link(req.body.url, req.body.name, req.body.displayOrder, null, userID))
+    linksModel.create(new LinkModel(req.body.url, req.body.name, req.body.displayOrder, null, userID))
     .then(link => {
       log('Attempted to create Link: ' + util.inspect(link));
       res.json(link);

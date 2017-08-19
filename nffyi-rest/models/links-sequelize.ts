@@ -4,9 +4,9 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import Link = require('./link');
+import LinkModel = require('./link');
 
-export function create(link:Link) {
+export function create(link:LinkModel) {
     return modelDef.connectDB('SQLink')
     .then(SQLink => {
         return SQLink['create']({
@@ -19,7 +19,7 @@ export function create(link:Link) {
     });
 };
 
-export function update(link:Link) {
+export function update(link:LinkModel) {
     return modelDef.connectDB('SQLink')
     .then(SQLink => {
         return SQLink['find']({ where: { linkID: link.linkID } })
@@ -47,7 +47,7 @@ export function read(linkID) {
                 // throw new Error("No link found for " + linkID);
                 return null;
             } else {
-                return new Link(link.url, link.name, link.displayOrder, link.linkID, link.userID);
+                return new LinkModel(link.url, link.name, link.displayOrder, link.linkID, link.userID);
             }
         });
     });

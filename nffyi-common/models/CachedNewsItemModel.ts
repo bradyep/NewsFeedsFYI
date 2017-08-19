@@ -1,10 +1,10 @@
-import util = require('util');
-import logModule = require('debug');
+import * as util from 'util';
+import * as logModule from 'debug';
     const log = logModule('nffyi-rest:CachedNewsItem');
-import errorModule = require('debug');
-    const error = errorModule('nffyi-rest:error');
+// import * as errorModule from 'debug';
+    const error = logModule('nffyi-rest:error');
 
-class CachedNewsItem {
+export class CachedNewsItemModel {
     cachedNewsItemID: number; // PK
     feedSourceID: number; // FK
     title: string;
@@ -27,10 +27,11 @@ class CachedNewsItem {
     
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var cachedNewsItem = new CachedNewsItem(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
+        var cachedNewsItem = new CachedNewsItemModel(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
         log(json +' => '+ util.inspect(cachedNewsItem));
         return cachedNewsItem;
     }
 }; // /class CachedNewsItem
 
-export = CachedNewsItem;
+// export = CachedNewsItemModel;
+export default CachedNewsItemModel;

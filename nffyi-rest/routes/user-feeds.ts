@@ -7,7 +7,8 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import UserFeed = require('../models/UserFeed');
+// import UserFeedModel = require('../models/UserFeed');
+import { UserFeedModel } from '../../nffyi-common/models';
 import pagesModel = require('../models/pages-sequelize');
 
 /* GET all UserFeeds for requesting User */
@@ -39,7 +40,7 @@ var getKeyList = function(pageID:number) {
     .then(keylist => {
         var keyPromises = keylist.map(key => {
             return userFeedsModel.read(key, pageID).then(userFeed => {
-                return new UserFeed ( 
+                return new UserFeedModel ( 
                   userFeed.column,
                   userFeed.displayOrder,
                   userFeed.name,
@@ -90,7 +91,7 @@ router.get('/:feedsourceid/:pageid', (req, res, next) => {
 router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
   authorizeRequest(req, res, next, false);
 
-  let updateUserFeed = new UserFeed(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.params.pageid, req.params.feedsourceid);
+  let updateUserFeed = new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.params.pageid, req.params.feedsourceid);
   userFeedsModel.update(updateUserFeed)
   .then(userFeed => {
     if (!userFeed) next();
@@ -103,7 +104,7 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
 router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   authorizeRequest(req, res, next, true);
 
-  userFeedsModel.create(new UserFeed(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
+  userFeedsModel.create(new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
   .then(userFeed => {
     log('Attempted to create UserFeed: ' + util.inspect(userFeed));
     res.json(userFeed);

@@ -1,11 +1,11 @@
-import util = require('util');
-import logModule = require('debug');
+import * as util from 'util';
+import * as logModule from 'debug';
     const log = logModule('nffyi-rest:Link');
-import errorModule = require('debug');
-    const error = errorModule('nffyi-rest:error');
+// import errorModule = require('debug');
+    const error = logModule('nffyi-rest:error');
 
 // module.exports = class Note {
-class Link {
+export class LinkModel {
     linkID: number; // PK
     userID: number; // FK
     url: string;
@@ -28,10 +28,11 @@ class Link {
     
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var link = new Link(data.url, data.name, data.displayOrder, data.linkID, data.userID);
+        var link = new LinkModel(data.url, data.name, data.displayOrder, data.linkID, data.userID);
         log(json +' => '+ util.inspect(link));
         return link;
     }
 }; // /class Link
 
-export = Link;
+// export = LinkModel;
+export default LinkModel;

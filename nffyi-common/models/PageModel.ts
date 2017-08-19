@@ -1,15 +1,15 @@
-import util = require('util');
-import logModule = require('debug');
+import * as util from 'util';
+import * as logModule from 'debug';
     const log = logModule('nffyi-rest:Page');
-import errorModule = require('debug');
-    const error = errorModule('nffyi-rest:error');
+// import errorModule = require('debug');
+    const error = logModule('nffyi-rest:error');
 
 // module.exports = class Note {
-class Page {
+export class PageModel {
     pageID: number; // PK
     userID: number; // FK
-    name: string;
-    displayOrder: number;
+    @observable public name: string;
+    @observable public displayOrder: number;
 
     constructor(name:string, displayOrder:number, userID?:number, pageID?:number) {
         this.name = name;
@@ -26,10 +26,11 @@ class Page {
     
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var page = new Page(data.name, data.displayOrder, data.userID, data.pageID);
+        var page = new PageModel(data.name, data.displayOrder, data.userID, data.pageID);
         log(json +' => '+ util.inspect(page));
         return page;
     }
 }; // /class Page
 
-export = Page;
+// export = Page;
+export default PageModel;

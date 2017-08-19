@@ -8,7 +8,8 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import Page = require('../models/Page');
+// import PageModel = require('../models/Page');
+import { PageModel } from '../../nffyi-common/models';
 import User = require('../models/User');
 
 /* GET all Pages for requesting User */
@@ -26,7 +27,7 @@ var getKeyList = function(userID:number) {
     .then(keylist => {
         var keyPromises = keylist.map(key => {
             return pagesModel.read(key).then(page => {
-                return new Page ( 
+                return new PageModel ( 
                   page.name,
                   page.displayOrder,
                   page.userID,
@@ -63,7 +64,7 @@ router.put('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
   if (userID === req.body.userID || req.user.userID === 2) {
-    let updatePage = new Page(req.body.name, req.body.displayOrder, req.body.userID, req.params.pageID);
+    let updatePage = new PageModel(req.body.name, req.body.displayOrder, req.body.userID, req.params.pageID);
     pagesModel.update(updatePage)
     .then(page => {
       if (!page) next();
@@ -82,7 +83,7 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
   if (userID === req.body.userID || req.user.userID === 2) {
-    pagesModel.create(new Page(req.body.name, req.body.displayOrder, userID, null))
+    pagesModel.create(new PageModel(req.body.name, req.body.displayOrder, userID, null))
     .then(page => {
       log('Attempted to create Page: ' + util.inspect(page));
       res.json(page);

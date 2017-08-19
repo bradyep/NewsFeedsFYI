@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as styles from './styles.css';
 import { inject, observer } from 'mobx-react';
-import { RouteComponentProps } from 'react-router';
-import { Header } from '../../components/Header';
+// import { RouteComponentProps } from 'react-router';
+import { LinkSection, ProfileSection } from '../../components/TopHeaderComponents';
 import { TodoList } from '../../components/TodoList';
 import { Footer } from '../../components/Footer';
 import { TodoModel } from '../../models/TodoModel';
@@ -10,7 +10,7 @@ import { TodoStore, RouterStore } from '../../stores';
 import { STORE_TODO, STORE_ROUTER } from '../../constants/stores';
 import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
 
-export interface TodoAppProps extends RouteComponentProps<any> {
+export interface NewsFeedsFYIAppProps extends React.Component<any> {
   /** MobX Stores will be injected via @inject() **/
   // [STORE_ROUTER]: RouterStore;
   // [STOURE_TODO]: TodoStore;
@@ -22,7 +22,7 @@ export interface TodoAppState {
 
 @inject(STORE_TODO, STORE_ROUTER)
 @observer
-export class TodoApp extends React.Component<TodoAppProps, TodoAppState> {
+export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, TodoAppState> {
 
   constructor(props: TodoAppProps, context: any) {
     super(props, context);

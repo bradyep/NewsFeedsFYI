@@ -4,9 +4,10 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import Page = require('./page');
+// import PageModel = require('./page');
+import { PageModel } from '../../nffyi-common/models';
 
-export function create(page:Page) {
+export function create(page:PageModel) {
     return modelDef.connectDB('SQPage')
     .then(SQPage => {
         return SQPage['create']({
@@ -18,7 +19,7 @@ export function create(page:Page) {
     });
 };
 
-export function update(page:Page) {
+export function update(page:PageModel) {
     return modelDef.connectDB('SQPage')
     .then(SQPage => {
         return SQPage['find']({ where: { pageID: page.pageID } })
@@ -45,7 +46,7 @@ export function read(pageID) {
                 // throw new Error("No page found for " + pageID);
                 return null;
             } else {
-                return new Page(page.name, page.displayOrder, page.userID, page.pageID);
+                return new PageModel(page.name, page.displayOrder, page.userID, page.pageID);
             }
         });
     });

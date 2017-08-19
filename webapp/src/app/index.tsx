@@ -6,7 +6,7 @@ import { Provider } from 'mobx-react';
 // import { Router, Route, Switch } from 'react-router';
 import { Root } from './containers/Root';
 // import { TodoApp } from './containers/TodoApp';
-import { TodoApp } from './containers/TodoApp';
+import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
 import { TodoModel } from './models/TodoModel';
 import { TodoStore, RouterStore } from './stores';
 import { STORE_TODO } from './constants/stores';

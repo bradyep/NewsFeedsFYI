@@ -6,9 +6,10 @@ import errorModule = require('debug');
 import FeedHandler from './FeedHandler';
 
 import modelDef = require('./nffyi-sequelize');
-import UserFeed = require('./UserFeed');
+// import UserFeed = require('./UserFeed');
+import { UserFeedModel } from '../../nffyi-common/models';
 
-export function create(userFeed:UserFeed) {
+export function create(userFeed:UserFeedModel) {
     return modelDef.connectDB('SQUserFeed')
     .then(SQUserFeed => {
         return SQUserFeed['create']({
@@ -22,7 +23,7 @@ export function create(userFeed:UserFeed) {
     });
 };
 
-export function update(userFeed:UserFeed) {
+export function update(userFeed:UserFeedModel) {
     return modelDef.connectDB('SQUserFeed')
     .then(SQUserFeed => {
         return SQUserFeed['find']({ where: { 
@@ -68,7 +69,7 @@ export function read(feedSourceID, pageID) {
                     console.log('error: ', error);
                 });
                 
-                return new UserFeed(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                return new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
             }
         });
     });

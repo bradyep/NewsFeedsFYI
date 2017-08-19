@@ -4,9 +4,10 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import CachedNewsItem = require('./CachedNewsItem');
+// import CachedNewsItemModel = require('./CachedNewsItemModel');
+import { CachedNewsItemModel } from '../../nffyi-common/models';
 
-export function create(cachedNewsItem:CachedNewsItem) {
+export function create(cachedNewsItem:CachedNewsItemModel) {
     return modelDef.connectDB('SQCachedNewsItem')
     .then(SQCachedNewsItem => {
         return SQCachedNewsItem['create']({
@@ -19,7 +20,7 @@ export function create(cachedNewsItem:CachedNewsItem) {
     });
 };
 
-export function update(cachedNewsItem:CachedNewsItem) {
+export function update(cachedNewsItem:CachedNewsItemModel) {
     return modelDef.connectDB('SQCachedNewsItem')
     .then(SQCachedNewsItem => {
         return SQCachedNewsItem['find']({ where: { cachedNewsItemID: cachedNewsItem.cachedNewsItemID } })
@@ -48,7 +49,7 @@ export function read(cachedNewsItemID) {
                 // throw new Error("No cachedNewsItem found for " + cachedNewsItemID);
                 return null;
             } else {
-                return new CachedNewsItem(cachedNewsItem.title, cachedNewsItem.link, cachedNewsItem.description, cachedNewsItem.feedSourceID, cachedNewsItem.cachedNewsItemID);
+                return new CachedNewsItemModel(cachedNewsItem.title, cachedNewsItem.link, cachedNewsItem.description, cachedNewsItem.feedSourceID, cachedNewsItem.cachedNewsItemID);
             }
         });
     });
