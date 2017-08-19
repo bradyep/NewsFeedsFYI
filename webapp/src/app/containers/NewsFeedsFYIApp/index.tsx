@@ -10,21 +10,21 @@ import { TodoStore, RouterStore } from '../../stores';
 import { STORE_TODO, STORE_ROUTER } from '../../constants/stores';
 import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
 
-export interface NewsFeedsFYIAppProps extends React.Component<any> {
+export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
   // [STORE_ROUTER]: RouterStore;
   // [STOURE_TODO]: TodoStore;
 }
 
-export interface TodoAppState {
-  filter: TodoFilter;
+export interface NewsFeedsFYIAppState {
+  // filter: TodoFilter;
 }
 
 @inject(STORE_TODO, STORE_ROUTER)
 @observer
-export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, TodoAppState> {
+export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYIAppState> {
 
-  constructor(props: TodoAppProps, context: any) {
+  constructor(props: NewsFeedsFYIAppProps, context: any) {
     super(props, context);
     this.state = { filter: TodoFilter.ALL };
     this.handleFilter = this.handleFilter.bind(this);
@@ -34,7 +34,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, TodoA
     this.checkLocationChange();
   }
 
-  componentWillReceiveProps(nextProps: TodoAppProps, nextContext: any) {
+  componentWillReceiveProps(nextProps: NewsFeedsFYIAppProps, nextContext: any) {
     this.checkLocationChange();
   }
 
@@ -67,26 +67,29 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, TodoA
   render() {
     const todoStore = this.props[STORE_TODO] as TodoStore;
     const { children } = this.props;
-    const { filter } = this.state;
-    const filteredTodos = this.getFilteredTodo(filter);
+    // const { filter } = this.state;
+    // const filteredTodos = this.getFilteredTodo(filter);
 
+    /* 
     const footer = todoStore.todos.length ? (
       <Footer filter={filter}
         activeCount={todoStore.activeTodos.length}
         completedCount={todoStore.completedTodos.length}
         onClearCompleted={todoStore.clearCompleted}
         onChangeFilter={this.handleFilter} />
-    ) : undefined;
+      ) : undefined;
+*/
 
     return (
       <div className={styles.normal} >
-        <Header addTodo={todoStore.addTodo} />
+{/*         
         <TodoList todos={filteredTodos}
           completeAll={todoStore.completeAll}
           deleteTodo={todoStore.deleteTodo}
           editTodo={todoStore.editTodo} />
         {footer}
         {children}
+ */}
       </div>
     );
   }
