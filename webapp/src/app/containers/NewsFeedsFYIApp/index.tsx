@@ -29,59 +29,11 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
   constructor(props: NewsFeedsFYIAppProps, context: any) {
     super(props, context);
-    this.state = { filter: TodoFilter.ALL };
-    // this.handleFilter = this.handleFilter.bind(this);
-  }
-/* 
-  componentWillMount() {
-    this.checkLocationChange();
   }
 
-  componentWillReceiveProps(nextProps: NewsFeedsFYIAppProps, nextContext: any) {
-    this.checkLocationChange();
-  }
-
-  checkLocationChange() {
-    const router = this.props[STORE_ROUTER] as RouterStore;
-    const filter = Object.keys(TODO_FILTER_LOCATION_HASH)
-      .map((key) => Number(key) as TodoFilter)
-      .find((filter) => TODO_FILTER_LOCATION_HASH[filter] === router.location.hash);
-    this.setState({ filter });
-  }
-
-  handleFilter(filter: TodoFilter) {
-    const router = this.props[STORE_ROUTER] as RouterStore;
-    const currentHash = router.location.hash;
-    const nextHash = TODO_FILTER_LOCATION_HASH[filter];
-    if (currentHash !== nextHash) {
-      router.replace(nextHash);
-    }
-  }
-
-  getFilteredTodo(filter: TodoFilter) {
-    const todoStore = this.props[STORE_TODO] as TodoStore;
-    switch (filter) {
-      case TodoFilter.ACTIVE: return todoStore.activeTodos;
-      case TodoFilter.COMPLETED: return todoStore.completedTodos;
-      default: return todoStore.todos;
-    }
-  }
- */
   render() {
     const todoStore = this.props[STORE_TODO] as TodoStore;
     const { children } = this.props;
-    // const { filter } = this.state;
-    // const filteredTodos = this.getFilteredTodo(filter);
-
-    /* 
-    const footer = todoStore.todos.length ? (
-      <Footer filter={filter}
-        activeCount={todoStore.activeTodos.length}
-        completedCount={todoStore.completedTodos.length}
-        onClearCompleted={todoStore.clearCompleted}
-        onChangeFilter={this.handleFilter} />
-      ) : undefined;
-*/
 
     return (
       <div className={styles.normal} >
@@ -105,14 +57,6 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
         <footer>
           <Copyright></Copyright>
         </footer>
-{/*         
-        <TodoList todos={filteredTodos}
-          completeAll={todoStore.completeAll}
-          deleteTodo={todoStore.deleteTodo}
-          editTodo={todoStore.editTodo} />
-        {footer}
-        {children}
- */}
       </div>
     );
   }

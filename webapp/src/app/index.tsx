@@ -1,16 +1,17 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import { createBrowserHistory } from 'history';
+import { createBrowserHistory } from 'history';
 import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
-// import { Router, Route, Switch } from 'react-router';
+import { Router, Route, Switch } from 'react-router';
 import { Root } from './containers/Root';
 // import { TodoApp } from './containers/TodoApp';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
 import { TodoModel } from './models/TodoModel';
 import { TodoStore, RouterStore } from './stores';
-import { STORE_TODO } from './constants/stores';
+import { STORE_TODO, STORE_ROUTER } from './constants/stores';
 // import { TodoFilter } from './constants/todos';
+import { Footer } from './components/Footer';
 
 // enable MobX strict mode
 useStrict(true);
@@ -22,14 +23,29 @@ const defaultTodos = [
 ];
 
 // prepare MobX stores
-// const history = createBrowserHistory();
+const history = createBrowserHistory();
 const todoStore = new TodoStore(defaultTodos);
-// const routerStore = new RouterStore(history);
+const routerStore = new RouterStore(history);
 const rootStores = {
-  [STORE_TODO]: todoStore
+  [STORE_TODO]: todoStore,
+  [STORE_ROUTER]: routerStore
 };
 
 // render react DOM
+ReactDOM.render(
+  <Provider {...rootStores} >
+    <Root>
+      <Router history={history} >
+        <Switch>
+          <Route path="/" component={NewsFeedsFYIApp} />
+        </Switch>
+      </Router>
+    </Root>
+  </Provider >,
+  document.getElementById('root')
+);
+
+/* 
 ReactDOM.render(
   <Provider {...rootStores} >
     <Root>
@@ -38,3 +54,4 @@ ReactDOM.render(
   </Provider >,
   document.getElementById('root')
 );
+ */
