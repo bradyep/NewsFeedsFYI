@@ -9,8 +9,8 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
 // import PageModel = require('../models/Page');
-import { PageModel } from '../../nffyi-common/models';
-import User = require('../models/User');
+import { PageModel, UserModel } from '../../nffyi-common/models';
+// import UserModel = require('../models/User');
 
 /* GET all Pages for requesting User */
 router.get('/', function(req, res, next) {

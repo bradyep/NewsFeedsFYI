@@ -8,7 +8,8 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import User = require('../models/User');
+// import UserModel = require('../models/User');
+import { UserModel } from '../../nffyi-common/models';
 
 /* GET users listing. */
 router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
@@ -73,7 +74,7 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   // User spam
 
   // usersModel.create(req.body.username, req.body.password, req.body.email)
-  usersModel.create(new User(req.body.username, req.body.password, req.body.email, 'user'))
+  usersModel.create(new UserModel(req.body.username, req.body.password, req.body.email, 'user'))
   .then(user => {
     log('Attempted to create User: ' + util.inspect(user));
     res.json(user);

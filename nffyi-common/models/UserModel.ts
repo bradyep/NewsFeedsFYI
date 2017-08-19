@@ -1,11 +1,11 @@
-import util = require('util');
-import logModule = require('debug');
+import * as util from 'util';
+import * as logModule from 'debug';
     const log = logModule('nffyi-rest:User');
-import errorModule = require('debug');
-    const error = errorModule('nffyi-rest:error');
+// import errorModule = require('debug');
+    const error = logModule('nffyi-rest:error');
 
 // module.exports = class Note {
-class User {
+export class UserModel {
     userID: number;
     username: string;
     password: string;
@@ -30,10 +30,10 @@ class User {
     
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var user = new User(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);
+        var user = new UserModel(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);
         log(json +' => '+ util.inspect(user));
         return user;
     }
 }; // /class User
 
-export = User;
+export default UserModel;

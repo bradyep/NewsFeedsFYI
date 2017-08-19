@@ -8,8 +8,10 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import LinkModel = require('../models/Link');
-import User = require('../models/User');
+// import LinkModel = require('../models/Link');
+import { LinkModel } from '../../nffyi-common/models';
+// import UserModel = require('../models/User');
+import { UserModel } from '../../nffyi-common/models';
 
 /* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function(req, res, next) {

@@ -4,7 +4,8 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import LinkModel = require('./link');
+// import LinkModel = require('./link');
+import { LinkModel } from '../../nffyi-common/models';
 
 export function create(link:LinkModel) {
     return modelDef.connectDB('SQLink')

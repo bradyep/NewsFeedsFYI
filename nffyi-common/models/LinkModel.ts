@@ -10,7 +10,7 @@ export class LinkModel {
     userID: number; // FK
     url: string;
     name: string;
-    displayOrder: number;
+    @observable public displayOrder: number;
 
     constructor(url:string, name:string, displayOrder:number, linkID?:number, userID?:number) {
         this.url = url;

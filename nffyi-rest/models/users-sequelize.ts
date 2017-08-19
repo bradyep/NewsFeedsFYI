@@ -4,9 +4,10 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import User = require('./User');
+// import UserModel = require('./User');
+import { UserModel } from '../../nffyi-common/models';
 
-export function create(user:User) {
+export function create(user:UserModel) {
     return modelDef.connectDB('SQUser')
     .then(SQUser => {
         return SQUser['create']({
@@ -49,7 +50,7 @@ export function read(userID) {
                 // throw new Error("No user found for " + userID);
                 return null;
             } else {
-                return new User(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
+                return new UserModel(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
                 // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
                 // var test = new User();
 /*
