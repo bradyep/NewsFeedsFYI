@@ -2,36 +2,34 @@ import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 
-export interface ProfileSectionProps {
+export interface AddNewsFeedSectionProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
 }
 
-export interface ProfileSectionState {
+export interface AddNewsFeedSectionState {
   /* empty */
 }
 
-export class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
+export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNewsFeedSectionState> {
 
-  constructor(props?: ProfileSectionProps, context?: any) {
+  constructor(props?: AddNewsFeedSectionProps, context?: any) {
     super(props, context);
     // this.handleSave = this.handleSave.bind(this);
   }
 
-/*   
+/* 
   handleSave(text: string) {
     if (text.length) {
       this.props.addTodo({ text });
     }
   }
-   */
+ */
 
   render() {
     return (
-      <div>
-        <h3>ProfileSection</h3>
-      </div>
+      <h3>AddNewsFeedSection</h3>
     );
   }
 }
 
-export default ProfileSection;
+export default AddNewsFeedSection;

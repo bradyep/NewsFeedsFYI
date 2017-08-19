@@ -27,7 +27,7 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
 
   render() {
     return (
-        <h1>Todos</h1>
+        <h3>LinkSection</h3>
     );
   }
 }

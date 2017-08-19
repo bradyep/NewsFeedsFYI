@@ -2,36 +2,36 @@ import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 
-export interface ProfileSectionProps {
+export interface CopyrightProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
 }
 
-export interface ProfileSectionState {
+export interface CopyrightState {
   /* empty */
 }
 
-export class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
+export class Copyright extends React.Component<CopyrightProps, CopyrightState> {
 
-  constructor(props?: ProfileSectionProps, context?: any) {
+  constructor(props?: CopyrightProps, context?: any) {
     super(props, context);
     // this.handleSave = this.handleSave.bind(this);
   }
 
-/*   
+/* 
   handleSave(text: string) {
     if (text.length) {
       this.props.addTodo({ text });
     }
   }
-   */
+ */
 
   render() {
     return (
-      <div>
-        <h3>ProfileSection</h3>
-      </div>
+      <h2>
+        Copyright
+      </h2>
     );
   }
 }
 
-export default ProfileSection;
+export default Copyright;

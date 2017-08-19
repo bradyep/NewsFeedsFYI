@@ -3,6 +3,9 @@ import * as styles from './styles.css';
 import { inject, observer } from 'mobx-react';
 // import { RouteComponentProps } from 'react-router';
 import { LinkSection, ProfileSection } from '../../components/TopHeaderComponents';
+import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from '../../components/LowerHeaderComponents';
+import { NewsFeeds } from '../../components/BodyComponents';
+import { Copyright } from '../../components/FooterComponents';
 import { TodoList } from '../../components/TodoList';
 import { Footer } from '../../components/Footer';
 import { TodoModel } from '../../models/TodoModel';
@@ -27,9 +30,9 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
   constructor(props: NewsFeedsFYIAppProps, context: any) {
     super(props, context);
     this.state = { filter: TodoFilter.ALL };
-    this.handleFilter = this.handleFilter.bind(this);
+    // this.handleFilter = this.handleFilter.bind(this);
   }
-
+/* 
   componentWillMount() {
     this.checkLocationChange();
   }
@@ -63,7 +66,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
       default: return todoStore.todos;
     }
   }
-
+ */
   render() {
     const todoStore = this.props[STORE_TODO] as TodoStore;
     const { children } = this.props;
@@ -82,6 +85,26 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
     return (
       <div className={styles.normal} >
+        <h1>NewsFeedsFYI App</h1>
+
+        <header>
+          <LinkSection></LinkSection>
+          <ProfileSection></ProfileSection>
+        </header>
+
+        <section>
+          <PageSection></PageSection>
+          <GoogleSearchSection></GoogleSearchSection>
+          <AddNewsFeedSection></AddNewsFeedSection>
+        </section>
+
+        <main>
+          <NewsFeeds></NewsFeeds>
+        </main>
+
+        <footer>
+          <Copyright></Copyright>
+        </footer>
 {/*         
         <TodoList todos={filteredTodos}
           completeAll={todoStore.completeAll}
