@@ -1,6 +1,7 @@
 import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
+import { FormGroup, InputGroup, FormControl } from 'react-bootstrap';
 
 export interface GoogleSearchSectionProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -28,9 +29,16 @@ export class GoogleSearchSection extends React.Component<GoogleSearchSectionProp
   render() {
     return (
       <div className="col-md-7">
-        <h4>
-          GoogleSearchSection
-        </h4>
+        <form>
+          <FormGroup>
+            <InputGroup>
+              <FormControl type="text" />
+              <InputGroup.Addon>
+                <i className="fa fa-search" aria-hidden="true"></i>
+              </InputGroup.Addon>
+            </InputGroup>
+          </FormGroup>
+        </form>
       </div>
     );
   }

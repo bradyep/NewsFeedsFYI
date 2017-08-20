@@ -63,11 +63,11 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           </div>
         </section>
 
-        <main>
+        <main className="container">
           <NewsFeeds></NewsFeeds>
         </main>
 
-        <footer>
+        <footer className="container">
           <Copyright></Copyright>
         </footer>
       </div>
