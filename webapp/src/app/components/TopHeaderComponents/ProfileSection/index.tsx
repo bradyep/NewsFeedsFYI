@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './styles.css';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 
@@ -27,8 +28,11 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
 
   render() {
     return (
-      <div>
-        <h3>ProfileSection</h3>
+      <div className={styles.profileSection}>
+        <i className="fa fa-user fa-2x" aria-hidden="true"></i>
+        <p>
+          Sign In To Customize
+        </p>
       </div>
     );
   }

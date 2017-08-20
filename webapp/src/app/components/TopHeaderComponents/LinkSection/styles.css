@@ -1,0 +1,8 @@
+.linkList {
+  display: inline-block;
+}
+
+.linkList li {
+  display: inline-block;
+  margin-right: 1em;
+}

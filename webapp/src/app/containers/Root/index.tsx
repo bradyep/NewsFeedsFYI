@@ -11,10 +11,9 @@ export class Root extends React.Component<any, any> {
 
   render() {
     return (
-      <div className="container">
-        <h1>Root</h1>
+      <div>
         {this.props.children}
-        {this.renderDevTool()}
+        {/* {this.renderDevTool()} */}
       </div>
     );
   }

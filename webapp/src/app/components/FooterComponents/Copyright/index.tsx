@@ -17,19 +17,21 @@ export class Copyright extends React.Component<CopyrightProps, CopyrightState> {
     // this.handleSave = this.handleSave.bind(this);
   }
 
-/* 
-  handleSave(text: string) {
-    if (text.length) {
-      this.props.addTodo({ text });
+  /* 
+    handleSave(text: string) {
+      if (text.length) {
+        this.props.addTodo({ text });
+      }
     }
-  }
- */
+   */
 
   render() {
     return (
-      <h2>
-        Copyright
+      <div>
+        <h2>
+          Copyright
       </h2>
+      </div>
     );
   }
 }

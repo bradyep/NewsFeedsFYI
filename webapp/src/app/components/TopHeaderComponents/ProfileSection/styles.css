@@ -1,0 +1,8 @@
+i, p {
+  display: inline-block;
+}
+
+i {
+  margin-top: 4px;
+  margin-right: 4px;
+}

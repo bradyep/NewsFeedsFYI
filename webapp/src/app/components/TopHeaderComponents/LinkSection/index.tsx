@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as styles from './styles.css';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 
@@ -17,17 +18,26 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
     // this.handleSave = this.handleSave.bind(this);
   }
 
-/*   
-  handleSave(text: string) {
-    if (text.length) {
-      this.props.addTodo({ text });
+  /*   
+    handleSave(text: string) {
+      if (text.length) {
+        this.props.addTodo({ text });
+      }
     }
-  }
- */
+   */
 
   render() {
     return (
-        <h3>LinkSection</h3>
+      <div className={styles.linkList}>
+        <ol>
+          <li>GMail</li>
+          <li>Google Drive</li>
+          <li>Facebook</li>
+          <li>
+            <i className="fa fa-cog" aria-hidden="true"></i>
+          </li>
+        </ol>
+      </div>
     );
   }
 }

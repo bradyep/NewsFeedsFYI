@@ -12,6 +12,7 @@ import { TodoModel } from '../../models/TodoModel';
 import { TodoStore, RouterStore } from '../../stores';
 import { STORE_TODO, STORE_ROUTER } from '../../constants/stores';
 import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
+import { Navbar } from 'react-bootstrap';
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
@@ -36,12 +37,25 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     const { children } = this.props;
 
     return (
-      <div className={styles.normal} >
-        <h1>NewsFeedsFYI App</h1>
+      <div>
+        <Navbar inverse staticTop className={styles.header}>
+          <Navbar.Header>
+            <div className="container">
+              <div className="row">
+                <div className="col-md-9">
+                  <h4>newsfeeds.fyi</h4>
+                  <LinkSection></LinkSection>
+                </div>
+                <div className="col-md-3">
+                  <ProfileSection></ProfileSection>
+                </div>
+              </div>
+
+            </div>
+          </Navbar.Header>
+        </Navbar>
 
         <header>
-          <LinkSection></LinkSection>
-          <ProfileSection></ProfileSection>
         </header>
 
         <section>
