@@ -55,13 +55,12 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           </Navbar.Header>
         </Navbar>
 
-        <header>
-        </header>
-
-        <section>
-          <PageSection></PageSection>
-          <GoogleSearchSection></GoogleSearchSection>
-          <AddNewsFeedSection></AddNewsFeedSection>
+        <section className="container">
+          <div className="row">
+            <PageSection></PageSection>
+            <GoogleSearchSection></GoogleSearchSection>
+            <AddNewsFeedSection></AddNewsFeedSection>
+          </div>
         </section>
 
         <main>

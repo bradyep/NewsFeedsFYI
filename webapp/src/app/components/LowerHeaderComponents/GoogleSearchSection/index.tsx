@@ -17,19 +17,21 @@ export class GoogleSearchSection extends React.Component<GoogleSearchSectionProp
     // this.handleSave = this.handleSave.bind(this);
   }
 
-/* 
-  handleSave(text: string) {
-    if (text.length) {
-      this.props.addTodo({ text });
+  /* 
+    handleSave(text: string) {
+      if (text.length) {
+        this.props.addTodo({ text });
+      }
     }
-  }
- */
+   */
 
   render() {
     return (
-      <h3>
-        GoogleSearchSection
-      </h3>
+      <div className="col-md-7">
+        <h4>
+          GoogleSearchSection
+        </h4>
+      </div>
     );
   }
 }

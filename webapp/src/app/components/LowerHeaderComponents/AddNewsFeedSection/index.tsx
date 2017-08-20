@@ -27,7 +27,9 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
   render() {
     return (
-      <h3>AddNewsFeedSection</h3>
+      <div className="col-md-2">
+        <h4>Add News Feed</h4>
+      </div>
     );
   }
 }
