@@ -26,11 +26,11 @@ export class Copyright extends React.Component<CopyrightProps, CopyrightState> {
    */
 
   render() {
+    const copyrightYear:string = new Date().getFullYear().toString();
+
     return (
-      <div>
-        <h2>
-          Copyright
-      </h2>
+      <div className="footer">
+        <p>&copy; Syntonic Studios {copyrightYear}</p>
       </div>
     );
   }
