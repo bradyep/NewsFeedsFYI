@@ -9,7 +9,8 @@ const log = logModule('nffyi-rest:router-users');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
-const User = require("../models/User");
+// import UserModel = require('../models/User');
+const models_1 = require("../../nffyi-common/models");
 /* GET users listing. */
 router.get('/', authRouter.ensureAuthenticated, function (req, res, next) {
     // Must be an admin for full User listing, otherwise display 
@@ -67,7 +68,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     // We should authorize this action in order to prevent new
     // User spam
     // usersModel.create(req.body.username, req.body.password, req.body.email)
-    usersModel.create(new User(req.body.username, req.body.password, req.body.email, 'user'))
+    usersModel.create(new models_1.UserModel(req.body.username, req.body.password, req.body.email, 'user'))
         .then(user => {
         log('Attempted to create User: ' + util.inspect(user));
         res.json(user);

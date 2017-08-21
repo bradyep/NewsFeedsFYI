@@ -8,7 +8,8 @@ const log = logModule('nffyi-rest:router-userFeeds');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
-const UserFeed = require("../models/UserFeed");
+// import UserFeedModel = require('../models/UserFeed');
+const models_1 = require("../../nffyi-common/models");
 const pagesModel = require("../models/pages-sequelize");
 /* GET all UserFeeds for requesting User */
 // NOTE: We probably do not need this
@@ -36,7 +37,7 @@ var getKeyList = function (pageID) {
         .then(keylist => {
         var keyPromises = keylist.map(key => {
             return userFeedsModel.read(key, pageID).then(userFeed => {
-                return new UserFeed(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                return new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
             });
         });
         return Promise.all(keyPromises);
@@ -75,7 +76,7 @@ router.get('/:feedsourceid/:pageid', (req, res, next) => {
 // Update existing UserFeed
 router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
     authorizeRequest(req, res, next, false);
-    let updateUserFeed = new UserFeed(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.params.pageid, req.params.feedsourceid);
+    let updateUserFeed = new models_1.UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.params.pageid, req.params.feedsourceid);
     userFeedsModel.update(updateUserFeed)
         .then(userFeed => {
         if (!userFeed)
@@ -88,7 +89,7 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
 // POST new UserFeed
 router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     authorizeRequest(req, res, next, true);
-    userFeedsModel.create(new UserFeed(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
+    userFeedsModel.create(new models_1.UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
         .then(userFeed => {
         log('Attempted to create UserFeed: ' + util.inspect(userFeed));
         res.json(userFeed);

@@ -4,7 +4,7 @@ const log = logModule('nffyi-rest:users-model');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const modelDef = require("./nffyi-sequelize");
-const User = require("./User");
+const models_1 = require("../../nffyi-common/models");
 function create(user) {
     return modelDef.connectDB('SQUser')
         .then(SQUser => {
@@ -52,7 +52,7 @@ function read(userID) {
                 return null;
             }
             else {
-                return new User(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
+                return new models_1.UserModel(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
             }
         });
     });

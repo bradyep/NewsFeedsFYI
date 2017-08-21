@@ -12,6 +12,7 @@
   "dependencies": {
     "debug": "^3.0.0",
     "mobx": "^3.2.2",
+    "typescript": "^2.4.2",
     "util": "^0.10.3"
   },
   "devDependencies": {

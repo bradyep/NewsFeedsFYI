@@ -6,7 +6,8 @@ const error = errorModule('nffyi-rest:error');
 // import FeedHandler = require('./FeedHandler');
 const FeedHandler_1 = require("./FeedHandler");
 const modelDef = require("./nffyi-sequelize");
-const UserFeed = require("./UserFeed");
+// import UserFeed = require('./UserFeed');
+const models_1 = require("../../nffyi-common/models");
 function create(userFeed) {
     return modelDef.connectDB('SQUserFeed')
         .then(SQUserFeed => {
@@ -68,7 +69,7 @@ function read(feedSourceID, pageID) {
                 }).catch(function (error) {
                     console.log('error: ', error);
                 });
-                return new UserFeed(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                return new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
             }
         });
     });

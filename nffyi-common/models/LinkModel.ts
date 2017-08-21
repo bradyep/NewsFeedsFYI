@@ -3,6 +3,7 @@ import * as logModule from 'debug';
     const log = logModule('nffyi-rest:Link');
 // import errorModule = require('debug');
     const error = logModule('nffyi-rest:error');
+import { observable } from 'mobx';
 
 // module.exports = class Note {
 export class LinkModel {

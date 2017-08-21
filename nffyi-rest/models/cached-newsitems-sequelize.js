@@ -4,7 +4,8 @@ const log = logModule('nffyi-rest:cachedNewsItems-model');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const modelDef = require("./nffyi-sequelize");
-const CachedNewsItem = require("./CachedNewsItem");
+// import CachedNewsItemModel = require('./CachedNewsItemModel');
+const models_1 = require("../../nffyi-common/models");
 function create(cachedNewsItem) {
     return modelDef.connectDB('SQCachedNewsItem')
         .then(SQCachedNewsItem => {
@@ -51,7 +52,7 @@ function read(cachedNewsItemID) {
                 return null;
             }
             else {
-                return new CachedNewsItem(cachedNewsItem.title, cachedNewsItem.link, cachedNewsItem.description, cachedNewsItem.feedSourceID, cachedNewsItem.cachedNewsItemID);
+                return new models_1.CachedNewsItemModel(cachedNewsItem.title, cachedNewsItem.link, cachedNewsItem.description, cachedNewsItem.feedSourceID, cachedNewsItem.cachedNewsItemID);
             }
         });
     });
