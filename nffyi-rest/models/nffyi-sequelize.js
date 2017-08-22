@@ -103,7 +103,21 @@ function connectDB(modelRequested) {
                 username: 'admin'
             },
             defaults: {
-                username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+                username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'admin', createdAt: Date(), updatedAt: Date()
+            }
+        });
+    })
+        .then(function ([instance, created]) {
+        // Understand results of last findOrCreate
+        log(instance.get({ plain: true }));
+        log(created);
+        log('--Creating Initial Data: Normal User--');
+        return models.SQUser.findOrCreate({
+            where: {
+                username: 'bradyep'
+            },
+            defaults: {
+                username: 'bradyep', password: 'Passw0rd', email: 'bradyep@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
             }
         });
     })

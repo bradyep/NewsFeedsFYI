@@ -1,8 +1,9 @@
-import express = require("express");
+// import express = require("express");
+import * as express from "express";
 var router = express.Router();
-import util = require('util');
+import * as util from 'util';
 // import User = require('../models/User');
-import usersModel = require('../models/users-sequelize');
+import * as usersModel from '../models/users-sequelize';
 import logModule = require('debug');
   const log = logModule('nffyi-rest:router-users');
 import errorModule = require('debug');
@@ -10,17 +11,34 @@ import errorModule = require('debug');
 import authRouter = require('./authenticate');
 // import UserModel = require('../models/User');
 import { UserModel } from '../../nffyi-common/models';
+import { GUEST_ID, ADMIN_ID } from '../constants/users';
 
 /* GET users listing. */
-router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
+// router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
+  router.get('/', function(req, res, next) {
     // Must be an admin for full User listing, otherwise display 
     // User data for requesting User
 
-    getKeyList()
-    .then(userlist => {
-        res.json(userlist);
-    })
-    .catch(err => { error('test page '+ err); next(err); });
+    if (!req.user) {
+      // Return guest user
+      usersModel.read(GUEST_ID)
+      .then(user => {
+        if (!user) next();
+        else res.json(user);
+      })
+      .catch(err => { next(err); });
+    } else {
+      if (req.user.userID === ADMIN_ID) {
+        getKeyList()
+        .then(userlist => {
+            res.json(userlist);
+        })
+        .catch(err => { error('test page '+ err); next(err); });   
+      } else {
+        // Normal user
+        res.redirect('/users/' + req.user.userID);
+      }
+    }
 });
 
 var getKeyList = function() {
@@ -45,7 +63,6 @@ var getKeyList = function() {
 // GET single User
 router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to see another User's data
-
 
   usersModel.read(req.params.userid)
   .then(user => {

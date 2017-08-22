@@ -4,8 +4,8 @@ const express = require("express");
 var router = express.Router();
 const logModule = require("debug");
 const log = logModule('nffyi-rest:router-index');
-const errorModule = require("debug");
-const error = errorModule('nffyi-rest:error');
+// import errorModule = require('debug');
+const error = logModule('nffyi-rest:error');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', { title: 'Express' });

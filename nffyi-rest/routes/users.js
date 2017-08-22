@@ -1,4 +1,5 @@
 "use strict";
+// import express = require("express");
 const express = require("express");
 var router = express.Router();
 const util = require("util");
@@ -11,15 +12,36 @@ const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 // import UserModel = require('../models/User');
 const models_1 = require("../../nffyi-common/models");
+const users_1 = require("../constants/users");
 /* GET users listing. */
-router.get('/', authRouter.ensureAuthenticated, function (req, res, next) {
+// router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
+router.get('/', function (req, res, next) {
     // Must be an admin for full User listing, otherwise display 
     // User data for requesting User
-    getKeyList()
-        .then(userlist => {
-        res.json(userlist);
-    })
-        .catch(err => { error('test page ' + err); next(err); });
+    if (!req.user) {
+        // Return guest user
+        usersModel.read(users_1.GUEST_ID)
+            .then(user => {
+            if (!user)
+                next();
+            else
+                res.json(user);
+        })
+            .catch(err => { next(err); });
+    }
+    else {
+        if (req.user.userID === users_1.ADMIN_ID) {
+            getKeyList()
+                .then(userlist => {
+                res.json(userlist);
+            })
+                .catch(err => { error('test page ' + err); next(err); });
+        }
+        else {
+            // Normal user
+            res.redirect('/users/' + req.user.userID);
+        }
+    }
 });
 var getKeyList = function () {
     return usersModel.keylist()
