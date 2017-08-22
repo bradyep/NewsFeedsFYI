@@ -1,6 +1,7 @@
 import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
+import * as styles from './styles.css';
 
 export interface NewsFeedsProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -27,14 +28,14 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
  renderNewsFeedColumn() {
    return (
-    <div className="col-md-4 newsSectionContainer">
+    <div className={`col-md-4 ${styles.newsSectionContainer}`}>
     {/* @foreach (var nf in columnOneFeeds) */}
-      <div className="newsSection">
-        <div className="newsSectionHeader">
+      <div className={styles.newsSection}>
+        <div className={styles.newsSectionHeader}>
           {/* <h4 className="feedHeader">@Html.HtmlLink(nf.Link, nf.Title, new { @target = "_blank" })</h4> */}
-          <h4 className="feedHeader">TitleLink</h4>
+          <h4 className={styles.feedHeader}>TitleLink</h4>
         </div>
-        <div className="newsSectionHeaderContent">
+        <div className={styles.newsSectionHeaderContent}>
           <ul>
             <li>News Feed Item Link</li>
             <li>News Feed Item Link</li>

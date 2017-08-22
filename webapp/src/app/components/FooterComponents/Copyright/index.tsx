@@ -1,6 +1,7 @@
 import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
+import * as styles from './styles.css';
 
 export interface CopyrightProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -29,7 +30,7 @@ export class Copyright extends React.Component<CopyrightProps, CopyrightState> {
     const copyrightYear:string = new Date().getFullYear().toString();
 
     return (
-      <div className="footer">
+      <div className={styles.footer}>
         <p>&copy; Syntonic Studios {copyrightYear}</p>
       </div>
     );
