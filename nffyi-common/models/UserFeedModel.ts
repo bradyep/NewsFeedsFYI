@@ -3,7 +3,8 @@ import * as logModule from 'debug';
     const log = logModule('nffyi-rest:UserFeed');
 // import errorModule = require('debug');
     const error = logModule('nffyi-rest:error');
-import { observable } from 'mobx';    
+import { observable } from 'mobx';
+import { CachedNewsItemModel } from './';
 
 // module.exports = class Note {
 export class UserFeedModel {
@@ -13,6 +14,8 @@ export class UserFeedModel {
     @observable public displayOrder: number;
     @observable public name: string;
     @observable public itemDisplayCount: number;
+
+    @observable public newsItems: CachedNewsItemModel[];
 
     constructor(column:number, displayOrder:number, name:string, itemDisplayCount:number, pageID?:number, feedSourceID?:number) {
         this.column = column;

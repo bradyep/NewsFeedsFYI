@@ -28,7 +28,7 @@ export class LinkStore {
         if (typeof data.name == 'string') {
           link.name = data.name;
         }
-        if (typeof data.displayOrder == 'string') {
+        if (typeof data.displayOrder == 'number') {
           link.displayOrder = data.displayOrder;
         }
       }

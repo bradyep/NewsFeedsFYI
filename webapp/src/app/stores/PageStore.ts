@@ -1,5 +1,5 @@
 import { observable, computed, action } from 'mobx';
-import { PageModel } from '../../../../nffyi-common/models';
+import { PageModel, UserFeedModel } from '../../../../nffyi-common/models';
 
 export class PageStore {
 
@@ -10,6 +10,7 @@ export class PageStore {
     this.editPage = this.editPage.bind(this);
   }
 
+  // Pages
   @observable
   public pages: Array<PageModel>;
 
@@ -25,7 +26,7 @@ export class PageStore {
         if (typeof data.name == 'string') {
           page.name = data.name;
         }
-        if (typeof data.displayOrder == 'string') {
+        if (typeof data.displayOrder == 'number') {
           page.displayOrder = data.displayOrder;
         }
       }
@@ -36,6 +37,48 @@ export class PageStore {
   @action
   deletePage(id: number): void {
     this.pages = this.pages.filter((page) => page.pageID !== id);
+  }
+
+  // UserFeeds
+  @action
+  addUserFeed(pageID: number, userFeed: UserFeedModel): void {
+    this.pages.map(page => {
+      if (page.pageID === pageID) {
+        page.userFeeds.push(userFeed);
+      }
+    })
+  }
+
+  @action
+  editUserFeed(feedSourceID: number, pageID: number, data: Partial<UserFeedModel>): void {
+    this.pages.map((page) => {
+      if (page.pageID === pageID) {
+        page.userFeeds.map(userFeed => {
+          if (userFeed.feedSourceID === feedSourceID) {
+            if (typeof data.column == 'number') {
+              userFeed.column = data.column;
+            }
+            if (typeof data.displayOrder == 'number') {
+              userFeed.displayOrder = data.displayOrder;
+            }
+            if (typeof data.name == 'string') {
+              userFeed.name = data.name;
+            }
+            if (typeof data.itemDisplayCount == 'number') {
+              userFeed.itemDisplayCount = data.itemDisplayCount;
+            }
+          } // /if (userFeed.feedSourceID === feedSourceID) {
+        })
+      } // /if (page.pageID === pageID) {
+
+      return page;
+    })
+  }
+
+  @action
+  deleteUserFeed(feedSourceID: number, pageID: number): void {
+    const page:PageModel = this.pages.find((page) => page.pageID === pageID);
+    page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.feedSourceID !== feedSourceID);
   }
 
 }
