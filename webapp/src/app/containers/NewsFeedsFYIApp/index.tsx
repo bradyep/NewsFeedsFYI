@@ -30,17 +30,6 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
   constructor(props: NewsFeedsFYIAppProps, context: any) {
     super(props, context);
-
-    // Get current User and place in store
-    console.log("Get current User and place in store");
-    fetch('http://localhost:3000/users') 
-      .then((response) => response.json())
-      .then((user) => console.log(user));
-/* 
-      .then((posts) => this.setState({
-        posts: posts,
-      }));
-       */
   }
 
   componentDidMount() {

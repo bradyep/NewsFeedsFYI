@@ -1,8 +1,8 @@
 import * as util from 'util';
 import * as logModule from 'debug';
-    const log = logModule('nffyi-rest:Page');
+    const log = logModule('nffyi-common:Page');
 // import errorModule = require('debug');
-    const error = logModule('nffyi-rest:error');
+    const error = logModule('nffyi-common:error');
 import { observable } from 'mobx';    
 
 // module.exports = class Note {

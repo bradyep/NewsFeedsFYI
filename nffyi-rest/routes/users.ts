@@ -65,7 +65,7 @@ router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to see another User's data
 
   usersModel.read(req.params.userid)
-  .then(user => {
+  .then((user:UserModel) => {
     if (!user) next();
     else res.json(user);
   })
