@@ -1,10 +1,9 @@
 "use strict";
 const logModule = require("debug");
 const log = logModule('nffyi-rest:userFeeds-model');
-const errorModule = require("debug");
-const error = errorModule('nffyi-rest:error');
-// import FeedHandler = require('./FeedHandler');
-const FeedHandler_1 = require("./FeedHandler");
+// import errorModule = require('debug');
+const error = logModule('nffyi-rest:error');
+const cachedNewsItemModel = require("../models/cached-newsitems-sequelize");
 const modelDef = require("./nffyi-sequelize");
 // import UserFeed = require('./UserFeed');
 const models_1 = require("../../nffyi-common/models");
@@ -58,18 +57,42 @@ function read(feedSourceID, pageID) {
                 return null;
             }
             else {
-                // Since we are asking for a UserFeed, we probably also want the actual
-                // feed itself
-                // Need to get the feed's URL here
-                var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
-                FeedHandler_1.default.parse(url).then(function (items) {
-                    items.forEach(function (item) {
-                        console.log('title: ', item.title);
+                /*
+                                // Since we are asking for a UserFeed, we probably also want the actual
+                                // feed itself
+                                
+                                // Need to get the feed's URL here
+                                var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
+                                
+                                FeedHandler.parse(url).then(function (items:Array<any>) {
+                                    items.forEach(function (item) {
+                                    console.log('title: ', item.title);
+                                    });
+                                }).catch(function (error) {
+                                    console.log('error: ', error);
+                                });
+                 */
+                let userFeedModel = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                // Get the CachedNewsItems for this UserFeed
+                let getKeyList = function (feedSourceID) {
+                    return cachedNewsItemModel.keylist(feedSourceID)
+                        .then(keylist => {
+                        var keyPromises = keylist.map(key => {
+                            return cachedNewsItemModel.read(key)
+                                .then(cachedNewsItem => {
+                                return new models_1.CachedNewsItemModel(cachedNewsItem.title, cachedNewsItem.link, cachedNewsItem.description, cachedNewsItem.feedSourceID, cachedNewsItem.cachedNewsItemID);
+                            });
+                        });
+                        return Promise.all(keyPromises);
                     });
-                }).catch(function (error) {
-                    console.log('error: ', error);
-                });
-                return new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                };
+                /*
+                                getKeyList(userFeed.feedSourceID)
+                                .then((cachedNewsItems:any) => {
+                                    userFeedModel.newsItems = cachedNewsItems;
+                                });
+                                 */
+                return userFeedModel;
             }
         });
     });

@@ -66,10 +66,11 @@ export function destroy(cachedNewsItemID) {
     });
 };
 
-export function keylist() {
+// Get Cached News Items By FeedSourceID
+export function keylist(feedSourceID:number) {
     return modelDef.connectDB('SQCachedNewsItem')
     .then(SQCachedNewsItem => {
-        return SQCachedNewsItem['findAll']({ attributes: [ 'cachedNewsItemID' ] })
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID }, attributes: [ 'cachedNewsItemID' ] })
         .then(cachedNewsItems => {
             return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
         });

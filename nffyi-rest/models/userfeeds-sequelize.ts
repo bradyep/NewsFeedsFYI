@@ -1,13 +1,14 @@
 import logModule = require('debug');
   const log = logModule('nffyi-rest:userFeeds-model');
-import errorModule = require('debug');
-  const error = errorModule('nffyi-rest:error');
+// import errorModule = require('debug');
+  const error = logModule('nffyi-rest:error');
 // import FeedHandler = require('./FeedHandler');
 import FeedHandler from './FeedHandler';
+import cachedNewsItemModel = require('../models/cached-newsitems-sequelize');
 
 import modelDef = require('./nffyi-sequelize');
 // import UserFeed = require('./UserFeed');
-import { UserFeedModel } from '../../nffyi-common/models';
+import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
 
 export function create(userFeed:UserFeedModel) {
     return modelDef.connectDB('SQUserFeed')
@@ -55,6 +56,7 @@ export function read(feedSourceID, pageID) {
                 // throw new Error("No userFeed found for " + userFeedID);
                 return null;
             } else {
+/* 
                 // Since we are asking for a UserFeed, we probably also want the actual
                 // feed itself
                 
@@ -68,8 +70,38 @@ export function read(feedSourceID, pageID) {
                 }).catch(function (error) {
                     console.log('error: ', error);
                 });
+ */
                 
-                return new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+
+                // Get the CachedNewsItems for this UserFeed
+                let getKeyList = function(feedSourceID:number) {
+                    return cachedNewsItemModel.keylist(feedSourceID)
+                    .then(keylist => {
+                        var keyPromises = keylist.map(key => {
+                            return cachedNewsItemModel.read(key)
+                            .then(cachedNewsItem => {
+                                return new CachedNewsItemModel ( 
+                                  cachedNewsItem.title,
+                                  cachedNewsItem.link,
+                                  cachedNewsItem.description,
+                                  cachedNewsItem.feedSourceID,
+                                  cachedNewsItem.cachedNewsItemID
+                                );
+                            });
+                        });
+                        return Promise.all(keyPromises);
+                    });
+                };
+
+/* 
+                getKeyList(userFeed.feedSourceID)
+                .then((cachedNewsItems:any) => {
+                    userFeedModel.newsItems = cachedNewsItems;
+                });
+                 */
+                
+                return userFeedModel;
             }
         });
     });

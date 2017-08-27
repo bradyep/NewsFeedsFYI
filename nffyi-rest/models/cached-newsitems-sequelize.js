@@ -73,10 +73,11 @@ function destroy(cachedNewsItemID) {
 }
 exports.destroy = destroy;
 ;
-function keylist() {
+// Get Cached News Items By FeedSourceID
+function keylist(feedSourceID) {
     return modelDef.connectDB('SQCachedNewsItem')
         .then(SQCachedNewsItem => {
-        return SQCachedNewsItem['findAll']({ attributes: ['cachedNewsItemID'] })
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID }, attributes: ['cachedNewsItemID'] })
             .then(cachedNewsItems => {
             return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
         });
