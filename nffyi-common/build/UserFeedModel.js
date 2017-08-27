@@ -21,6 +21,7 @@ var UserFeedModel = (function () {
         this.itemDisplayCount = itemDisplayCount;
         this.pageID = pageID;
         this.feedSourceID = feedSourceID;
+        this.newsItems = [];
     }
     Object.defineProperty(UserFeedModel.prototype, "JSON", {
         get: function () {
@@ -59,6 +60,10 @@ __decorate([
     mobx_1.observable,
     __metadata("design:type", Number)
 ], UserFeedModel.prototype, "itemDisplayCount", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Array)
+], UserFeedModel.prototype, "newsItems", void 0);
 exports.UserFeedModel = UserFeedModel;
 ;
 Object.defineProperty(exports, "__esModule", { value: true });

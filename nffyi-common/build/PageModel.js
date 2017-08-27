@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var util = require("util");
 var logModule = require("debug");
-var log = logModule('nffyi-rest:Page');
-var error = logModule('nffyi-rest:error');
+var log = logModule('nffyi-common:Page');
+var error = logModule('nffyi-common:error');
 var mobx_1 = require("mobx");
 var PageModel = (function () {
     function PageModel(name, displayOrder, userID, pageID) {
@@ -45,6 +45,10 @@ __decorate([
     mobx_1.observable,
     __metadata("design:type", Number)
 ], PageModel.prototype, "displayOrder", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Array)
+], PageModel.prototype, "userFeeds", void 0);
 exports.PageModel = PageModel;
 ;
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -77,6 +77,16 @@ export function keylist(feedSourceID:number) {
     });
 };
 
+export function getForFeedSourceID(feedSourceID:number) {
+    return modelDef.connectDB('SQCachedNewsItem')
+    .then(SQCachedNewsItem => {
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID }  })
+        .then(cachedNewsItems => {
+            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
+        });
+    });
+};
+
 export function count() {
     return modelDef.connectDB('SQCachedNewsItem')
     .then(SQCachedNewsItem => {

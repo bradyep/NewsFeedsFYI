@@ -36,12 +36,19 @@ var getKeyList = function (pageID) {
     return userFeedsModel.keylist(pageID)
         .then(keylist => {
         var keyPromises = keylist.map(key => {
-            return userFeedsModel.read(key, pageID).then(userFeed => {
-                return new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
-            });
+            return userFeedsModel.read(key, pageID)
+                .then(userFeed => {
+                let usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                /*
+                            // Handle Cached News Items
+                            let testCNIM = new CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
+                            usfm.newsItems.push(testCNIM);
+                 */
+                return usfm;
+            }); // /.then(userFeed => {
         });
         return Promise.all(keyPromises);
-    });
+    }); // /.then(keylist => {
 };
 var authorizeRequest = function (req, res, next, isPost) {
     // Authorize - Page should be associated with current User

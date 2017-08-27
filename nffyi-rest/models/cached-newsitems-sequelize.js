@@ -85,6 +85,17 @@ function keylist(feedSourceID) {
 }
 exports.keylist = keylist;
 ;
+function getForFeedSourceID(feedSourceID) {
+    return modelDef.connectDB('SQCachedNewsItem')
+        .then(SQCachedNewsItem => {
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID } })
+            .then(cachedNewsItems => {
+            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
+        });
+    });
+}
+exports.getForFeedSourceID = getForFeedSourceID;
+;
 function count() {
     return modelDef.connectDB('SQCachedNewsItem')
         .then(SQCachedNewsItem => {

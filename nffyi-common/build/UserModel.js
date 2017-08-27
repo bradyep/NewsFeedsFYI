@@ -1,8 +1,8 @@
 "use strict";
 var util = require("util");
 var logModule = require("debug");
-var log = logModule('nffyi-rest:User');
-var error = logModule('nffyi-rest:error');
+var log = logModule('nffyi-common:User');
+var error = logModule('nffyi-common:error');
 var UserModel = (function () {
     function UserModel(username, password, email, role, userID, lastAccessDate) {
         this.username = username;

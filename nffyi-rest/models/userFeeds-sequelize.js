@@ -3,7 +3,6 @@ const logModule = require("debug");
 const log = logModule('nffyi-rest:userFeeds-model');
 // import errorModule = require('debug');
 const error = logModule('nffyi-rest:error');
-const cachedNewsItemModel = require("../models/cached-newsitems-sequelize");
 const modelDef = require("./nffyi-sequelize");
 // import UserFeed = require('./UserFeed');
 const models_1 = require("../../nffyi-common/models");
@@ -73,25 +72,36 @@ function read(feedSourceID, pageID) {
                                 });
                  */
                 let userFeedModel = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
-                // Get the CachedNewsItems for this UserFeed
-                let getKeyList = function (feedSourceID) {
-                    return cachedNewsItemModel.keylist(feedSourceID)
-                        .then(keylist => {
-                        var keyPromises = keylist.map(key => {
-                            return cachedNewsItemModel.read(key)
-                                .then(cachedNewsItem => {
-                                return new models_1.CachedNewsItemModel(cachedNewsItem.title, cachedNewsItem.link, cachedNewsItem.description, cachedNewsItem.feedSourceID, cachedNewsItem.cachedNewsItemID);
-                            });
-                        });
-                        return Promise.all(keyPromises);
-                    });
-                };
+                /*
+                                // Get the CachedNewsItems for this UserFeed
+                                let getKeyList = function(feedSourceID:number) {
+                                    return cachedNewsItemModel.keylist(feedSourceID)
+                                    .then(keylist => {
+                                        var keyPromises = keylist.map(key => {
+                                            return cachedNewsItemModel.read(key)
+                                            .then(cachedNewsItem => {
+                                                return new CachedNewsItemModel (
+                                                  cachedNewsItem.title,
+                                                  cachedNewsItem.link,
+                                                  cachedNewsItem.description,
+                                                  cachedNewsItem.feedSourceID,
+                                                  cachedNewsItem.cachedNewsItemID
+                                                );
+                                            });
+                                        });
+                                        return Promise.all(keyPromises);
+                                    });
+                                };
+                 */
                 /*
                                 getKeyList(userFeed.feedSourceID)
                                 .then((cachedNewsItems:any) => {
                                     userFeedModel.newsItems = cachedNewsItems;
                                 });
                                  */
+                // Handle Cached News Items
+                // let testCNIM = new CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
+                // userFeedModel.newsItems.push(testCNIM);
                 return userFeedModel;
             }
         });

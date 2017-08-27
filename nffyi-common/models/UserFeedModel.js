@@ -13,6 +13,8 @@ const error = logModule('nffyi-rest:error');
 const mobx_1 = require("mobx");
 // module.exports = class Note {
 class UserFeedModel {
+    // Cannot use the syntax below
+    // @observable public newsItems: CachedNewsItemModel[];
     constructor(column, displayOrder, name, itemDisplayCount, pageID, feedSourceID) {
         this.column = column;
         this.displayOrder = displayOrder;
@@ -20,6 +22,7 @@ class UserFeedModel {
         this.itemDisplayCount = itemDisplayCount;
         this.pageID = pageID;
         this.feedSourceID = feedSourceID;
+        this.newsItems = [];
     }
     get JSON() {
         return JSON.stringify({

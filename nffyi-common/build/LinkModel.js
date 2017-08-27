@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var util = require("util");
 var logModule = require("debug");
-var log = logModule('nffyi-rest:Link');
-var error = logModule('nffyi-rest:error');
+var log = logModule('nffyi-common:Link');
+var error = logModule('nffyi-common:error');
 var mobx_1 = require("mobx");
 var LinkModel = (function () {
     function LinkModel(url, name, displayOrder, linkID, userID) {

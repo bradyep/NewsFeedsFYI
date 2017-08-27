@@ -74,6 +74,7 @@ export function read(feedSourceID, pageID) {
                 
                 let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
 
+/* 
                 // Get the CachedNewsItems for this UserFeed
                 let getKeyList = function(feedSourceID:number) {
                     return cachedNewsItemModel.keylist(feedSourceID)
@@ -93,6 +94,7 @@ export function read(feedSourceID, pageID) {
                         return Promise.all(keyPromises);
                     });
                 };
+ */
 
 /* 
                 getKeyList(userFeed.feedSourceID)
@@ -100,7 +102,11 @@ export function read(feedSourceID, pageID) {
                     userFeedModel.newsItems = cachedNewsItems;
                 });
                  */
-                
+
+                // Handle Cached News Items
+                // let testCNIM = new CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
+                // userFeedModel.newsItems.push(testCNIM);
+
                 return userFeedModel;
             }
         });
