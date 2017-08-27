@@ -7,9 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 const util = require("util");
 const logModule = require("debug");
-const log = logModule('nffyi-rest:Link');
+const log = logModule('nffyi-common:Link');
 // import errorModule = require('debug');
-const error = logModule('nffyi-rest:error');
+const error = logModule('nffyi-common:error');
 const mobx_1 = require("mobx");
 // module.exports = class Note {
 class LinkModel {

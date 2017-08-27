@@ -48,6 +48,9 @@ __decorate([
 __decorate([
     mobx_1.observable
 ], UserFeedModel.prototype, "itemDisplayCount", void 0);
+__decorate([
+    mobx_1.observable
+], UserFeedModel.prototype, "newsItems", void 0);
 exports.UserFeedModel = UserFeedModel;
 ; // /class UserFeed
 Object.defineProperty(exports, "__esModule", { value: true });

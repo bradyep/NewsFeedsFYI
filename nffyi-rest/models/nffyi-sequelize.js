@@ -89,7 +89,7 @@ function connectDB(modelRequested) {
                 username: 'guest'
             },
             defaults: {
-                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'guest', createdAt: Date(), updatedAt: Date()
             }
         });
     })

@@ -3,8 +3,9 @@ import { LinkModel } from '../../../../nffyi-common/models';
 
 export class LinkStore {
 
-  constructor(fixtures: LinkModel[]) {
-    this.links = fixtures;
+  constructor(fixtures?: LinkModel[]) {
+    if (fixtures) this.links = fixtures;
+    else this.links = [];
     this.addLink = this.addLink.bind(this);
     this.deleteLink = this.deleteLink.bind(this);
     this.editLink = this.editLink.bind(this);

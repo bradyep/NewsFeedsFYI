@@ -1,9 +1,9 @@
 "use strict";
 const util = require("util");
 const logModule = require("debug");
-const log = logModule('nffyi-rest:User');
+const log = logModule('nffyi-common:User');
 // import errorModule = require('debug');
-const error = logModule('nffyi-rest:error');
+const error = logModule('nffyi-common:error');
 // module.exports = class Note {
 class UserModel {
     constructor(username, password, email, role, userID, lastAccessDate) {

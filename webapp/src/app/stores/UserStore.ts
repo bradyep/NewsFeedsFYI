@@ -10,7 +10,7 @@ export class UserStore {
     this.editTodo = this.editTodo.bind(this);
     this.completeAll = this.completeAll.bind(this);
     this.clearCompleted = this.clearCompleted.bind(this); */
-    this.user = fixtures[0];
+    if (fixtures) this.user = fixtures[0];
   }
 
   // The Primary User

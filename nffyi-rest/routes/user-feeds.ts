@@ -26,7 +26,7 @@ router.get('/', function(req, res, next) {
 
 // GET UserFeeds By PageID
 router.get('/page/:pageid', function(req, res, next) {
-  authorizeRequest(req, res, next, false);
+  // authorizeRequest(req, res, next, false);
 
   getKeyList(req.params.pageid)
   .then(userFeedList => {
