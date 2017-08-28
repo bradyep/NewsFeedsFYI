@@ -53,22 +53,11 @@ var getUserFeeds = function (pageID) {
             return userFeedsModel.read(key, pageID)
                 .then(userFeed => {
                 var usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
-                // Handle Cached News Items
-                let testCNIM = new models_1.CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
-                usfm.newsItems.push(testCNIM);
-                cachedNewsItemsModel.getForFeedSourceID(usfm.feedSourceID);
-                /*
-                            .then(cnis => {
-                              cnis.map(cni => {
-                                usfm.newsItems.push(new CachedNewsItemModel(cni.title, cni.link, cni.description, cni.feedSourceID, cni.cachedNewsItemID));
-                              }); // /cnis.map(cni => {
-                            }); // /.then(cnis => {
-                 */
                 return usfm;
-            }); // /.then(userFeed => {
-        }); // /var keyPromises = keylist.map(key => {
+            });
+        });
         return Promise.all(keyPromises);
-    }); // /.then(keylist => {
+    });
 };
 var getCachedNewsItems = function (feedSourceIDs) {
     return cachedNewsItemsModel.getKeysForMultipleFeedSourceID(feedSourceIDs)

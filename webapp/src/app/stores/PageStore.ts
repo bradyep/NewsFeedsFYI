@@ -3,11 +3,13 @@ import { PageModel, UserFeedModel } from '../../../../nffyi-common/models';
 
 export class PageStore {
 
-  constructor(fixtures: PageModel[]) {
-    this.pages = fixtures;
+  constructor(fixtures?: PageModel[]) {
+    if (fixtures) this.pages = fixtures;
     this.addPage = this.addPage.bind(this);
     this.deletePage = this.deletePage.bind(this);
     this.editPage = this.editPage.bind(this);
+
+    this.pages = new Array<PageModel>();
   }
 
   // Pages

@@ -8,14 +8,14 @@ import { Root } from './containers/Root';
 // import { TodoApp } from './containers/TodoApp';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
 import { TodoModel } from './models/TodoModel';
-import { UserModel, LinkModel } from '../../../nffyi-common/models';
+import { UserModel, LinkModel, PageModel } from '../../../nffyi-common/models';
 import { TodoStore, RouterStore, UserStore, LinkStore, PageStore } from './stores';
 import { STORE_TODO, STORE_ROUTER, STORE_USER, STORE_LINK, STORE_PAGE } from './constants/stores';
 import { REST_DOMAIN } from './constants/values';
 // import { TodoFilter } from './constants/todos';
 import { Footer } from './components/Footer';
 import * as logModule from 'debug';
-  const log = logModule('webapp:app-index');
+const log = logModule('webapp:app-index');
 // import errorModule = require('debug');
 // const error = logModule('nffyi-rest:error');
 
@@ -41,29 +41,43 @@ const routerStore = new RouterStore(history);
 const userStore = new UserStore();
 (window as any).NFYI.userStore = userStore;
 log("Get current User and place in store");
-fetch(REST_DOMAIN + '/users') 
+fetch(REST_DOMAIN + '/users')
   .then((response) => response.json())
-  .then((user:UserModel) => { 
+  .then((user: UserModel) => {
     log(user);
     userStore.changeUser(user);
   });
-/* 
-  .then((posts) => this.setState({
-    posts: posts,
-  }));
-    */
 
 const linkStore = new LinkStore();
 (window as any).NFYI.linkStore = linkStore;
 log("Get User's Links and place in store");
-fetch(REST_DOMAIN + '/links') 
+fetch(REST_DOMAIN + '/links')
   .then((response) => response.json())
-  .then((links:LinkModel[]) => { 
+  .then((links: LinkModel[]) => {
     log(links);
     links.map((link) => linkStore.addLink(link));
   });
 
-// const pageStore = new PageStore();
+// Just get User's first page for now
+const pageStore = new PageStore();
+var initialPage:number = 0;
+(window as any).NFYI.pageStore = pageStore;
+log("Get User's Pages to place in store");
+fetch(REST_DOMAIN + '/pages')
+  .then((response) => response.json())
+  .then((pages: PageModel[]) => {
+    log(pages);
+    initialPage = pages[0].pageID;
+
+    log("Getting initial page for User");
+    log("REST_DOMAIN: " + REST_DOMAIN);
+    fetch(REST_DOMAIN + '/userfeeds/page/' + initialPage.toString())
+      .then((response) => response.json())
+      .then((page: PageModel) => {
+        log(page);
+        pageStore.addPage(page);
+      });
+  });
 
 const rootStores = {
   [STORE_TODO]: todoStore,

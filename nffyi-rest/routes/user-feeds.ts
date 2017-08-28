@@ -64,26 +64,12 @@ var getUserFeeds = function (pageID: number):any {
               userFeed.pageID,
               userFeed.feedSourceID
             );
-            
-            // Handle Cached News Items
-            let testCNIM = new CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
-            usfm.newsItems.push(testCNIM);
-
-            cachedNewsItemsModel.getForFeedSourceID(usfm.feedSourceID)
-
-/*             
-            .then(cnis => {
-              cnis.map(cni => {
-                usfm.newsItems.push(new CachedNewsItemModel(cni.title, cni.link, cni.description, cni.feedSourceID, cni.cachedNewsItemID));
-              }); // /cnis.map(cni => {
-            }); // /.then(cnis => {
- */
 
             return usfm;
-          }); // /.then(userFeed => {
-      }); // /var keyPromises = keylist.map(key => {
+          }); 
+      }); 
       return Promise.all(keyPromises);
-    }); // /.then(keylist => {
+    }); 
 };
 
 var getCachedNewsItems = function (feedSourceIDs: Array<number>):any {
