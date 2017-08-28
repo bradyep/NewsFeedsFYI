@@ -90,11 +90,22 @@ function getForFeedSourceID(feedSourceID) {
         .then(SQCachedNewsItem => {
         return SQCachedNewsItem['findAll']({ where: { feedSourceID } })
             .then(cachedNewsItems => {
-            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
+            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem);
         });
     });
 }
 exports.getForFeedSourceID = getForFeedSourceID;
+;
+function getKeysForMultipleFeedSourceID(feedSourceIDs) {
+    return modelDef.connectDB('SQCachedNewsItem')
+        .then(SQCachedNewsItem => {
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID: feedSourceIDs }, attributes: ['cachedNewsItemID'] })
+            .then(cachedNewsItems => {
+            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
+        });
+    });
+}
+exports.getKeysForMultipleFeedSourceID = getKeysForMultipleFeedSourceID;
 ;
 function count() {
     return modelDef.connectDB('SQCachedNewsItem')

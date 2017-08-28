@@ -3,10 +3,11 @@ const express = require("express");
 var router = express.Router();
 const util = require("util");
 const userFeedsModel = require("../models/userFeeds-sequelize");
+const cachedNewsItemsModel = require("../models/cached-newsitems-sequelize");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:router-userFeeds');
-const errorModule = require("debug");
-const error = errorModule('nffyi-rest:error');
+// import errorModule = require('debug');
+const error = logModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 // import UserFeedModel = require('../models/UserFeed');
 const models_1 = require("../../nffyi-common/models");
@@ -26,29 +27,61 @@ router.get('/', function(req, res, next) {
 // GET UserFeeds By PageID
 router.get('/page/:pageid', function (req, res, next) {
     // authorizeRequest(req, res, next, false);
-    getKeyList(req.params.pageid)
+    getUserFeeds(req.params.pageid)
         .then(userFeedList => {
-        res.json(userFeedList);
+        const feedSourceIDs = userFeedList.map(ufl => ufl.feedSourceID);
+        getCachedNewsItems([...feedSourceIDs])
+            .then(cnis => {
+            // Place all cnis with their userFeeds
+            userFeedList.map(uf => {
+                cnis.map(cni => {
+                    if (uf.feedSourceID === cni.feedSourceID) {
+                        uf.newsItems.push(cni);
+                    }
+                });
+            });
+            res.json(userFeedList);
+        });
     })
         .catch(err => { error('router-userFeeds ' + err); next(err); });
 });
-var getKeyList = function (pageID) {
+// We are returning as type 'any', but this actually returns an array of UserFeedModel
+var getUserFeeds = function (pageID) {
     return userFeedsModel.keylist(pageID)
         .then(keylist => {
         var keyPromises = keylist.map(key => {
             return userFeedsModel.read(key, pageID)
                 .then(userFeed => {
-                let usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                var usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                // Handle Cached News Items
+                let testCNIM = new models_1.CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
+                usfm.newsItems.push(testCNIM);
+                cachedNewsItemsModel.getForFeedSourceID(usfm.feedSourceID);
                 /*
-                            // Handle Cached News Items
-                            let testCNIM = new CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
-                            usfm.newsItems.push(testCNIM);
+                            .then(cnis => {
+                              cnis.map(cni => {
+                                usfm.newsItems.push(new CachedNewsItemModel(cni.title, cni.link, cni.description, cni.feedSourceID, cni.cachedNewsItemID));
+                              }); // /cnis.map(cni => {
+                            }); // /.then(cnis => {
                  */
                 return usfm;
             }); // /.then(userFeed => {
-        });
+        }); // /var keyPromises = keylist.map(key => {
         return Promise.all(keyPromises);
     }); // /.then(keylist => {
+};
+var getCachedNewsItems = function (feedSourceIDs) {
+    return cachedNewsItemsModel.getKeysForMultipleFeedSourceID(feedSourceIDs)
+        .then(keylist => {
+        var keyPromises = keylist.map(key => {
+            return cachedNewsItemsModel.read(key)
+                .then(cni => {
+                var cnim = new models_1.CachedNewsItemModel(cni.title, cni.link, cni.description, cni.feedSourceID, cni.cachedNewsItemID);
+                return cnim;
+            });
+        });
+        return Promise.all(keyPromises);
+    });
 };
 var authorizeRequest = function (req, res, next, isPost) {
     // Authorize - Page should be associated with current User

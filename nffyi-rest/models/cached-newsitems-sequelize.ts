@@ -82,6 +82,17 @@ export function getForFeedSourceID(feedSourceID:number) {
     .then(SQCachedNewsItem => {
         return SQCachedNewsItem['findAll']({ where: { feedSourceID }  })
         .then(cachedNewsItems => {
+            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem);
+        });
+    });
+};
+
+export function getKeysForMultipleFeedSourceID(feedSourceIDs:Array<number>) {
+    return modelDef.connectDB('SQCachedNewsItem')
+    .then(SQCachedNewsItem => {
+        return SQCachedNewsItem['findAll']({ where: 
+            { feedSourceID: feedSourceIDs }, attributes: [ 'cachedNewsItemID' ] })
+        .then(cachedNewsItems => {
             return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
         });
     });
