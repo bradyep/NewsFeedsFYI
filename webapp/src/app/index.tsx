@@ -15,9 +15,9 @@ import { REST_DOMAIN } from './constants/values';
 // import { TodoFilter } from './constants/todos';
 import { Footer } from './components/Footer';
 import * as logModule from 'debug';
-const log = logModule('webapp:app-index');
+  const log = logModule('webapp:app-index');
 // import errorModule = require('debug');
-// const error = logModule('nffyi-rest:error');
+  const error = logModule('webapp:error');
 
 // Window Object for Debugging
 (window as any).NFYI = (window as any).NFYI || {};
@@ -39,52 +39,50 @@ const routerStore = new RouterStore(history);
 // Get current User and place in store. Multiple Users means the requester is an admin.
 // But an admin should probably never be here to begin with. 
 const userStore = new UserStore();
-(window as any).NFYI.userStore = userStore;
-log("Get current User and place in store");
-fetch(REST_DOMAIN + '/users')
-  .then((response) => response.json())
-  .then((user: UserModel) => {
-    log(user);
-    userStore.changeUser(user);
-  });
-
 const linkStore = new LinkStore();
-(window as any).NFYI.linkStore = linkStore;
-log("Get User's Links and place in store");
-fetch(REST_DOMAIN + '/links')
-  .then((response) => response.json())
-  .then((links: LinkModel[]) => {
-    log(links);
-    links.map((link) => linkStore.addLink(link));
-  });
-
-// Just get User's first page for now
 const pageStore = new PageStore();
-var initialPage:number = 0;
+(window as any).NFYI.userStore = userStore;
+(window as any).NFYI.linkStore = linkStore;
 (window as any).NFYI.pageStore = pageStore;
-log("Get User's Pages to place in store");
-fetch(REST_DOMAIN + '/pages')
-  .then((response) => response.json())
-  .then((pages: PageModel[]) => {
-    log(pages);
-    initialPage = pages[0].pageID;
+var initialPage:number = 0;
 
+(async () => {
+  try {
+    log("Get current User and place in store");
+    const userResponse = await fetch(REST_DOMAIN + '/users');
+    const userData: UserModel = await userResponse.json();
+    log(userData);
+    userStore.changeUser(userData);
+
+    log("Get User's Links and place in store");
+    const linkResponse = await fetch(REST_DOMAIN + '/links');
+    const linksData: LinkModel[] = await linkResponse.json();
+    log(linksData);
+    linksData.map((link) => linkStore.addLink(link));
+
+    // Just get User's first page for now
+    log("Get User's Pages to place in store");
+    const pagesResponse = await fetch(REST_DOMAIN + '/pages');
+    const pagesData: PageModel[] = await pagesResponse.json();
+    log(pagesData);
+    initialPage = pagesData[0].pageID;
+    
     log("Getting initial page for User");
-    log("REST_DOMAIN: " + REST_DOMAIN);
-    fetch(REST_DOMAIN + '/userfeeds/page/' + initialPage.toString())
-      .then((response) => response.json())
-      .then((page: PageModel) => {
-        log(page);
-        pageStore.addPage(page);
-      });
-  });
+    const pageResponse = await fetch(REST_DOMAIN + '/userfeeds/page/' + initialPage.toString());
+    const pageData: PageModel = await pageResponse.json();
+    log(pageData);
+    pageStore.addPage(pageData); 
+  } catch (err) {
+    error("Problem Populating Stores: " + err.toString());
+  }
+})();
 
 const rootStores = {
   [STORE_TODO]: todoStore,
   [STORE_ROUTER]: routerStore,
   [STORE_USER]: userStore,
-  // [STORE_LINK]: linkStore,
-  // [STORE_PAGE]: pageStore,
+  [STORE_LINK]: linkStore,
+  [STORE_PAGE]: pageStore
 };
 
 // render react DOM

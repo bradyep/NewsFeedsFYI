@@ -10,21 +10,25 @@ import { TodoList } from '../../components/TodoList';
 import { Footer } from '../../components/Footer';
 import { TodoModel } from '../../models/TodoModel';
 import { TodoStore, RouterStore } from '../../stores';
-import { STORE_TODO, STORE_ROUTER } from '../../constants/stores';
+import { STORE_TODO, STORE_ROUTER, STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
 import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
 import { Navbar } from 'react-bootstrap';
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
-  // [STORE_ROUTER]: RouterStore;
-  // [STOURE_TODO]: TodoStore;
+  // [STORE_TODO]: todoStore,
+  // [STORE_ROUTER]: routerStore,
+  // [STORE_USER]: userStore,
+  // [STORE_LINK]: linkStore,
+  // [STORE_PAGE]: pageStore
+  [store: string]: any
 }
 
 export interface NewsFeedsFYIAppState {
   // filter: TodoFilter;
 }
 
-@inject(STORE_TODO, STORE_ROUTER)
+@inject(STORE_TODO, STORE_ROUTER, STORE_USER, STORE_LINK, STORE_PAGE)
 @observer
 export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYIAppState> {
 
@@ -33,7 +37,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
   }
 
   componentDidMount() {
-    console.log("Hey!");
+    // console.log("Hey!");
   }
 
   render() {
