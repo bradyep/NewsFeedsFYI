@@ -1,25 +1,16 @@
 import * as React from 'react';
 import * as styles from './styles.css';
 import { inject, observer } from 'mobx-react';
-// import { RouteComponentProps } from 'react-router';
 import { LinkSection, ProfileSection } from '../../components/TopHeaderComponents';
 import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from '../../components/LowerHeaderComponents';
 import { NewsFeeds } from '../../components/BodyComponents';
 import { Copyright } from '../../components/FooterComponents';
-import { TodoList } from '../../components/TodoList';
-import { Footer } from '../../components/Footer';
-// import { TodoModel } from '../../models/TodoModel';
 import { UserStore, LinkStore, PageStore } from '../../stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
-// import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
 import { Navbar } from 'react-bootstrap';
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
-  // [STORE_USER]: userStore,
-  // [STORE_LINK]: linkStore,
-  // [STORE_PAGE]: pageStore
-  // [store: string]: any
 }
 
 // Since the names of properties cannot be derived, we cannot use our constant store names
@@ -30,7 +21,7 @@ interface InjectedProps extends NewsFeedsFYIAppProps {
 }
 
 export interface NewsFeedsFYIAppState {
-  // filter: TodoFilter;
+  // empty
 }
 
 @inject(STORE_USER, STORE_LINK, STORE_PAGE)
@@ -46,11 +37,10 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
   }
 
   componentDidMount() {
-    // console.log("Hey!");
+
   }
 
   render() {
-    // const todoStore = this.props[STORE_TODO] as TodoStore;
     const { children } = this.props;
 
     return (
