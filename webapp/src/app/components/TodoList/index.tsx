@@ -36,7 +36,7 @@ export class TodoList extends React.Component<TodoListProps, TodoListState> {
           checked={completedCount === todos.length}
           onChange={this.handleToggleAll} />
       );
-    }
+    } else return null;
   }
 
   render() {

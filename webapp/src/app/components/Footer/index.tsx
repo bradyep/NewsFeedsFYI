@@ -52,7 +52,7 @@ export class Footer extends React.Component<FooterProps, FooterState> {
           Clear completed
         </button>
       );
-    }
+    } else return null;
   }
 
   render() {
