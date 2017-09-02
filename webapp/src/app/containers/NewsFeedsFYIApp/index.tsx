@@ -8,27 +8,32 @@ import { NewsFeeds } from '../../components/BodyComponents';
 import { Copyright } from '../../components/FooterComponents';
 import { TodoList } from '../../components/TodoList';
 import { Footer } from '../../components/Footer';
-import { TodoModel } from '../../models/TodoModel';
-import { TodoStore, RouterStore } from '../../stores';
-import { STORE_TODO, STORE_ROUTER, STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
-import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
+// import { TodoModel } from '../../models/TodoModel';
+import { UserStore, LinkStore, PageStore } from '../../stores';
+import { STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
+// import { TodoFilter, TODO_FILTER_LOCATION_HASH } from '../../constants/todos';
 import { Navbar } from 'react-bootstrap';
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
-  // [STORE_TODO]: todoStore,
-  // [STORE_ROUTER]: routerStore,
   // [STORE_USER]: userStore,
   // [STORE_LINK]: linkStore,
   // [STORE_PAGE]: pageStore
-  [store: string]: any
+  // [store: string]: any
+}
+
+// Since the names of properties cannot be derived, we cannot use our constant store names
+interface InjectedProps extends NewsFeedsFYIAppProps {
+  user: UserStore;
+  link: LinkStore,
+  page: PageStore
 }
 
 export interface NewsFeedsFYIAppState {
   // filter: TodoFilter;
 }
 
-@inject(STORE_TODO, STORE_ROUTER, STORE_USER, STORE_LINK, STORE_PAGE)
+@inject(STORE_USER, STORE_LINK, STORE_PAGE)
 @observer
 export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYIAppState> {
 
@@ -36,12 +41,16 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     super(props, context);
   }
 
+  get injected() {
+    return this.props as InjectedProps;
+  }
+
   componentDidMount() {
     // console.log("Hey!");
   }
 
   render() {
-    const todoStore = this.props[STORE_TODO] as TodoStore;
+    // const todoStore = this.props[STORE_TODO] as TodoStore;
     const { children } = this.props;
 
     return (

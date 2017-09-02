@@ -1,12 +1,12 @@
-import * as util from 'util';
+// import * as util from 'util';
 import * as logModule from 'debug';
     const log = logModule('nffyi-rest:CachedNewsItem');
 // import * as errorModule from 'debug';
     const error = logModule('nffyi-rest:error');
 
 export class CachedNewsItemModel {
-    cachedNewsItemID: number; // PK
-    feedSourceID: number; // FK
+    cachedNewsItemID?: number; // PK
+    feedSourceID?: number; // FK
     title: string;
     link: string;
     description: string;
@@ -16,7 +16,7 @@ export class CachedNewsItemModel {
         this.link = link;
         this.description = description;
         this.feedSourceID = feedSourceID;
-        this.cachedNewsItemID = cachedNewsItemID
+        this.cachedNewsItemID = cachedNewsItemID;
     }
     
     get JSON() {
@@ -25,10 +25,11 @@ export class CachedNewsItemModel {
         });
     }
     
-    static fromJSON(json) {
+    static fromJSON(json:string) {
         var data = JSON.parse(json);
         var cachedNewsItem = new CachedNewsItemModel(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
-        log(json +' => '+ util.inspect(cachedNewsItem));
+        // log(json +' => '+ util.inspect(cachedNewsItem));
+        log(json +' => '+ cachedNewsItem);
         return cachedNewsItem;
     }
 }; // /class CachedNewsItem

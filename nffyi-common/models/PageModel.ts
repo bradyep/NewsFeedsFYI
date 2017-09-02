@@ -1,4 +1,4 @@
-import * as util from 'util';
+// import * as util from 'util';
 import * as logModule from 'debug';
     const log = logModule('nffyi-common:Page');
 // import errorModule = require('debug');
@@ -8,8 +8,8 @@ import { UserFeedModel } from './';
 
 // module.exports = class Note {
 export class PageModel {
-    pageID: number; // PK
-    userID: number; // FK
+    pageID?: number; // PK
+    userID?: number; // FK
     @observable public name: string;
     @observable public displayOrder: number;
 
@@ -19,7 +19,7 @@ export class PageModel {
         this.name = name;
         this.displayOrder = displayOrder;
         this.userID = userID;
-        this.pageID = pageID
+        this.pageID = pageID;
     }
     
     get JSON() {
@@ -28,10 +28,10 @@ export class PageModel {
         });
     }
     
-    static fromJSON(json) {
+    static fromJSON(json:string) {
         var data = JSON.parse(json);
         var page = new PageModel(data.name, data.displayOrder, data.userID, data.pageID);
-        log(json +' => '+ util.inspect(page));
+        log(json +' => '+ page);
         return page;
     }
 }; // /class Page

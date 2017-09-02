@@ -1,5 +1,5 @@
 "use strict";
-var util = require("util");
+Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-rest:CachedNewsItem');
 var error = logModule('nffyi-rest:error');
@@ -23,13 +23,12 @@ var CachedNewsItemModel = (function () {
     CachedNewsItemModel.fromJSON = function (json) {
         var data = JSON.parse(json);
         var cachedNewsItem = new CachedNewsItemModel(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
-        log(json + ' => ' + util.inspect(cachedNewsItem));
+        log(json + ' => ' + cachedNewsItem);
         return cachedNewsItem;
     };
     return CachedNewsItemModel;
 }());
 exports.CachedNewsItemModel = CachedNewsItemModel;
 ;
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CachedNewsItemModel;
 //# sourceMappingURL=CachedNewsItemModel.js.map

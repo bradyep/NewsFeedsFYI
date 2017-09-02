@@ -1,4 +1,4 @@
-import * as util from 'util';
+// import * as util from 'util';
 import * as logModule from 'debug';
     const log = logModule('nffyi-common:User');
 // import errorModule = require('debug');
@@ -6,11 +6,11 @@ import * as logModule from 'debug';
 
 // module.exports = class Note {
 export class UserModel {
-    userID: number;
+    userID?: number;
     username: string;
     password: string;
     email: string;
-    lastAccessDate: Date;
+    lastAccessDate?: Date;
     role: string;
 
     constructor(username:string, password:string, email:string, role:string, userID?:number, lastAccessDate?:Date) {
@@ -28,10 +28,10 @@ export class UserModel {
         });
     }
     
-    static fromJSON(json) {
+    static fromJSON(json:string) {
         var data = JSON.parse(json);
         var user = new UserModel(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);
-        log(json +' => '+ util.inspect(user));
+        log(json +' => '+ user);
         return user;
     }
 }; // /class User

@@ -1,5 +1,5 @@
 "use strict";
-var util = require("util");
+Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-common:User');
 var error = logModule('nffyi-common:error');
@@ -24,13 +24,12 @@ var UserModel = (function () {
     UserModel.fromJSON = function (json) {
         var data = JSON.parse(json);
         var user = new UserModel(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);
-        log(json + ' => ' + util.inspect(user));
+        log(json + ' => ' + user);
         return user;
     };
     return UserModel;
 }());
 exports.UserModel = UserModel;
 ;
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = UserModel;
 //# sourceMappingURL=UserModel.js.map

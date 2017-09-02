@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var util = require("util");
+Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-common:Page');
 var error = logModule('nffyi-common:error');
@@ -32,25 +32,24 @@ var PageModel = (function () {
     PageModel.fromJSON = function (json) {
         var data = JSON.parse(json);
         var page = new PageModel(data.name, data.displayOrder, data.userID, data.pageID);
-        log(json + ' => ' + util.inspect(page));
+        log(json + ' => ' + page);
         return page;
     };
+    __decorate([
+        mobx_1.observable,
+        __metadata("design:type", String)
+    ], PageModel.prototype, "name", void 0);
+    __decorate([
+        mobx_1.observable,
+        __metadata("design:type", Number)
+    ], PageModel.prototype, "displayOrder", void 0);
+    __decorate([
+        mobx_1.observable,
+        __metadata("design:type", Array)
+    ], PageModel.prototype, "userFeeds", void 0);
     return PageModel;
 }());
-__decorate([
-    mobx_1.observable,
-    __metadata("design:type", String)
-], PageModel.prototype, "name", void 0);
-__decorate([
-    mobx_1.observable,
-    __metadata("design:type", Number)
-], PageModel.prototype, "displayOrder", void 0);
-__decorate([
-    mobx_1.observable,
-    __metadata("design:type", Array)
-], PageModel.prototype, "userFeeds", void 0);
 exports.PageModel = PageModel;
 ;
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = PageModel;
 //# sourceMappingURL=PageModel.js.map

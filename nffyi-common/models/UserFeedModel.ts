@@ -1,4 +1,4 @@
-import * as util from 'util';
+// import * as util from 'util';
 import * as logModule from 'debug';
     const log = logModule('nffyi-rest:UserFeed');
 // import errorModule = require('debug');
@@ -8,8 +8,8 @@ import { CachedNewsItemModel } from './';
 
 // module.exports = class Note {
 export class UserFeedModel {
-    readonly feedSourceID: number; // FK
-    @observable public pageID: number; // FK
+    readonly feedSourceID?: number; // FK
+    @observable public pageID?: number; // FK
     @observable public column: number;
     @observable public displayOrder: number;
     @observable public name: string;
@@ -38,10 +38,10 @@ export class UserFeedModel {
         });
     }
     
-    static fromJSON(json) {
+    static fromJSON(json:string) {
         var data = JSON.parse(json);
         var userFeed = new UserFeedModel(data.column, data.displayOrder, data.name, data.itemDisplayCount, data.pageID, data.feedSourceID);
-        log(json + ' => ' + util.inspect(userFeed, null));
+        log(json + ' => ' + userFeed, null);
         return userFeed;
     }
 }; // /class UserFeed

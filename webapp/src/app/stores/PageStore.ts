@@ -79,8 +79,9 @@ export class PageStore {
 
   @action
   deleteUserFeed(feedSourceID: number, pageID: number): void {
-    const page:PageModel = this.pages.find((page) => page.pageID === pageID);
-    page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.feedSourceID !== feedSourceID);
+    const page:PageModel | undefined = this.pages.find((page) => page.pageID === pageID);
+    if (page)
+      page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.feedSourceID !== feedSourceID);
   }
 
 }
