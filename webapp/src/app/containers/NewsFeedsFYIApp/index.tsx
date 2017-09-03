@@ -7,7 +7,11 @@ import { NewsFeeds } from '../../components/BodyComponents';
 import { Copyright } from '../../components/FooterComponents';
 import { UserStore, LinkStore, PageStore } from '../../stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
+import { PageModel } from '../../../../../nffyi-common/models';
 import { Navbar } from 'react-bootstrap';
+import * as logModule from 'debug';
+const log = logModule('webapp:NewsFeedsFYIApp');
+const error = logModule('webapp:error');
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
@@ -42,6 +46,11 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
   render() {
     const { children } = this.props;
+    const pageStore = this.injected[STORE_PAGE] as PageStore;
+    const page:any = pageStore.pages[0];
+    // log("Page Count: " + page.userFeeds.length);
+    log("PAGE");
+    log(page.length);
 
     return (
       <div>
