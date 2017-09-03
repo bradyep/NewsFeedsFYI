@@ -47,10 +47,10 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
   render() {
     const { children } = this.props;
     const pageStore = this.injected[STORE_PAGE] as PageStore;
-    const page:any = pageStore.pages[0];
+    // const page:any = pageStore.pages[0];
     // log("Page Count: " + page.userFeeds.length);
-    log("PAGE");
-    log(page.length);
+    // log("PAGE");
+    // log(page.length);
 
     return (
       <div>

@@ -6,7 +6,7 @@ import { Provider } from 'mobx-react';
 import { Router, Route, Switch } from 'react-router';
 import { Root } from './containers/Root';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
-import { UserModel, LinkModel, PageModel } from '../../../nffyi-common/models';
+import { UserModel, LinkModel, PageModel, UserFeedModel } from '../../../nffyi-common/models';
 import { UserStore, LinkStore, PageStore } from './stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from './constants/stores';
 import { REST_DOMAIN } from './constants/values';
@@ -61,15 +61,18 @@ async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<Pag
     const pagesResponse = await fetch(pagesURL);
     const pagesData: PageModel[] = await pagesResponse.json();
     log(pagesData);
-    const initialPage = pagesData[0].pageID;
-    if (!initialPage) throw new Error("First Page's ID is undefined");
+    let initialPage = pagesData[0];
+    if (!initialPage.pageID) throw new Error("First Page's ID is undefined");
 
-    log("Getting initial page for User");
-    const pageResponse = await fetch(pageURL + initialPage.toString());
-    const pageData: PageModel = await pageResponse.json();
-    log(pageData);
+    log("Getting initial page UserFeeds for User");
+    const userFeedsResponse = await fetch(pageURL + initialPage.pageID.toString());
+    const userFeedsData: UserFeedModel[] = await userFeedsResponse.json();
+    log(userFeedsData);
 
-    return pageData;
+    // Assemble Initial Page
+    initialPage.userFeeds = userFeedsData;
+
+    return initialPage;
   } catch (err) {
     error("Problem Getting First Page: " + err.toString());
     return undefined;
@@ -95,7 +98,7 @@ async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<Pag
   } catch (err) {
     error("Problem Setting Data For Stores: " + err.toString());
   }
-  
+
   const rootStores = {
     [STORE_USER]: userStore,
     [STORE_LINK]: linkStore,
