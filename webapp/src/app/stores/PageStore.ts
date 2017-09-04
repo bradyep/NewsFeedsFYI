@@ -3,18 +3,19 @@ import { PageModel, UserFeedModel } from '../../../../nffyi-common/models';
 
 export class PageStore {
 
-  constructor(fixtures?: PageModel[]) {
+  constructor(fixtures: PageModel[]) {
     if (fixtures) this.pages = fixtures;
     this.addPage = this.addPage.bind(this);
-    this.deletePage = this.deletePage.bind(this);
     this.editPage = this.editPage.bind(this);
-
-    this.pages = new Array<PageModel>();
+    this.deletePage = this.deletePage.bind(this);
+    this.addUserFeed = this.addUserFeed.bind(this);
+    this.editUserFeed = this.editUserFeed.bind(this);
+    this.deleteUserFeed = this.deleteUserFeed.bind(this);
   }
 
   // Pages
-  @observable
-  public pages: Array<PageModel>;
+  @observable public pages: Array<PageModel>;
+  @observable public currentlyDisplayedPageID: number;
 
   @action
   addPage(item: PageModel): void {

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as styles from './styles.css';
 import { LinkStore, UserStore } from '../../../stores';
+import { Roles, ROLE_DB_NAMES } from '../../../constants/roles';
 import { STORE_LINK } from '../../../constants/stores';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
@@ -31,8 +32,9 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
    */
 
   render() {
-    const { linksStore } = this.props;
+    const { linksStore, userStore } = this.props;
     const { links } = linksStore;
+    const { currentUser } = userStore;
 
     return (
       <div className={styles.linkList}>
@@ -43,7 +45,9 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
             </li>
           )}
           <li>
-            <i className="fa fa-cog" aria-hidden="true"></i>
+            {currentUser.role != ROLE_DB_NAMES[Roles.GUEST] &&
+              <i className="fa fa-cog" aria-hidden="true"></i>
+            }
           </li>
         </ol>
       </div>

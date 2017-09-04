@@ -3,14 +3,14 @@ import { UserModel } from '../../../../nffyi-common/models';
 
 export class UserStore {
 
-  constructor(fixtures?: UserModel[]) {
+  constructor(user: UserModel) {
 /*     this.todos = fixtures;
     this.addTodo = this.addTodo.bind(this);
     this.deleteTodo = this.deleteTodo.bind(this);
     this.editTodo = this.editTodo.bind(this);
     this.completeAll = this.completeAll.bind(this);
     this.clearCompleted = this.clearCompleted.bind(this); */
-    if (fixtures) this.currentUser = fixtures[0];
+    if (user) this.currentUser = user;
   }
 
   // The Primary User

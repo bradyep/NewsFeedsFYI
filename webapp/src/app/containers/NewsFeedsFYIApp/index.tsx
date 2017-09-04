@@ -72,7 +72,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
         </section>
 
         <main className="container">
-          <NewsFeeds />
+          <NewsFeeds pageStore={this.injected[STORE_PAGE]} />
         </main>
 
         <footer className="container">

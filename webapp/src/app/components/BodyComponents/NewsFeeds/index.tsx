@@ -2,9 +2,11 @@ import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 import * as styles from './styles.css';
+import { PageStore } from '../../../stores';
 
 export interface NewsFeedsProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
+  pageStore: PageStore
 }
 
 export interface NewsFeedsState {
@@ -26,7 +28,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   }
  */
 
- renderNewsFeedColumn() {
+ renderNewsFeedColumn(column: number) {
    return (
     <div className={`col-md-4 ${styles.newsSectionContainer}`}>
     {/* @foreach (var nf in columnOneFeeds) */}
@@ -57,9 +59,9 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
     return (
       <div className="allNews">
         <div className="row">
-          {this.renderNewsFeedColumn()}
-          {this.renderNewsFeedColumn()}
-          {this.renderNewsFeedColumn()}
+          {this.renderNewsFeedColumn(1)}
+          {this.renderNewsFeedColumn(2)}
+          {this.renderNewsFeedColumn(3)}
         </div>
       </div>
     );

@@ -1,9 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-// import { createBrowserHistory } from 'history';
 import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
-// import { Router, Route, Switch } from 'react-router';
 import { Root } from './containers/Root';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
 import { UserModel, LinkModel, PageModel, UserFeedModel } from '../../../nffyi-common/models';
@@ -19,13 +17,6 @@ const error = logModule('webapp:error');
 
 // enable MobX strict mode
 useStrict(true);
-
-const userStore = new UserStore();
-const linkStore = new LinkStore();
-const pageStore = new PageStore();
-(window as any).NFYI.userStore = userStore;
-(window as any).NFYI.linkStore = linkStore;
-(window as any).NFYI.pageStore = pageStore;
 
 async function getCurrentUser(url: string): Promise<UserModel | undefined> {
   try {
@@ -91,19 +82,32 @@ async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<Pag
 
   try {
     [currentUser, links, firstPage] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersFirstPage(getPagesURL, getPageURL)]);
-    
-    if (currentUser) userStore.changeCurrentUser(currentUser);
-    if (links) links.map((link) => linkStore.addLink(link));
-    if (firstPage) pageStore.addPage(firstPage);
   } catch (err) {
-    error("Problem Setting Data For Stores: " + err.toString());
+    error("Problem Getting Data For Stores: " + err.toString());
   }
 
-  const rootStores = {
-    [STORE_USER]: userStore,
-    [STORE_LINK]: linkStore,
-    [STORE_PAGE]: pageStore
-  };
+  let rootStores = { };
+
+  if (currentUser) {
+    const userStore = new UserStore(currentUser);
+    (window as any).NFYI.userStore = userStore;
+    rootStores = { ...rootStores, [STORE_USER]: userStore };
+  } else {
+    throw new Error("Could Not Get Current User");
+  }
+
+  const linkStore = new LinkStore();
+  if (links) links.map((link) => linkStore.addLink(link));
+  (window as any).NFYI.linkStore = linkStore;
+  rootStores = { ...rootStores, [STORE_LINK]: linkStore };
+
+  if (firstPage) {
+    const pageStore = new PageStore([firstPage]);
+    (window as any).NFYI.pageStore = pageStore;
+    rootStores = { ...rootStores, [STORE_PAGE]: pageStore };    
+  } else {
+    throw new Error("Could Not Get First Page");    
+  }
   
   // render react DOM
   ReactDOM.render(
