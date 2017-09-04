@@ -1,15 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { createBrowserHistory } from 'history';
+// import { createBrowserHistory } from 'history';
 import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
-import { Router, Route, Switch } from 'react-router';
+// import { Router, Route, Switch } from 'react-router';
 import { Root } from './containers/Root';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
 import { UserModel, LinkModel, PageModel, UserFeedModel } from '../../../nffyi-common/models';
 import { UserStore, LinkStore, PageStore } from './stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from './constants/stores';
-import { REST_DOMAIN } from './constants/values';
+import { REST_DOMAIN } from './constants/network';
 import * as logModule from 'debug';
 const log = logModule('webapp:app-index');
 const error = logModule('webapp:error');
@@ -92,7 +92,7 @@ async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<Pag
   try {
     [currentUser, links, firstPage] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersFirstPage(getPagesURL, getPageURL)]);
     
-    if (currentUser) userStore.changeUser(currentUser);
+    if (currentUser) userStore.changeCurrentUser(currentUser);
     if (links) links.map((link) => linkStore.addLink(link));
     if (firstPage) pageStore.addPage(firstPage);
   } catch (err) {

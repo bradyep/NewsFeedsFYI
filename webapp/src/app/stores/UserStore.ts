@@ -10,12 +10,12 @@ export class UserStore {
     this.editTodo = this.editTodo.bind(this);
     this.completeAll = this.completeAll.bind(this);
     this.clearCompleted = this.clearCompleted.bind(this); */
-    if (fixtures) this.user = fixtures[0];
+    if (fixtures) this.currentUser = fixtures[0];
   }
 
   // The Primary User
   @observable
-  public user: UserModel;
+  public currentUser: UserModel;
 
   // All Users, Not Implemented Yet
 /* 
@@ -25,8 +25,8 @@ export class UserStore {
 
   /** Change Primary User in User Store. Used when a User creates an account. */
   @action
-  changeUser(user:UserModel): void {
-    this.user = user;
+  changeCurrentUser(user:UserModel): void {
+    this.currentUser = user;
   }
 
 }

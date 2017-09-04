@@ -52,7 +52,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
               <div className="row">
                 <div className="col-md-9">
                   <h4>newsfeeds.fyi</h4>
-                  <LinkSection linksStore={this.injected[STORE_LINK]} />
+                  <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
                 </div>
                 <div className="col-md-3">
                   <ProfileSection />
