@@ -40,17 +40,9 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     return this.props as InjectedProps;
   }
 
-  componentDidMount() {
-
-  }
-
   render() {
-    const { children } = this.props;
+    // const { children } = this.props;
     const pageStore = this.injected[STORE_PAGE] as PageStore;
-    // const page:any = pageStore.pages[0];
-    // log("Page Count: " + page.userFeeds.length);
-    // log("PAGE");
-    // log(page.length);
 
     return (
       <div>
@@ -60,10 +52,10 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
               <div className="row">
                 <div className="col-md-9">
                   <h4>newsfeeds.fyi</h4>
-                  <LinkSection></LinkSection>
+                  <LinkSection linksStore={this.injected[STORE_LINK]} />
                 </div>
                 <div className="col-md-3">
-                  <ProfileSection></ProfileSection>
+                  <ProfileSection />
                 </div>
               </div>
 
@@ -73,18 +65,18 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
         <section className="container">
           <div className="row">
-            <PageSection></PageSection>
-            <GoogleSearchSection></GoogleSearchSection>
-            <AddNewsFeedSection></AddNewsFeedSection>
+            <PageSection />
+            <GoogleSearchSection />
+            <AddNewsFeedSection />
           </div>
         </section>
 
         <main className="container">
-          <NewsFeeds></NewsFeeds>
+          <NewsFeeds />
         </main>
 
         <footer className="container">
-          <Copyright></Copyright>
+          <Copyright />
         </footer>
       </div>
     );
