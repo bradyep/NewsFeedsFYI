@@ -3,6 +3,7 @@ import * as React from 'react';
 // import { TodoModel } from '../../models/TodoModel';
 import * as styles from './styles.css';
 import { PageStore } from '../../../stores';
+import { UserFeedModel } from "../../../../../../nffyi-common/models";
 
 export interface NewsFeedsProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -20,40 +21,48 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
     // this.handleSave = this.handleSave.bind(this);
   }
 
-/* 
-  handleSave(text: string) {
-    if (text.length) {
-      this.props.addTodo({ text });
+  /* 
+    handleSave(text: string) {
+      if (text.length) {
+        this.props.addTodo({ text });
+      }
     }
-  }
- */
+   */
 
- renderNewsFeedColumn(column: number) {
-   return (
-    <div className={`col-md-4 ${styles.newsSectionContainer}`}>
-    {/* @foreach (var nf in columnOneFeeds) */}
-      <div className={styles.newsSection}>
+  renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
+    return (
+      <div className={styles.newsSection} key={key} >
         <div className={styles.newsSectionHeader}>
-          {/* <h4 className="feedHeader">@Html.HtmlLink(nf.Link, nf.Title, new { @target = "_blank" })</h4> */}
-          <h4 className={styles.feedHeader}>TitleLink</h4>
+          <h4 className={styles.feedHeader}>
+            <a href="#" target="_blank">{userFeedModel.name}</a>
+          </h4>
         </div>
         <div className={styles.newsSectionHeaderContent}>
           <ul>
-            <li>News Feed Item Link</li>
-            <li>News Feed Item Link</li>
-            <li>News Feed Item Link</li>
-{/*             
-            @for (int i = 0; i < nf.NewsItems.Count; i++)
-            {
-                @Html.HtmlLink(nf.NewsItems[i].Link, "<li>" + nf.NewsItems[i].Title + "</li>", new { @class = "newsFeedItem", @target = "_blank" }) 
-            }
-             */}
+            {userFeedModel.newsItems.map(newsItem => 
+              <li className={styles.newsFeedItem}>
+                <a href={newsItem.link} target="_blank">{newsItem.title}</a>
+              </li>  
+            )}
           </ul>
         </div>
-      </div> 
-    </div> 
-   );
- }
+      </div >
+    )
+  }
+
+  renderNewsFeedColumn(column: number) {
+    const { pageStore } = this.props;
+    const { activePage } = pageStore;
+    const userFeeds = activePage.userFeeds.filter(uf => uf.column === column);
+
+    return (
+      <div className={`col-md-4 ${styles.newsSectionContainer}`}>
+        {userFeeds.map((newsFeed, i) =>
+          this.renderNewsFeed(newsFeed, i)
+        )}
+      </div>
+    );
+  }
 
   render() {
     return (

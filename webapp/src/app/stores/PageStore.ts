@@ -4,7 +4,11 @@ import { PageModel, UserFeedModel } from '../../../../nffyi-common/models';
 export class PageStore {
 
   constructor(fixtures: PageModel[]) {
-    if (fixtures) this.pages = fixtures;
+    this.pages = fixtures;
+    // Set active page
+    const sortedPages = this.pages.sort((a, b) => a.displayOrder - b.displayOrder);
+    this.currentlyDisplayedPageID = sortedPages[0].pageID || -1;
+
     this.addPage = this.addPage.bind(this);
     this.editPage = this.editPage.bind(this);
     this.deletePage = this.deletePage.bind(this);
@@ -16,6 +20,20 @@ export class PageStore {
   // Pages
   @observable public pages: Array<PageModel>;
   @observable public currentlyDisplayedPageID: number;
+
+  @computed
+  get activePage(): PageModel {
+    const activePage = this.pages.find(p => p.pageID === this.currentlyDisplayedPageID);
+    if (!activePage) throw new Error("No Active Page Set");
+    return activePage;
+  }
+
+  @action
+  setCurrentlyDisplayedPage(id: number) {
+    const page = this.pages.find(p => p.pageID === id);
+    if (page) this.currentlyDisplayedPageID = page.pageID || -1;
+    else throw new Error("Tried to set active page to a page that doesn't exist");
+  }
 
   @action
   addPage(item: PageModel): void {
@@ -80,7 +98,7 @@ export class PageStore {
 
   @action
   deleteUserFeed(feedSourceID: number, pageID: number): void {
-    const page:PageModel | undefined = this.pages.find((page) => page.pageID === pageID);
+    const page: PageModel | undefined = this.pages.find((page) => page.pageID === pageID);
     if (page)
       page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.feedSourceID !== feedSourceID);
   }

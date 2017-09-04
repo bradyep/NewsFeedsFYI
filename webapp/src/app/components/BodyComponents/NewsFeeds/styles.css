@@ -45,3 +45,12 @@
 .feedHeader a {
   color: #111;
 }
+
+.newsFeedItem {
+  font-size: 13px;
+  font-family: arial, sans-serif;
+}
+
+.newsFeedItem a:visited {
+  color: #61c;
+}
