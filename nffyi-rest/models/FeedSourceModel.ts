@@ -5,7 +5,7 @@ import errorModule = require('debug');
     const error = errorModule('nffyi-rest:error');
 
 // module.exports = class Note {
-class FeedSource {
+class FeedSourceModel {
     feedSourceID: number; // PK
     url: string; 
     cachedTitle: string; 
@@ -28,10 +28,10 @@ class FeedSource {
     
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var feedSource = new FeedSource(data.url, data.cachedTitle, data.cachedWebsiteURL, data.lastCachedDate, data.feedSourceID);
+        var feedSource = new FeedSourceModel(data.url, data.cachedTitle, data.cachedWebsiteURL, data.lastCachedDate, data.feedSourceID);
         log(json +' => '+ util.inspect(feedSource));
         return feedSource;
     }
 }; // /class FeedSource
 
-export = FeedSource;
+export = FeedSourceModel;

@@ -14,6 +14,8 @@ export class UserFeedModel {
     @observable public displayOrder: number;
     @observable public name: string;
     @observable public itemDisplayCount: number;
+    
+    @observable public titleURL: string;
 
     @observable
     public newsItems: Array<CachedNewsItemModel>;
@@ -21,7 +23,7 @@ export class UserFeedModel {
     // Cannot use the syntax below
     // @observable public newsItems: CachedNewsItemModel[];
 
-    constructor(column:number, displayOrder:number, name:string, itemDisplayCount:number, pageID?:number, feedSourceID?:number) {
+    constructor(column:number, displayOrder:number, name:string, itemDisplayCount:number, pageID?:number, feedSourceID?:number, titleURL?:string) {
         this.column = column;
         this.displayOrder = displayOrder;
         this.name = name;
@@ -30,6 +32,7 @@ export class UserFeedModel {
         this.feedSourceID = feedSourceID;
 
         this.newsItems = [];
+        this.titleURL = titleURL || "";
     }
     
     get JSON() {

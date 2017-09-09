@@ -3,6 +3,7 @@ var router = express.Router();
 import util = require('util');
 import userFeedsModel = require('../models/userFeeds-sequelize');
 import cachedNewsItemsModel = require('../models/cached-newsitems-sequelize');
+import feedSourcesModel = require('../models/feedsources-sequelize');
 import logModule = require('debug');
 const log = logModule('nffyi-rest:router-userFeeds');
 // import errorModule = require('debug');
@@ -11,6 +12,7 @@ import authRouter = require('./authenticate');
 // import UserFeedModel = require('../models/UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
 import pagesModel = require('../models/pages-sequelize');
+import FeedSourceModel = require('../models/FeedSourceModel');
 import * as mobx from 'mobx';
 
 /* GET all UserFeeds for requesting User */
@@ -43,7 +45,24 @@ router.get('/page/:pageid', function (req, res, next) {
             }
           });
         });
-        res.json(userFeedList);
+
+        getFeedSources([...feedSourceIDs])
+        .then(fss => {
+          // Place FeedSource's CachedWebsiteURL onto the UserFeed's getFeedSources titleURL
+          userFeedList.map(uf => {
+            fss.map(fs => {
+              if (uf.feedSourceID === fs.feedSourceID) {
+                uf.titleURL = fs.cachedWebsiteURL;
+              }
+            });
+          });
+
+          res.json(userFeedList);
+
+        });
+
+        
+
       });
     })
     .catch(err => { error('router-userFeeds ' + err); next(err); });
@@ -62,7 +81,8 @@ var getUserFeeds = function (pageID: number):any {
               userFeed.name,
               userFeed.itemDisplayCount,
               userFeed.pageID,
-              userFeed.feedSourceID
+              userFeed.feedSourceID,
+              userFeed.titleURL
             );
 
             return usfm;
@@ -90,7 +110,24 @@ var getCachedNewsItems = function (feedSourceIDs: Array<number>):any {
     }); 
     return Promise.all(keyPromises);
   }); 
-}
+};
+
+var getFeedSources = function (feedSourceIDs: Array<number>):any {
+  var keyPromises = feedSourceIDs.map(key => {
+    return feedSourcesModel.read(key)
+      .then(fs => {
+        var fsm = new FeedSourceModel(
+          fs.url,
+          fs.cachedTitle,
+          fs.cachedWebsiteURL,
+          fs.lastCachedDate,
+          fs.feedSourceID
+        );
+        return fsm;
+      }); 
+  }); 
+  return Promise.all(keyPromises);
+};
 
 var authorizeRequest = function (req, res, next, isPost: boolean) {
   // Authorize - Page should be associated with current User
@@ -109,7 +146,7 @@ var authorizeRequest = function (req, res, next, isPost: boolean) {
     next(err);
   }
   // /Authorize
-}
+};
 
 // GET single UserFeed
 router.get('/:feedsourceid/:pageid', (req, res, next) => {

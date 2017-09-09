@@ -5,7 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-const util = require("util");
+// import * as util from 'util';
 const logModule = require("debug");
 const log = logModule('nffyi-common:Link');
 // import errorModule = require('debug');
@@ -28,7 +28,7 @@ class LinkModel {
     static fromJSON(json) {
         var data = JSON.parse(json);
         var link = new LinkModel(data.url, data.name, data.displayOrder, data.linkID, data.userID);
-        log(json + ' => ' + util.inspect(link));
+        log(json + ' => ' + link);
         return link;
     }
 }

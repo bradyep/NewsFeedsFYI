@@ -4,6 +4,7 @@ var router = express.Router();
 const util = require("util");
 const userFeedsModel = require("../models/userFeeds-sequelize");
 const cachedNewsItemsModel = require("../models/cached-newsitems-sequelize");
+const feedSourcesModel = require("../models/feedsources-sequelize");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:router-userFeeds');
 // import errorModule = require('debug');
@@ -12,6 +13,7 @@ const authRouter = require("./authenticate");
 // import UserFeedModel = require('../models/UserFeed');
 const models_1 = require("../../nffyi-common/models");
 const pagesModel = require("../models/pages-sequelize");
+const FeedSourceModel = require("../models/FeedSourceModel");
 /* GET all UserFeeds for requesting User */
 // NOTE: We probably do not need this
 /*
@@ -40,7 +42,18 @@ router.get('/page/:pageid', function (req, res, next) {
                     }
                 });
             });
-            res.json(userFeedList);
+            getFeedSources([...feedSourceIDs])
+                .then(fss => {
+                // Place FeedSource's CachedWebsiteURL onto the UserFeed's getFeedSources titleURL
+                userFeedList.map(uf => {
+                    fss.map(fs => {
+                        if (uf.feedSourceID === fs.feedSourceID) {
+                            uf.titleURL = fs.cachedWebsiteURL;
+                        }
+                    });
+                });
+                res.json(userFeedList);
+            });
         });
     })
         .catch(err => { error('router-userFeeds ' + err); next(err); });
@@ -52,7 +65,7 @@ var getUserFeeds = function (pageID) {
         var keyPromises = keylist.map(key => {
             return userFeedsModel.read(key, pageID)
                 .then(userFeed => {
-                var usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
+                var usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, userFeed.titleURL);
                 return usfm;
             });
         });
@@ -71,6 +84,16 @@ var getCachedNewsItems = function (feedSourceIDs) {
         });
         return Promise.all(keyPromises);
     });
+};
+var getFeedSources = function (feedSourceIDs) {
+    var keyPromises = feedSourceIDs.map(key => {
+        return feedSourcesModel.read(key)
+            .then(fs => {
+            var fsm = new FeedSourceModel(fs.url, fs.cachedTitle, fs.cachedWebsiteURL, fs.lastCachedDate, fs.feedSourceID);
+            return fsm;
+        });
+    });
+    return Promise.all(keyPromises);
 };
 var authorizeRequest = function (req, res, next, isPost) {
     // Authorize - Page should be associated with current User

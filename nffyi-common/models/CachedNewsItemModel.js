@@ -1,5 +1,5 @@
 "use strict";
-const util = require("util");
+// import * as util from 'util';
 const logModule = require("debug");
 const log = logModule('nffyi-rest:CachedNewsItem');
 // import * as errorModule from 'debug';
@@ -20,7 +20,8 @@ class CachedNewsItemModel {
     static fromJSON(json) {
         var data = JSON.parse(json);
         var cachedNewsItem = new CachedNewsItemModel(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
-        log(json + ' => ' + util.inspect(cachedNewsItem));
+        // log(json +' => '+ util.inspect(cachedNewsItem));
+        log(json + ' => ' + cachedNewsItem);
         return cachedNewsItem;
     }
 }

@@ -4,9 +4,9 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import FeedSource = require('./FeedSource');
+import FeedSourceModel = require('./FeedSourceModel');
 
-export function create(feedSource:FeedSource) {
+export function create(feedSource:FeedSourceModel) {
     return modelDef.connectDB('SQFeedSource')
     .then(SQFeedSource => {
         return SQFeedSource['create']({
@@ -19,7 +19,7 @@ export function create(feedSource:FeedSource) {
     });
 };
 
-export function update(feedSource:FeedSource) {
+export function update(feedSource:FeedSourceModel) {
     return modelDef.connectDB('SQFeedSource')
     .then(SQFeedSource => {
         return SQFeedSource['find']({ where: { feedSourceID: feedSource.feedSourceID } })
@@ -48,7 +48,7 @@ export function read(feedSourceID) {
                 // throw new Error("No feedSource found for " + feedSourceID);
                 return null;
             } else {
-                return new FeedSource(feedSource.url, feedSource.cachedTitle, feedSource.cachedWebsiteURL, feedSource.lastCachedDate, feedSource.feedSourceID);
+                return new FeedSourceModel(feedSource.url, feedSource.cachedTitle, feedSource.cachedWebsiteURL, feedSource.lastCachedDate, feedSource.feedSourceID);
             }
         });
     });

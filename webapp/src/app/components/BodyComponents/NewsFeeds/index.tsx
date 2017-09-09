@@ -34,13 +34,13 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
       <div className={styles.newsSection} key={key} >
         <div className={styles.newsSectionHeader}>
           <h4 className={styles.feedHeader}>
-            <a href="#" target="_blank">{userFeedModel.name}</a>
+            <a href={userFeedModel.titleURL} target="_blank">{userFeedModel.name}</a>
           </h4>
         </div>
         <div className={styles.newsSectionHeaderContent}>
           <ul>
-            {userFeedModel.newsItems.map(newsItem => 
-              <li className={styles.newsFeedItem}>
+            {userFeedModel.newsItems.map((newsItem, i) => 
+              <li key={i} className={styles.newsFeedItem}>
                 <a href={newsItem.link} target="_blank">{newsItem.title}</a>
               </li>  
             )}

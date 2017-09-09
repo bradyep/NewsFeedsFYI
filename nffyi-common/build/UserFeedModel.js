@@ -14,7 +14,7 @@ var log = logModule('nffyi-rest:UserFeed');
 var error = logModule('nffyi-rest:error');
 var mobx_1 = require("mobx");
 var UserFeedModel = (function () {
-    function UserFeedModel(column, displayOrder, name, itemDisplayCount, pageID, feedSourceID) {
+    function UserFeedModel(column, displayOrder, name, itemDisplayCount, pageID, feedSourceID, titleURL) {
         this.column = column;
         this.displayOrder = displayOrder;
         this.name = name;
@@ -22,6 +22,7 @@ var UserFeedModel = (function () {
         this.pageID = pageID;
         this.feedSourceID = feedSourceID;
         this.newsItems = [];
+        this.titleURL = titleURL || "";
     }
     Object.defineProperty(UserFeedModel.prototype, "JSON", {
         get: function () {
@@ -58,6 +59,10 @@ var UserFeedModel = (function () {
         mobx_1.observable,
         __metadata("design:type", Number)
     ], UserFeedModel.prototype, "itemDisplayCount", void 0);
+    __decorate([
+        mobx_1.observable,
+        __metadata("design:type", String)
+    ], UserFeedModel.prototype, "titleURL", void 0);
     __decorate([
         mobx_1.observable,
         __metadata("design:type", Array)

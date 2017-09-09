@@ -1,5 +1,5 @@
 "use strict";
-const util = require("util");
+// import * as util from 'util';
 const logModule = require("debug");
 const log = logModule('nffyi-common:User');
 // import errorModule = require('debug');
@@ -22,7 +22,7 @@ class UserModel {
     static fromJSON(json) {
         var data = JSON.parse(json);
         var user = new UserModel(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);
-        log(json + ' => ' + util.inspect(user));
+        log(json + ' => ' + user);
         return user;
     }
 }

@@ -71,41 +71,8 @@ export function read(feedSourceID, pageID) {
                     console.log('error: ', error);
                 });
  */
-                
-                let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID);
 
-/* 
-                // Get the CachedNewsItems for this UserFeed
-                let getKeyList = function(feedSourceID:number) {
-                    return cachedNewsItemModel.keylist(feedSourceID)
-                    .then(keylist => {
-                        var keyPromises = keylist.map(key => {
-                            return cachedNewsItemModel.read(key)
-                            .then(cachedNewsItem => {
-                                return new CachedNewsItemModel ( 
-                                  cachedNewsItem.title,
-                                  cachedNewsItem.link,
-                                  cachedNewsItem.description,
-                                  cachedNewsItem.feedSourceID,
-                                  cachedNewsItem.cachedNewsItemID
-                                );
-                            });
-                        });
-                        return Promise.all(keyPromises);
-                    });
-                };
- */
-
-/* 
-                getKeyList(userFeed.feedSourceID)
-                .then((cachedNewsItems:any) => {
-                    userFeedModel.newsItems = cachedNewsItems;
-                });
-                 */
-
-                // Handle Cached News Items
-                // let testCNIM = new CachedNewsItemModel("Title", "Link", "Desc", 1, 1);
-                // userFeedModel.newsItems.push(testCNIM);
+                let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
 
                 return userFeedModel;
             }
