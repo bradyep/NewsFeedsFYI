@@ -12,7 +12,7 @@ import authRouter = require('./authenticate');
 // import UserFeedModel = require('../models/UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
 import pagesModel = require('../models/pages-sequelize');
-import FeedSourceModel = require('../models/FeedSourceModel');
+import FeedSourceModel from '../models/FeedSourceModel';
 import * as mobx from 'mobx';
 
 /* GET all UserFeeds for requesting User */

@@ -4,7 +4,7 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import FeedSourceModel = require('./FeedSourceModel');
+import FeedSourceModel from './FeedSourceModel';
 
 export function create(feedSource:FeedSourceModel) {
     return modelDef.connectDB('SQFeedSource')

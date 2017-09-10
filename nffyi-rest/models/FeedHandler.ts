@@ -1,6 +1,6 @@
 // import request from 'request';
-import request = require('request');
-import FeedParser = require('feedparser');
+import * as request from 'request';
+import * as FeedParser from 'feedparser';
 
 export default class FeedHandler {
   // thing:string;

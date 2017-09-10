@@ -5,7 +5,7 @@ import logModule = require('debug');
 // import FeedHandler = require('./FeedHandler');
 import FeedHandler from './FeedHandler';
 import cachedNewsItemModel = require('../models/cached-newsitems-sequelize');
-
+import FeedSourceModel from '../models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
 // import UserFeed = require('./UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
@@ -47,7 +47,25 @@ export function update(userFeed:UserFeedModel) {
     });
 };
 
-export function read(feedSourceID, pageID) {
+export function read(feedSourceID: number, pageID: number) {
+    // First check to see if the FeedSource we are requesting needs to be updated
+    return modelDef.connectDB('SQFeedSource')
+    .then(SQFeedSource => {
+        return SQFeedSource['find']({ where: { feedSourceID } })
+        .then((feedSource: FeedSourceModel) => {
+            if (!feedSource) {
+                // throw new Error("No feedSource found for " + feedSourceID);
+                error("No feedSource found for: " + feedSourceID);
+                return null;
+            } else {
+                const now = new Date();
+                const { lastCachedDate } = feedSource;
+                const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
+                const diffInMinutes = diffInMilliseconds / (1000 * 60);
+            }
+        })
+    })
+    // Get the UserFeed
     return modelDef.connectDB('SQUserFeed')
     .then(SQUserFeed => {
         return SQUserFeed['find']({ where: { feedSourceID, pageID } })
