@@ -66,10 +66,13 @@ export function destroy(cachedNewsItemID) {
     });
 };
 
-export function destroyByFeedSourceID(feedSourceID) {
+export function destroyByFeedSourceID(feedSourceID: number) {
     return modelDef.connectDB('SQCachedNewsItem')
     .then(SQCachedNewsItem => {
-        return SQCachedNewsItem['destroy']({ where: { feedSourceID } })
+      return SQCachedNewsItem['findAll']({ where: { feedSourceID }  })
+      .then(cachedNewsItems => {
+          return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.destroy({ force: true }));
+      });
     });
 };
 
