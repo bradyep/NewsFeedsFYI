@@ -19,10 +19,10 @@ function create(feedSource) {
 }
 exports.create = create;
 ;
-function update(feedSource) {
+function update(pFeedSource) {
     return modelDef.connectDB('SQFeedSource')
         .then(SQFeedSource => {
-        return SQFeedSource['find']({ where: { feedSourceID: feedSource.feedSourceID } })
+        return SQFeedSource['find']({ where: { feedSourceID: pFeedSource.feedSourceID } })
             .then(feedSource => {
             if (!feedSource) {
                 // throw new Error("No feedSource found for feedSourceID " + feedSourceID);
@@ -30,10 +30,10 @@ function update(feedSource) {
             }
             else {
                 return feedSource.updateAttributes({
-                    url: feedSource.url,
-                    cachedTitle: feedSource.cachedTitle,
-                    cachedWebsiteURL: feedSource.cachedWebsiteURL,
-                    lastCachedDate: feedSource.lastCachedDate
+                    url: pFeedSource.url,
+                    cachedTitle: pFeedSource.cachedTitle,
+                    cachedWebsiteURL: pFeedSource.cachedWebsiteURL,
+                    lastCachedDate: pFeedSource.lastCachedDate
                 });
             }
         });

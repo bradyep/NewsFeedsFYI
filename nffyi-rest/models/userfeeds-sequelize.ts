@@ -4,6 +4,7 @@ const log = logModule('nffyi-rest:userFeeds-model');
 const error = logModule('nffyi-rest:error');
 // import FeedHandler = require('./FeedHandler');
 import FeedHandler from './FeedHandler';
+import feedSourcesModel = require('../models/feedsources-sequelize');
 import cachedNewsItemModel = require('../models/cached-newsitems-sequelize');
 import FeedSourceModel from '../models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
@@ -67,6 +68,45 @@ export async function getUserFeedAsync(feedSourceID: number, pageID: number): Pr
   }
 }
 
+export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: number): Promise<CachedNewsItemModel[]> {
+  try {
+    const newsItems: any = await FeedHandler.parse(url);
+    let feedItems = newsItems.slice(0, VAR_MAX_NEWS_ITEMS);
+    let cachedNewsItems = new Array<CachedNewsItemModel>();
+    
+    feedItems.map((item: any) => {
+      let shortCleanDesc = item.description
+        .replace(/<\/?[^>]+(>|$)/g, "")
+        .replace(/ *\([^)]*\) */g, "")
+        .replace(/\s\s+/g, ' ')
+        .substr(0, 240);
+
+      let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID);
+      cachedNewsItems.push(cachedNewsItem);
+    });
+
+    return cachedNewsItems;
+    
+  } catch (err) {
+    error("Error Calling getNewsItemsFromFeedAsync: " + err);    
+  }
+}
+
+export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItemModel[]): Promise<string[]> {
+  try {
+    let insertPromises = cachedNewsItems.map(cni => {
+      return cachedNewsItemModel.create(cni)
+        .then(cniReturn => {
+          return "OK";
+        });
+    });
+
+    return Promise.all(insertPromises);
+  } catch (err) {
+    error("Error Calling updateCachedNewsItemsAsync: " + err);    
+  }
+}
+
 export async function readAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel> {
   try {
     const SQFeedSourceModel = await modelDef.connectDB('SQFeedSource');
@@ -78,8 +118,17 @@ export async function readAsync(feedSourceID: number, pageID: number): Promise<U
     const { lastCachedDate } = feedSourceModel;
     const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
     const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60))) - 300; // The 300 is for time zone shit I guess
+    
     if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
       log("[CACHE] Cache is out of date, fetching updated newsfeed");
+      const newNewsItems: CachedNewsItemModel[] = await getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID);
+      const deleteOldCachedNewsItemsReturn: any = await cachedNewsItemModel.destroyByFeedSourceID(feedSourceID);
+      const updateCachedNewsItemsReturn: string[] = await updateCachedNewsItemsAsync(newNewsItems);
+
+      // Put together a real feedSourceModel and update its lastCachedDate
+      let realFeedSourceModel: FeedSourceModel = new FeedSourceModel(feedSourceModel.url, feedSourceModel.cachedTitle, feedSourceModel.cachedWebsiteURL, new Date(), feedSourceModel.feedSourceID);
+      const updateFeedSourceReturn: any = await feedSourcesModel.update(realFeedSourceModel);
+
       const userFeedModel = await getUserFeedAsync(feedSourceID, pageID);
       return userFeedModel;
     } else {
@@ -90,115 +139,6 @@ export async function readAsync(feedSourceID: number, pageID: number): Promise<U
   } catch (err) {
     error("Error Calling readAsync: " + err);
   }
-}
-
-export function read(feedSourceID: number, pageID: number) {
-  // First check to see if the FeedSource we are requesting needs to be updated
-  return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSourceModel => {
-      return SQFeedSourceModel['find']({ where: { feedSourceID } })
-        .then((feedSource: FeedSourceModel) => {
-          if (!feedSource) {
-            // throw new Error("No feedSource found for " + feedSourceID);
-            error("No feedSource found for: " + feedSourceID);
-            return null;
-          } else {
-            const now = new Date();
-            const { lastCachedDate } = feedSource;
-            const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
-            const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60))) - 300; // The 300 is for time zone shit I guess
-            if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
-              log("[CACHE] Cache is out of date, fetching updated newsfeed");
-
-              // Since we are asking for a UserFeed, we probably also want the actual
-              // feed itself
-
-              // Need to get the feed's URL here
-              // var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
-
-              const { url } = feedSource;
-
-              FeedHandler.parse(url)
-                .then(function (items: Array<any>) {
-                  let feedItems = items.slice(0, 10);
-                  let cachedNewsItems = new Array<CachedNewsItemModel>();
-
-                  feedItems.map((item: any) => {
-                    let shortCleanDesc = item.description
-                      .replace(/<\/?[^>]+(>|$)/g, "")
-                      .replace(/ *\([^)]*\) */g, "")
-                      .replace(/\s\s+/g, ' ')
-                      .substr(0, 240);
-
-                    let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSource.feedSourceID);
-                    // log('title: ', item.title);
-                    cachedNewsItems.push(cachedNewsItem);
-                  });
-
-                  // Remove cachedNewsItems from the database
-                  cachedNewsItemModel.destroyByFeedSourceID(feedSource.feedSourceID)
-                    .then(deleteReturn => {
-                      // Save cachedNewsItems to the database
-                      var insertPromises = cachedNewsItems.map(cni => {
-                        return cachedNewsItemModel.create(cni)
-                          .then(cniReturn => {
-                            return "OK";
-                          });
-                      });
-                      return Promise.all(insertPromises)
-                        .then(() => {
-
-                          // Update FeedSorce's LastCachedDate
-                          
-
-                          // Get the UserFeed
-                          // TODO: Repeated Code 
-                          return modelDef.connectDB('SQUserFeed')
-                            .then(SQUserFeed => {
-                              return SQUserFeed['find']({ where: { feedSourceID, pageID } })
-                                .then(userFeed => {
-                                  if (!userFeed) {
-                                    // throw new Error("No userFeed found for " + userFeedID);
-                                    return null;
-                                  } else {
-                                    let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
-
-                                    return userFeedModel;
-                                  }
-                                });
-                            });
-
-                        })
-                    });
-
-                })
-                .catch(function (error) {
-                  error('error: ', error);
-                });
-
-            } else {
-              log("[CACHE] Cache is up to date, fetching from cache");
-
-              // Get the UserFeed
-              return modelDef.connectDB('SQUserFeed')
-                .then(SQUserFeed => {
-                  return SQUserFeed['find']({ where: { feedSourceID, pageID } })
-                    .then(userFeed => {
-                      if (!userFeed) {
-                        // throw new Error("No userFeed found for " + userFeedID);
-                        return null;
-                      } else {
-                        let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
-
-                        return userFeedModel;
-                      }
-                    });
-                });
-
-            }
-          }
-        })
-    });
 }
 
 export function destroy(feedSourceID, pageID) {

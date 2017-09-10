@@ -116,7 +116,8 @@ var authorizeRequest = function (req, res, next, isPost) {
 // GET single UserFeed
 router.get('/:feedsourceid/:pageid', (req, res, next) => {
     authorizeRequest(req, res, next, false);
-    userFeedsModel.read(req.params.feedsourceid, req.params.pageid)
+    // userFeedsModel.read(req.params.feedsourceid, req.params.pageid)
+    userFeedsModel.readAsync(req.params.feedsourceid, req.params.pageid)
         .then(userFeed => {
         if (!userFeed)
             next();
