@@ -25,6 +25,8 @@ class FeedSourceModel {
         return feedSource;
     }
 }
+exports.FeedSourceModel = FeedSourceModel;
 ; // /class FeedSource
-module.exports = FeedSourceModel;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = FeedSourceModel;
 //# sourceMappingURL=FeedSourceModel.js.map

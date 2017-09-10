@@ -4,7 +4,7 @@ const log = logModule('nffyi-rest:feedSources-model');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const modelDef = require("./nffyi-sequelize");
-const FeedSourceModel = require("./FeedSourceModel");
+const FeedSourceModel_1 = require("./FeedSourceModel");
 function create(feedSource) {
     return modelDef.connectDB('SQFeedSource')
         .then(SQFeedSource => {
@@ -51,7 +51,7 @@ function read(feedSourceID) {
                 return null;
             }
             else {
-                return new FeedSourceModel(feedSource.url, feedSource.cachedTitle, feedSource.cachedWebsiteURL, feedSource.lastCachedDate, feedSource.feedSourceID);
+                return new FeedSourceModel_1.default(feedSource.url, feedSource.cachedTitle, feedSource.cachedWebsiteURL, feedSource.lastCachedDate, feedSource.feedSourceID);
             }
         });
     });

@@ -73,6 +73,20 @@ function destroy(cachedNewsItemID) {
 }
 exports.destroy = destroy;
 ;
+function destroyByFeedSourceID(feedSourceID) {
+    return modelDef.connectDB('SQCachedNewsItem')
+        .then(SQCachedNewsItem => {
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID } })
+            .then(cachedNewsItems => {
+            if (!cachedNewsItems)
+                return null;
+            else
+                return cachedNewsItems.destroy();
+        });
+    });
+}
+exports.destroyByFeedSourceID = destroyByFeedSourceID;
+;
 // Get Cached News Items By FeedSourceID
 function keylist(feedSourceID) {
     return modelDef.connectDB('SQCachedNewsItem')

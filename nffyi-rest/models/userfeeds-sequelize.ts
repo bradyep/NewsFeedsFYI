@@ -9,6 +9,11 @@ import FeedSourceModel from '../models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
 // import UserFeed = require('./UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
+import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/constants/newsfeeds';
+
+var VAR_MINUTES_TO_CAHCE_FEED: number = MINUTES_TO_CAHCE_FEED;
+var VAR_MAX_NEWS_ITEMS: number = MAX_NEWS_ITEMS;
+// log(VAR_MINUTES_TO_CAHCE_FEED.toString());
 
 export function create(userFeed:UserFeedModel) {
     return modelDef.connectDB('SQUserFeed')
@@ -61,42 +66,97 @@ export function read(feedSourceID: number, pageID: number) {
                 const now = new Date();
                 const { lastCachedDate } = feedSource;
                 const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
-                const diffInMinutes = diffInMilliseconds / (1000 * 60);
-            }
-        })
-    })
-    // Get the UserFeed
-    return modelDef.connectDB('SQUserFeed')
-    .then(SQUserFeed => {
-        return SQUserFeed['find']({ where: { feedSourceID, pageID } })
-        .then(userFeed => {
-            if (!userFeed) {
-                // throw new Error("No userFeed found for " + userFeedID);
-                return null;
-            } else {
-/* 
-                // Since we are asking for a UserFeed, we probably also want the actual
-                // feed itself
-                
-                // Need to get the feed's URL here
-                var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
-                
-                FeedHandler.parse(url).then(function (items:Array<any>) {
-                    items.forEach(function (item) {
-                    console.log('title: ', item.title);
+                const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60))) - 300; // The 300 is for time zone shit I guess
+                if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
+                    log("[CACHE] Cache is out of date, fetching updated newsfeed");
+                    
+                    // Since we are asking for a UserFeed, we probably also want the actual
+                    // feed itself
+                    
+                    // Need to get the feed's URL here
+                    // var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
+
+                    const { url } = feedSource;
+                    
+                    FeedHandler.parse(url)
+                    .then(function (items:Array<any>) {
+                        let feedItems = items.slice(0, 10);
+                        let cachedNewsItems = new Array<CachedNewsItemModel>();
+
+                        feedItems.map((item: any) => {
+                            let shortCleanDesc = item.description
+                            .replace(/<\/?[^>]+(>|$)/g, "")
+                            .replace(/ *\([^)]*\) */g, "")
+                            .replace(/\s\s+/g, ' ')
+                            .substr(0, 240);
+
+                            let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSource.feedSourceID);
+                            // log('title: ', item.title);
+                            cachedNewsItems.push(cachedNewsItem);
+                        });
+
+                        // Remove cachedNewsItems from the database
+                        cachedNewsItemModel.destroyByFeedSourceID(feedSource.feedSourceID)
+                        .then(deleteReturn => {
+                            // Save cachedNewsItems to the database
+                            var insertPromises = cachedNewsItems.map(cni => {
+                                return cachedNewsItemModel.create(cni)
+                                .then(cniReturn => {
+                                    return "OK";
+                                });
+                            });
+                            return Promise.all(insertPromises)
+                            .then(() => {
+
+                                // Get the UserFeed
+                                // TODO: Repeated Code 
+                                return modelDef.connectDB('SQUserFeed')
+                                .then(SQUserFeed => {
+                                    return SQUserFeed['find']({ where: { feedSourceID, pageID } })
+                                    .then(userFeed => {
+                                        if (!userFeed) {
+                                            // throw new Error("No userFeed found for " + userFeedID);
+                                            return null;
+                                        } else {
+                                            let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
+
+                                            return userFeedModel;
+                                        }
+                                    });
+                                });
+
+                                    })
+                                });
+
+                    })
+                    .catch(function (error) {
+                        error('error: ', error);
                     });
-                }).catch(function (error) {
-                    console.log('error: ', error);
-                });
- */
+                    
+                } else {
+                    log("[CACHE] Cache is up to date, fetching from cache");
 
-                let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
+                    // Get the UserFeed
+                    return modelDef.connectDB('SQUserFeed')
+                    .then(SQUserFeed => {
+                        return SQUserFeed['find']({ where: { feedSourceID, pageID } })
+                        .then(userFeed => {
+                            if (!userFeed) {
+                                // throw new Error("No userFeed found for " + userFeedID);
+                                return null;
+                            } else {
+                                let userFeedModel = new UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
 
-                return userFeedModel;
-            }
-        });
+                                return userFeedModel;
+                            }
+                        });
+                    }); 
+
+                }
+            } 
+        }) 
     });
-};
+} 
 
 export function destroy(feedSourceID, pageID) {
     return modelDef.connectDB('SQUserFeed')

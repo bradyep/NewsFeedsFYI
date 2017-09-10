@@ -66,6 +66,17 @@ export function destroy(cachedNewsItemID) {
     });
 };
 
+export function destroyByFeedSourceID(feedSourceID) {
+    return modelDef.connectDB('SQCachedNewsItem')
+    .then(SQCachedNewsItem => {
+        return SQCachedNewsItem['findAll']({ where: { feedSourceID } })
+        .then(cachedNewsItems => {
+            if (!cachedNewsItems) return null;
+            else return cachedNewsItems.destroy();
+        });
+    });
+};
+
 // Get Cached News Items By FeedSourceID
 export function keylist(feedSourceID:number) {
     return modelDef.connectDB('SQCachedNewsItem')

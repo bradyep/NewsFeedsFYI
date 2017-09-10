@@ -2,7 +2,7 @@
 const express = require("express");
 var router = express.Router();
 const util = require("util");
-const userFeedsModel = require("../models/userFeeds-sequelize");
+const userFeedsModel = require("../models/userfeeds-sequelize");
 const cachedNewsItemsModel = require("../models/cached-newsitems-sequelize");
 const feedSourcesModel = require("../models/feedsources-sequelize");
 const logModule = require("debug");
@@ -13,7 +13,7 @@ const authRouter = require("./authenticate");
 // import UserFeedModel = require('../models/UserFeed');
 const models_1 = require("../../nffyi-common/models");
 const pagesModel = require("../models/pages-sequelize");
-const FeedSourceModel = require("../models/FeedSourceModel");
+const FeedSourceModel_1 = require("../models/FeedSourceModel");
 /* GET all UserFeeds for requesting User */
 // NOTE: We probably do not need this
 /*
@@ -89,7 +89,7 @@ var getFeedSources = function (feedSourceIDs) {
     var keyPromises = feedSourceIDs.map(key => {
         return feedSourcesModel.read(key)
             .then(fs => {
-            var fsm = new FeedSourceModel(fs.url, fs.cachedTitle, fs.cachedWebsiteURL, fs.lastCachedDate, fs.feedSourceID);
+            var fsm = new FeedSourceModel_1.default(fs.url, fs.cachedTitle, fs.cachedWebsiteURL, fs.lastCachedDate, fs.feedSourceID);
             return fsm;
         });
     });

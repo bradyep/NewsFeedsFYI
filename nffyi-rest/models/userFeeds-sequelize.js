@@ -3,9 +3,16 @@ const logModule = require("debug");
 const log = logModule('nffyi-rest:userFeeds-model');
 // import errorModule = require('debug');
 const error = logModule('nffyi-rest:error');
+// import FeedHandler = require('./FeedHandler');
+const FeedHandler_1 = require("./FeedHandler");
+const cachedNewsItemModel = require("../models/cached-newsitems-sequelize");
 const modelDef = require("./nffyi-sequelize");
 // import UserFeed = require('./UserFeed');
 const models_1 = require("../../nffyi-common/models");
+const newsfeeds_1 = require("../../nffyi-common/constants/newsfeeds");
+var VAR_MINUTES_TO_CAHCE_FEED = newsfeeds_1.MINUTES_TO_CAHCE_FEED;
+var VAR_MAX_NEWS_ITEMS = newsfeeds_1.MAX_NEWS_ITEMS;
+// log(VAR_MINUTES_TO_CAHCE_FEED.toString());
 function create(userFeed) {
     return modelDef.connectDB('SQUserFeed')
         .then(SQUserFeed => {
@@ -47,38 +54,100 @@ function update(userFeed) {
 exports.update = update;
 ;
 function read(feedSourceID, pageID) {
-    return modelDef.connectDB('SQUserFeed')
-        .then(SQUserFeed => {
-        return SQUserFeed['find']({ where: { feedSourceID, pageID } })
-            .then(userFeed => {
-            if (!userFeed) {
-                // throw new Error("No userFeed found for " + userFeedID);
+    // First check to see if the FeedSource we are requesting needs to be updated
+    return modelDef.connectDB('SQFeedSource')
+        .then(SQFeedSource => {
+        return SQFeedSource['find']({ where: { feedSourceID } })
+            .then((feedSource) => {
+            if (!feedSource) {
+                // throw new Error("No feedSource found for " + feedSourceID);
+                error("No feedSource found for: " + feedSourceID);
                 return null;
             }
             else {
-                /*
-                                // Since we are asking for a UserFeed, we probably also want the actual
-                                // feed itself
-                                
-                                // Need to get the feed's URL here
-                                var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
-                                
-                                FeedHandler.parse(url).then(function (items:Array<any>) {
-                                    items.forEach(function (item) {
-                                    console.log('title: ', item.title);
-                                    });
-                                }).catch(function (error) {
-                                    console.log('error: ', error);
+                const now = new Date();
+                const { lastCachedDate } = feedSource;
+                const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
+                const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60))) - 300; // The 300 is for time zone shit I guess
+                if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
+                    log("[CACHE] Cache is out of date, fetching updated newsfeed");
+                    // Since we are asking for a UserFeed, we probably also want the actual
+                    // feed itself
+                    // Need to get the feed's URL here
+                    // var url = 'http://feeds.feedwrench.com/JavaScriptJabber.rss';
+                    const { url } = feedSource;
+                    FeedHandler_1.default.parse(url)
+                        .then(function (items) {
+                        let feedItems = items.slice(0, 10);
+                        let cachedNewsItems = new Array();
+                        feedItems.map((item) => {
+                            let shortCleanDesc = item.description
+                                .replace(/<\/?[^>]+(>|$)/g, "")
+                                .replace(/ *\([^)]*\) */g, "")
+                                .replace(/\s\s+/g, ' ')
+                                .substr(0, 240);
+                            let cachedNewsItem = new models_1.CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSource.feedSourceID);
+                            // log('title: ', item.title);
+                            cachedNewsItems.push(cachedNewsItem);
+                        });
+                        // Remove cachedNewsItems from the database
+                        cachedNewsItemModel.destroyByFeedSourceID(feedSource.feedSourceID)
+                            .then(deleteReturn => {
+                            // Save cachedNewsItems to the database
+                            var insertPromises = cachedNewsItems.map(cni => {
+                                return cachedNewsItemModel.create(cni)
+                                    .then(cniReturn => {
+                                    return "OK";
                                 });
-                 */
-                let userFeedModel = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
-                return userFeedModel;
+                            });
+                            return Promise.all(insertPromises)
+                                .then(() => {
+                                // Get the UserFeed
+                                // TODO: Repeated Code 
+                                return modelDef.connectDB('SQUserFeed')
+                                    .then(SQUserFeed => {
+                                    return SQUserFeed['find']({ where: { feedSourceID, pageID } })
+                                        .then(userFeed => {
+                                        if (!userFeed) {
+                                            // throw new Error("No userFeed found for " + userFeedID);
+                                            return null;
+                                        }
+                                        else {
+                                            let userFeedModel = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
+                                            return userFeedModel;
+                                        }
+                                    });
+                                });
+                            });
+                        });
+                    })
+                        .catch(function (error) {
+                        error('error: ', error);
+                    });
+                }
+                else {
+                    log("[CACHE] Cache is up to date, fetching from cache");
+                    // Get the UserFeed
+                    return modelDef.connectDB('SQUserFeed')
+                        .then(SQUserFeed => {
+                        return SQUserFeed['find']({ where: { feedSourceID, pageID } })
+                            .then(userFeed => {
+                            if (!userFeed) {
+                                // throw new Error("No userFeed found for " + userFeedID);
+                                return null;
+                            }
+                            else {
+                                let userFeedModel = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, "#");
+                                return userFeedModel;
+                            }
+                        });
+                    });
+                }
             }
         });
     });
 }
 exports.read = read;
-;
 function destroy(feedSourceID, pageID) {
     return modelDef.connectDB('SQUserFeed')
         .then(SQUserFeed => {
@@ -116,4 +185,4 @@ function count() {
 }
 exports.count = count;
 ;
-//# sourceMappingURL=userFeeds-sequelize.js.map
+//# sourceMappingURL=userfeeds-sequelize.js.map
