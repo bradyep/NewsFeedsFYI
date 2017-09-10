@@ -76,13 +76,7 @@ exports.destroy = destroy;
 function destroyByFeedSourceID(feedSourceID) {
     return modelDef.connectDB('SQCachedNewsItem')
         .then(SQCachedNewsItem => {
-        return SQCachedNewsItem['findAll']({ where: { feedSourceID } })
-            .then(cachedNewsItems => {
-            if (!cachedNewsItems)
-                return null;
-            else
-                return cachedNewsItems.destroy();
-        });
+        return SQCachedNewsItem['destroy']({ where: { feedSourceID } });
     });
 }
 exports.destroyByFeedSourceID = destroyByFeedSourceID;

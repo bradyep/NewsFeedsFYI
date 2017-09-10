@@ -73,7 +73,8 @@ var getUserFeeds = function (pageID: number):any {
   return userFeedsModel.keylist(pageID)
     .then(keylist => {
       var keyPromises = keylist.map(key => {
-        return userFeedsModel.read(key, pageID)
+        // return userFeedsModel.read(key, pageID)
+        return userFeedsModel.readAsync(key, pageID)
           .then(userFeed => {
             var usfm = new UserFeedModel(
               userFeed.column,

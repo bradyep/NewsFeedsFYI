@@ -63,7 +63,8 @@ var getUserFeeds = function (pageID) {
     return userFeedsModel.keylist(pageID)
         .then(keylist => {
         var keyPromises = keylist.map(key => {
-            return userFeedsModel.read(key, pageID)
+            // return userFeedsModel.read(key, pageID)
+            return userFeedsModel.readAsync(key, pageID)
                 .then(userFeed => {
                 var usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, userFeed.titleURL);
                 return usfm;

@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 const logModule = require("debug");
 const log = logModule('nffyi-rest:userFeeds-model');
 // import errorModule = require('debug');
@@ -31,10 +39,12 @@ exports.create = create;
 function update(userFeed) {
     return modelDef.connectDB('SQUserFeed')
         .then(SQUserFeed => {
-        return SQUserFeed['find']({ where: {
+        return SQUserFeed['find']({
+            where: {
                 feedSourceID: userFeed.feedSourceID,
                 pageID: userFeed.pageID
-            } })
+            }
+        })
             .then(userFeed => {
             if (!userFeed) {
                 // throw new Error("No userFeed found for userFeedID " + userFeedID);
@@ -53,11 +63,56 @@ function update(userFeed) {
 }
 exports.update = update;
 ;
+function getUserFeedAsync(feedSourceID, pageID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const SQUserFeedModel = yield modelDef.connectDB('SQUserFeed');
+            let dbUserFeedModel = yield SQUserFeedModel['find']({ where: { feedSourceID, pageID } });
+            if (!dbUserFeedModel)
+                throw new Error("Cannot find UserFeed for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
+            let userFeedModel = new models_1.UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
+            return userFeedModel;
+        }
+        catch (err) {
+            error("Error Calling getUserFeedAsync: " + err);
+        }
+    });
+}
+exports.getUserFeedAsync = getUserFeedAsync;
+function readAsync(feedSourceID, pageID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const SQFeedSourceModel = yield modelDef.connectDB('SQFeedSource');
+            let feedSourceModel = yield SQFeedSourceModel['find']({ where: { feedSourceID } });
+            if (!feedSourceModel)
+                throw new Error("Cannot find FeedSource for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
+            // Determine whether FeedSource's cache is up to date
+            const now = new Date();
+            const { lastCachedDate } = feedSourceModel;
+            const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
+            const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60))) - 300; // The 300 is for time zone shit I guess
+            if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
+                log("[CACHE] Cache is out of date, fetching updated newsfeed");
+                const userFeedModel = yield getUserFeedAsync(feedSourceID, pageID);
+                return userFeedModel;
+            }
+            else {
+                log("[CACHE] Cache is up to date, fetching from cache");
+                const userFeedModel = yield getUserFeedAsync(feedSourceID, pageID);
+                return userFeedModel;
+            }
+        }
+        catch (err) {
+            error("Error Calling readAsync: " + err);
+        }
+    });
+}
+exports.readAsync = readAsync;
 function read(feedSourceID, pageID) {
     // First check to see if the FeedSource we are requesting needs to be updated
     return modelDef.connectDB('SQFeedSource')
-        .then(SQFeedSource => {
-        return SQFeedSource['find']({ where: { feedSourceID } })
+        .then(SQFeedSourceModel => {
+        return SQFeedSourceModel['find']({ where: { feedSourceID } })
             .then((feedSource) => {
             if (!feedSource) {
                 // throw new Error("No feedSource found for " + feedSourceID);
@@ -102,6 +157,7 @@ function read(feedSourceID, pageID) {
                             });
                             return Promise.all(insertPromises)
                                 .then(() => {
+                                // Update FeedSorce's LastCachedDate
                                 // Get the UserFeed
                                 // TODO: Repeated Code 
                                 return modelDef.connectDB('SQUserFeed')
