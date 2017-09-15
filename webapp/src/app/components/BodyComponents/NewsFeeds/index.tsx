@@ -30,6 +30,8 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
    */
 
   renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
+    const displayedNewsItems = userFeedModel.newsItems.slice(0, userFeedModel.itemDisplayCount);
+
     return (
       <div className={styles.newsSection} key={key} >
         <div className={styles.newsSectionHeader}>
@@ -39,7 +41,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
         </div>
         <div className={styles.newsSectionHeaderContent}>
           <ul>
-            {userFeedModel.newsItems.map((newsItem, i) => 
+            {displayedNewsItems.map((newsItem, i) => 
               <li key={i} className={styles.newsFeedItem}>
                 <a href={newsItem.link} target="_blank">{newsItem.title}</a>
               </li>  
