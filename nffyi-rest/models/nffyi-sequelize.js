@@ -7,7 +7,7 @@ const log = logModule('nffyi-rest:model-definition');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 var sequelize;
-var models = { SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
+var models = { SQRole: null, SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
 function connectDB(modelRequested) {
     log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
     if (models[modelRequested]) {
@@ -29,14 +29,19 @@ function connectDB(modelRequested) {
     })
         .then(params => {
         sequelize = new Sequelize(params.dbname, params.username, params.password, params.params);
+        models.SQRole = sequelize.define('Role', {
+            roleID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            name: Sequelize.STRING,
+        }); // /SQRole
         models.SQUser = sequelize.define('User', {
             userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
             username: Sequelize.STRING,
             password: Sequelize.STRING,
             email: Sequelize.STRING,
-            lastAccessDate: Sequelize.DATE,
-            role: Sequelize.STRING
+            lastAccessDate: Sequelize.DATE
         }); // /SQUser
+        models.SQUser.belongsTo(models.SQRole, { foreignKey: 'roleID' });
+        models.SQRole.hasMany(models.SQUser, { as: 'Users', foreignKey: 'roleID' });
         models.SQLink = sequelize.define('Link', {
             linkID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
             url: Sequelize.STRING,
@@ -82,6 +87,54 @@ function connectDB(modelRequested) {
         return sequelize.sync();
     }) // /params Promise
         .then(() => {
+        // Auto-Populate Database with Roles
+        log('--Creating Initial Data: Admin Role--');
+        return models.SQRole.findOrCreate({
+            where: {
+                name: 'admin'
+            },
+            defaults: {
+                name: 'admin', roleID: 1
+            }
+        });
+    })
+        .then(() => {
+        // Auto-Populate Database with Roles
+        log('--Creating Initial Data: Pro Role--');
+        return models.SQRole.findOrCreate({
+            where: {
+                name: 'pro'
+            },
+            defaults: {
+                name: 'pro', roleID: 2
+            }
+        });
+    })
+        .then(() => {
+        // Auto-Populate Database with Roles
+        log('--Creating Initial Data: User Role--');
+        return models.SQRole.findOrCreate({
+            where: {
+                name: 'user'
+            },
+            defaults: {
+                name: 'user', roleID: 3
+            }
+        });
+    })
+        .then(() => {
+        // Auto-Populate Database with Roles
+        log('--Creating Initial Data: Guest Role--');
+        return models.SQRole.findOrCreate({
+            where: {
+                name: 'guest'
+            },
+            defaults: {
+                name: 'guest', roleID: 4
+            }
+        });
+    })
+        .then(() => {
         // Auto-Populate Database with Users
         log('--Creating Initial Data: Guest User--');
         return models.SQUser.findOrCreate({
@@ -89,7 +142,7 @@ function connectDB(modelRequested) {
                 username: 'guest'
             },
             defaults: {
-                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), role: 'guest', createdAt: Date(), updatedAt: Date()
+                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), roleID: 'guest', createdAt: Date(), updatedAt: Date()
             }
         });
     })

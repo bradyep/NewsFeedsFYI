@@ -1,10 +1,9 @@
-import * as React from 'react';
-import * as styles from './styles.css';
-import { LinkStore, UserStore } from '../../../stores';
-import { Roles, ROLE_DB_NAMES } from '../../../constants/roles';
-import { STORE_LINK } from '../../../constants/stores';
-// import { TodoTextInput } from '../TodoTextInput';
-// import { TodoModel } from '../../models/TodoModel';
+import * as React from "react";
+import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
+import * as styles from "./styles.css";
+import { STORE_LINK } from "../../../constants/stores";
+import { LinkStore, UserStore } from "../../../stores";
+
 
 export interface LinkSectionProps {
   // addTodo: (todo: Partial<TodoModel>) => any;

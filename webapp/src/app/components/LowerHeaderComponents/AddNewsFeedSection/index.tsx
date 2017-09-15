@@ -1,10 +1,10 @@
-import * as React from 'react';
-// import { TodoTextInput } from '../TodoTextInput';
-// import { TodoModel } from '../../models/TodoModel';
-import { FormGroup, InputGroup, Button } from 'react-bootstrap';
+import * as React from "react";
+import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
+import { UserStore } from "../../../stores";
+import { FormGroup, InputGroup, Button } from "react-bootstrap";
 
 export interface AddNewsFeedSectionProps {
-  // addTodo: (todo: Partial<TodoModel>) => any;
+  userStore: UserStore
 }
 
 export interface AddNewsFeedSectionState {
@@ -27,9 +27,13 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
  */
 
   render() {
+    const { userStore } = this.props;
+    const { currentUser } = userStore;
+    const disabled = currentUser.role === ROLE_DB_NAMES[Roles.GUEST];
+
     return (
       <div className="col-md-2">
-        <Button bsStyle="primary">Add News Feed</Button>
+        <Button bsStyle="primary" disabled={disabled}>Add News Feed</Button>
       </div>
     );
   }

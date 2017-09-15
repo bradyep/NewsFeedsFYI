@@ -67,7 +67,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           <div className="row">
             <PageSection />
             <GoogleSearchSection />
-            <AddNewsFeedSection />
+            <AddNewsFeedSection userStore={this.injected[STORE_USER]} />
           </div>
         </section>
 
