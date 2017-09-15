@@ -349,7 +349,7 @@ export function connectDB(modelRequested: string) {
       })
     })
     // Auto-Populate Database with Cached News Items 
-
+/*
     .then(function ([instance, created]) {
       log(instance.get({ plain: true }));
       log(created);
@@ -521,7 +521,7 @@ export function connectDB(modelRequested: string) {
         }
       })
     })
-
+*/
 
     // Auto-Populate Database with User Feeds
     .then(function ([instance, created]) {
