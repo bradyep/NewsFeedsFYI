@@ -9,13 +9,13 @@ const models_1 = require("../nffyi-common/models");
 // $env:PORT='3000'
 // Get-ChildItem env:
 // Create Users
-let adminUser = new models_1.UserModel('admin', 'Passw0rd', 'admin@newsfeeds.fyi', 'admin');
+let adminUser = new models_1.UserModel('admin', 'Passw0rd', 'admin@newsfeeds.fyi', 1);
 usersModel.create(adminUser)
     .then(user => {
     console.log('Attempted to create User: ' + util.inspect(user));
 })
     .catch(err => { console.error(err); });
-let guestUser = new models_1.UserModel('guest', 'Passw0rd', 'guest@newsfeeds.fyi', 'user');
+let guestUser = new models_1.UserModel('guest', 'Passw0rd', 'guest@newsfeeds.fyi', 3);
 usersModel.create(guestUser)
     .then(user => {
     console.log('Attempted to create User: ' + util.inspect(user));

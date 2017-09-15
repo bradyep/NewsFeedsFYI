@@ -13,7 +13,7 @@ function create(user) {
             password: user.password,
             email: user.email,
             lastAccessDate: Date(),
-            role: user.role
+            roleID: user.roleID
         });
     });
 }
@@ -52,7 +52,7 @@ function read(userID) {
                 return null;
             }
             else {
-                return new models_1.UserModel(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
+                return new models_1.UserModel(user.username, user.password, user.email, user.roleID, user.userID, user.lastAccessDate);
             }
         });
     });

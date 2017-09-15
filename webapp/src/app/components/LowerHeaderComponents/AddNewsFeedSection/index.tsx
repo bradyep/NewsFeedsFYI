@@ -29,7 +29,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   render() {
     const { userStore } = this.props;
     const { currentUser } = userStore;
-    const disabled = currentUser.role === ROLE_DB_NAMES[Roles.GUEST];
+    const disabled = currentUser.roleID === Roles.GUEST;
 
     return (
       <div className="col-md-2">

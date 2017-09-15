@@ -91,7 +91,7 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   // User spam
 
   // usersModel.create(req.body.username, req.body.password, req.body.email)
-  usersModel.create(new UserModel(req.body.username, req.body.password, req.body.email, 'user'))
+  usersModel.create(new UserModel(req.body.username, req.body.password, req.body.email, 3))
   .then(user => {
     log('Attempted to create User: ' + util.inspect(user));
     res.json(user);

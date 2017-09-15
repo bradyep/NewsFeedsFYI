@@ -44,7 +44,7 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
             </li>
           )}
           <li>
-            {currentUser.role != ROLE_DB_NAMES[Roles.GUEST] &&
+            {currentUser.roleID != Roles.GUEST &&
               <i className="fa fa-cog" aria-hidden="true"></i>
             }
           </li>

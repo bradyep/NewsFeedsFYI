@@ -142,7 +142,7 @@ function connectDB(modelRequested) {
                 username: 'guest'
             },
             defaults: {
-                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), roleID: 'guest', createdAt: Date(), updatedAt: Date()
+                username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), roleID: 4, createdAt: Date(), updatedAt: Date()
             }
         });
     })
@@ -156,7 +156,7 @@ function connectDB(modelRequested) {
                 username: 'admin'
             },
             defaults: {
-                username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), role: 'admin', createdAt: Date(), updatedAt: Date()
+                username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), roleID: 1, createdAt: Date(), updatedAt: Date()
             }
         });
     })
@@ -164,13 +164,13 @@ function connectDB(modelRequested) {
         // Understand results of last findOrCreate
         log(instance.get({ plain: true }));
         log(created);
-        log('--Creating Initial Data: Normal User--');
+        log('--Creating Initial Data: Pro User--');
         return models.SQUser.findOrCreate({
             where: {
                 username: 'bradyep'
             },
             defaults: {
-                username: 'bradyep', password: 'Passw0rd', email: 'bradyep@newsfeeds.fyi', lastAccessDate: Date(), role: 'pro', createdAt: Date(), updatedAt: Date()
+                username: 'bradyep', password: 'Passw0rd', email: 'bradyep@newsfeeds.fyi', lastAccessDate: Date(), roleID: 2, createdAt: Date(), updatedAt: Date()
             }
         });
     })
@@ -184,7 +184,7 @@ function connectDB(modelRequested) {
                 username: 'joeuser'
             },
             defaults: {
-                username: 'joeuser', password: 'Passw0rd', email: 'joeuser@newsfeeds.fyi', lastAccessDate: Date(), role: 'user', createdAt: Date(), updatedAt: Date()
+                username: 'joeuser', password: 'Passw0rd', email: 'joeuser@newsfeeds.fyi', lastAccessDate: Date(), roleID: 3, createdAt: Date(), updatedAt: Date()
             }
         });
     })

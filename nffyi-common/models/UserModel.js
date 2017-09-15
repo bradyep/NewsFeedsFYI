@@ -1,22 +1,19 @@
 "use strict";
-// import * as util from 'util';
 const logModule = require("debug");
 const log = logModule('nffyi-common:User');
-// import errorModule = require('debug');
 const error = logModule('nffyi-common:error');
-// module.exports = class Note {
 class UserModel {
-    constructor(username, password, email, role, userID, lastAccessDate) {
+    constructor(username, password, email, roleID, userID, lastAccessDate) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
+        this.roleID = roleID;
         this.userID = userID;
         this.lastAccessDate = lastAccessDate;
     }
     get JSON() {
         return JSON.stringify({
-            userID: this.userID, userName: this.username, password: this.password, email: this.email, lastAccessDate: this.lastAccessDate, role: this.role
+            userID: this.userID, userName: this.username, password: this.password, email: this.email, lastAccessDate: this.lastAccessDate, roleID: this.roleID
         });
     }
     static fromJSON(json) {

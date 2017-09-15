@@ -10,14 +10,14 @@ import { UserModel } from '../nffyi-common/models';
 // Get-ChildItem env:
 
 // Create Users
-let adminUser = new UserModel('admin', 'Passw0rd', 'admin@newsfeeds.fyi', 'admin');
+let adminUser = new UserModel('admin', 'Passw0rd', 'admin@newsfeeds.fyi', 1);
 usersModel.create(adminUser)
 .then(user => {
   console.log('Attempted to create User: ' + util.inspect(user));
 })
 .catch(err => { console.error(err); });
 
-let guestUser = new UserModel('guest', 'Passw0rd', 'guest@newsfeeds.fyi', 'user');
+let guestUser = new UserModel('guest', 'Passw0rd', 'guest@newsfeeds.fyi', 3);
 usersModel.create(guestUser)
 .then(user => {
   console.log('Attempted to create User: ' + util.inspect(user));

@@ -90,7 +90,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     // We should authorize this action in order to prevent new
     // User spam
     // usersModel.create(req.body.username, req.body.password, req.body.email)
-    usersModel.create(new models_1.UserModel(req.body.username, req.body.password, req.body.email, 'user'))
+    usersModel.create(new models_1.UserModel(req.body.username, req.body.password, req.body.email, 3))
         .then(user => {
         log('Attempted to create User: ' + util.inspect(user));
         res.json(user);

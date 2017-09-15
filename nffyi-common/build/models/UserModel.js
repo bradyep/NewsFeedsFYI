@@ -4,18 +4,18 @@ var logModule = require("debug");
 var log = logModule('nffyi-common:User');
 var error = logModule('nffyi-common:error');
 var UserModel = (function () {
-    function UserModel(username, password, email, role, userID, lastAccessDate) {
+    function UserModel(username, password, email, roleID, userID, lastAccessDate) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
+        this.roleID = roleID;
         this.userID = userID;
         this.lastAccessDate = lastAccessDate;
     }
     Object.defineProperty(UserModel.prototype, "JSON", {
         get: function () {
             return JSON.stringify({
-                userID: this.userID, userName: this.username, password: this.password, email: this.email, lastAccessDate: this.lastAccessDate, role: this.role
+                userID: this.userID, userName: this.username, password: this.password, email: this.email, lastAccessDate: this.lastAccessDate, roleID: this.roleID
             });
         },
         enumerable: true,

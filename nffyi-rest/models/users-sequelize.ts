@@ -14,7 +14,7 @@ export function create(user:UserModel) {
             password: user.password,
             email: user.email,
             lastAccessDate: Date(),
-            role: user.role
+            roleID: user.roleID
         });
     });
 };
@@ -49,7 +49,7 @@ export function read(userID) {
                 // throw new Error("No user found for " + userID);
                 return null;
             } else {
-                return new UserModel(user.username, user.password, user.email, user.role, user.userID, user.lastAccessDate);
+                return new UserModel(user.username, user.password, user.email, user.roleID, user.userID, user.lastAccessDate);
                 // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
                 // var test = new User();
 /*
