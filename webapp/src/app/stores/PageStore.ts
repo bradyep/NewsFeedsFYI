@@ -37,7 +37,9 @@ export class PageStore {
 
   @action
   setPages(pages: PageModel[]): void {
-    this.pages = pages;    
+    this.pages = pages;
+    const sortedPages = this.pages.sort((a, b) => a.displayOrder - b.displayOrder);
+    this.currentlyDisplayedPageID = sortedPages[0].pageID || -1;
   }
 
   @action

@@ -95,7 +95,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
                   <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
                 </div>
                 <div className="col-md-3">
-                  <ProfileSection changeCurrentUser={this.changeCurrentUser} />
+                  <ProfileSection changeCurrentUser={this.changeCurrentUser} userStore={this.injected[STORE_USER]} />
                 </div>
               </div>
 

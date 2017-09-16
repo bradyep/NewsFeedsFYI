@@ -10,3 +10,11 @@ i {
 .profileSection {
   cursor: pointer;
 }
+
+.popover {
+  /* width: 400px; */
+}
+
+.popoverButton {
+  margin: 5px;
+}
