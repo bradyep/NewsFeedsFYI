@@ -21,7 +21,7 @@ useStrict(true);
 export async function getCurrentUser(url: string): Promise<UserModel | undefined> {
   try {
     log("Getting current User");
-    const userResponse = await fetch(url);
+    const userResponse = await fetch(url, { credentials: "include" });
     const userData: UserModel = await userResponse.json();
     log(userData);
 
@@ -35,7 +35,7 @@ export async function getCurrentUser(url: string): Promise<UserModel | undefined
 export async function getLinks(url: string): Promise<LinkModel[] | undefined> {
   try {
     log("Getting User's Links");
-    const linkResponse = await fetch(url);
+    const linkResponse = await fetch(url, { credentials: "include" });
     const linksData: LinkModel[] = await linkResponse.json();
     log(linksData);
 
@@ -49,14 +49,14 @@ export async function getLinks(url: string): Promise<LinkModel[] | undefined> {
 export async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<PageModel | undefined> {
   try {
     log("Getting User's Pages");
-    const pagesResponse = await fetch(pagesURL);
+    const pagesResponse = await fetch(pagesURL, { credentials: "include" });
     const pagesData: PageModel[] = await pagesResponse.json();
     log(pagesData);
     let initialPage = pagesData[0];
     if (!initialPage.pageID) throw new Error("First Page's ID is undefined");
 
     log("Getting initial page UserFeeds for User");
-    const userFeedsResponse = await fetch(pageURL + initialPage.pageID.toString());
+    const userFeedsResponse = await fetch(pageURL + initialPage.pageID.toString(), { credentials: "include" });
     const userFeedsData: UserFeedModel[] = await userFeedsResponse.json();
     log(userFeedsData);
 
