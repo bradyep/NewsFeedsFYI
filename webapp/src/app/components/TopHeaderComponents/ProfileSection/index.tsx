@@ -6,9 +6,11 @@ import { UserModel } from '../../../../../../nffyi-common/models';
 import * as logModule from 'debug';
 const log = logModule('webapp:ProfileSection');
 const error = logModule('webapp:error');
+import { observer } from 'mobx-react';
 
 export interface ProfileSectionProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
+  changeCurrentUser: () => void
 }
 
 export interface ProfileSectionState {
@@ -18,6 +20,7 @@ export interface ProfileSectionState {
   confirmPassword: string;
 }
 
+@observer
 export class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
 
   constructor(props?: ProfileSectionProps, context?: any) {
@@ -41,7 +44,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   }
 
   handleChange(e:any) {
-    log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
+    // log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
     this.setState({[e.currentTarget.id]: e.currentTarget.value});
   }
 
@@ -62,6 +65,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
         log("Authentication Attempt Returned: ");
         log(userData);
         // log("Authentication Attempt Returned: " + text);
+        this.props.changeCurrentUser();
       } catch (err) {
         error("Error while trying to authenticate: " + err);
       }

@@ -2,6 +2,7 @@ import * as React from "react";
 import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
 import { UserStore } from "../../../stores";
 import { FormGroup, InputGroup, Button } from "react-bootstrap";
+import { observer } from 'mobx-react';
 
 export interface AddNewsFeedSectionProps {
   userStore: UserStore
@@ -11,6 +12,7 @@ export interface AddNewsFeedSectionState {
   /* empty */
 }
 
+@observer
 export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNewsFeedSectionState> {
 
   constructor(props?: AddNewsFeedSectionProps, context?: any) {

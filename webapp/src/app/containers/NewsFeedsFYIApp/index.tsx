@@ -7,11 +7,13 @@ import { NewsFeeds } from '../../components/BodyComponents';
 import { Copyright } from '../../components/FooterComponents';
 import { UserStore, LinkStore, PageStore } from '../../stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
-import { PageModel } from '../../../../../nffyi-common/models';
+import { REST_DOMAIN } from '../../constants/network';
+import { UserModel, LinkModel, PageModel } from '../../../../../nffyi-common/models';
 import { Navbar } from 'react-bootstrap';
 import * as logModule from 'debug';
 const log = logModule('webapp:NewsFeedsFYIApp');
 const error = logModule('webapp:error');
+import { getCurrentUser, getLinks, getUsersFirstPage } from "../../index";
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
@@ -34,10 +36,48 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
   constructor(props: NewsFeedsFYIAppProps, context: any) {
     super(props, context);
+    this.changeCurrentUser = this.changeCurrentUser.bind(this);    
   }
 
   get injected() {
     return this.props as InjectedProps;
+  }
+
+  async changeCurrentUser() {
+    log("Attempting to change current User");
+    const userStore = this.injected[STORE_USER] as UserStore;
+    const linkStore = this.injected[STORE_LINK] as LinkStore;
+    const pageStore = this.injected[STORE_PAGE] as PageStore;
+    
+    const getUserURL = REST_DOMAIN + '/users';
+    const getLinksURL = REST_DOMAIN + '/links';
+    const getPagesURL = REST_DOMAIN + '/pages';
+    const getPageURL = REST_DOMAIN + '/userfeeds/page/';
+
+    let currentUser: UserModel | undefined;
+    let links: LinkModel[] | undefined;
+    let firstPage: PageModel | undefined;
+
+    try {
+      [currentUser, links, firstPage] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersFirstPage(getPagesURL, getPageURL)]);
+    } catch (err) {
+      error("Problem Getting Data For Stores For User Change: " + err.toString());
+    }
+
+    if (currentUser) {
+      userStore.changeCurrentUser(currentUser);
+    } else {
+      throw new Error("Could Not Get Current User for User Change");
+    }
+  
+    linkStore.clearOutLinks();
+    if (links) links.map((link) => linkStore.addLink(link));
+  
+    if (firstPage) {
+      pageStore.setPages([firstPage]);
+    } else {
+      throw new Error("Could Not Get First Page for User Change");    
+    }
   }
 
   render() {
@@ -55,7 +95,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
                   <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
                 </div>
                 <div className="col-md-3">
-                  <ProfileSection />
+                  <ProfileSection changeCurrentUser={this.changeCurrentUser} />
                 </div>
               </div>
 

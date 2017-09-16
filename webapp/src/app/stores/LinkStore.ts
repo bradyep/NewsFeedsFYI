@@ -9,6 +9,7 @@ export class LinkStore {
     this.addLink = this.addLink.bind(this);
     this.deleteLink = this.deleteLink.bind(this);
     this.editLink = this.editLink.bind(this);
+    this.clearOutLinks = this.clearOutLinks.bind(this);
   }
 
   @observable
@@ -40,6 +41,11 @@ export class LinkStore {
   @action
   deleteLink(id: number): void {
     this.links = this.links.filter((link) => link.linkID !== id);
+  }
+
+  @action
+  clearOutLinks(): void {
+    this.links = [];
   }
 
 }

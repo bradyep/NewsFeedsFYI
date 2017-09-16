@@ -22,7 +22,7 @@ export class PageStore {
   @observable public currentlyDisplayedPageID: number;
 
   @computed
-  get activePage(): PageModel {
+  get currentlyDisplayedPage(): PageModel {
     const activePage = this.pages.find(p => p.pageID === this.currentlyDisplayedPageID);
     if (!activePage) throw new Error("No Active Page Set");
     return activePage;
@@ -33,6 +33,11 @@ export class PageStore {
     const page = this.pages.find(p => p.pageID === id);
     if (page) this.currentlyDisplayedPageID = page.pageID || -1;
     else throw new Error("Tried to set active page to a page that doesn't exist");
+  }
+
+  @action
+  setPages(pages: PageModel[]): void {
+    this.pages = pages;    
   }
 
   @action

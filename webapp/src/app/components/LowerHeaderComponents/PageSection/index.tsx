@@ -2,6 +2,7 @@ import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
+import { observer } from 'mobx-react';
 
 export interface PageSectionProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -11,6 +12,7 @@ export interface PageSectionState {
   /* empty */
 }
 
+@observer
 export class PageSection extends React.Component<PageSectionProps, PageSectionState> {
 
   constructor(props?: PageSectionProps, context?: any) {

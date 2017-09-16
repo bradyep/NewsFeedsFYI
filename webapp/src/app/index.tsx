@@ -18,7 +18,7 @@ const error = logModule('webapp:error');
 // enable MobX strict mode
 useStrict(true);
 
-async function getCurrentUser(url: string): Promise<UserModel | undefined> {
+export async function getCurrentUser(url: string): Promise<UserModel | undefined> {
   try {
     log("Getting current User");
     const userResponse = await fetch(url);
@@ -32,7 +32,7 @@ async function getCurrentUser(url: string): Promise<UserModel | undefined> {
   }
 }
 
-async function getLinks(url: string): Promise<LinkModel[] | undefined> {
+export async function getLinks(url: string): Promise<LinkModel[] | undefined> {
   try {
     log("Getting User's Links");
     const linkResponse = await fetch(url);
@@ -46,7 +46,7 @@ async function getLinks(url: string): Promise<LinkModel[] | undefined> {
   }
 }
 
-async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<PageModel | undefined> {
+export async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<PageModel | undefined> {
   try {
     log("Getting User's Pages");
     const pagesResponse = await fetch(pagesURL);

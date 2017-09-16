@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as styles from './styles.css';
 import { PageStore } from '../../../stores';
 import { UserFeedModel } from "../../../../../../nffyi-common/models";
+import { observer } from 'mobx-react';
 
 export interface NewsFeedsProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -14,6 +15,7 @@ export interface NewsFeedsState {
   /* empty */
 }
 
+@observer
 export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
   constructor(props?: NewsFeedsProps, context?: any) {
@@ -54,8 +56,8 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
   renderNewsFeedColumn(column: number) {
     const { pageStore } = this.props;
-    const { activePage } = pageStore;
-    const userFeeds = activePage.userFeeds.filter(uf => uf.column === column);
+    const { currentlyDisplayedPage } = pageStore;
+    const userFeeds = currentlyDisplayedPage.userFeeds.filter(uf => uf.column === column);
 
     return (
       <div className={`col-md-4 ${styles.newsSectionContainer}`}>

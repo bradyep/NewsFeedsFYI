@@ -162,8 +162,8 @@ export function connectDB(modelRequested: string) {
     })
     .then(function ([instance, created]) {
       // Understand results of last findOrCreate
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Admin User--');
       return models.SQUser.findOrCreate({
@@ -177,8 +177,8 @@ export function connectDB(modelRequested: string) {
     })
     .then(function ([instance, created]) {
       // Understand results of last findOrCreate
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Pro User--');
       return models.SQUser.findOrCreate({
@@ -192,8 +192,8 @@ export function connectDB(modelRequested: string) {
     })
     .then(function ([instance, created]) {
       // Understand results of last findOrCreate
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Normal User--');
       return models.SQUser.findOrCreate({
@@ -207,8 +207,8 @@ export function connectDB(modelRequested: string) {
     })
     // Auto-Populate Database with Links
     .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Link(Google Mail)--');
       return models.SQLink.findOrCreate({
@@ -216,13 +216,13 @@ export function connectDB(modelRequested: string) {
           url: 'https://mail.google.com/'
         },
         defaults: { // set the default properties if it doesn't exist
-          userID: 1, url: 'https://mail.google.com/', name: 'GMail', displayOrder: 1
+          userID: 3, url: 'https://mail.google.com/', name: 'GMail', displayOrder: 1
         }
       })
     })
     .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Link(Google News)--');
       return models.SQLink.findOrCreate({
@@ -230,13 +230,13 @@ export function connectDB(modelRequested: string) {
           url: 'https://news.google.com/'
         },
         defaults: { // set the default properties if it doesn't exist
-          userID: 1, url: 'https://news.google.com/', name: 'Google News', displayOrder: 2
+          userID: 3, url: 'https://news.google.com/', name: 'Google News', displayOrder: 2
         }
       })
     })
     .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Link(Google Drive)--');
       return models.SQLink.findOrCreate({
@@ -244,13 +244,13 @@ export function connectDB(modelRequested: string) {
           url: 'https://drive.google.com/'
         },
         defaults: { // set the default properties if it doesn't exist
-          userID: 1, url: 'https://drive.google.com/', name: 'Google Drive', displayOrder: 3
+          userID: 3, url: 'https://drive.google.com/', name: 'Google Drive', displayOrder: 3
         }
       })
     })
     .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
+      // log(instance.get({ plain: true }));
+      // log(created);
 
       log('--Creating Initial Data: Link(Google Keep)--');
       return models.SQLink.findOrCreate({
@@ -258,7 +258,50 @@ export function connectDB(modelRequested: string) {
           url: 'https://keep.google.com/'
         },
         defaults: { // set the default properties if it doesn't exist
-          userID: 1, url: 'https://keep.google.com/', name: 'Google Keep', displayOrder: 4
+          userID: 3, url: 'https://keep.google.com/', name: 'Google Keep', displayOrder: 4
+        }
+      })
+    })
+    // Create Guest Links
+    .then(function ([instance, created]) {
+      // log(instance.get({ plain: true }));
+      // log(created);
+
+      log('--Creating Initial Data: Link(Google)--');
+      return models.SQLink.findOrCreate({
+        where: {
+          url: 'https://www.google.com/'
+        },
+        defaults: { // set the default properties if it doesn't exist
+          userID: 1, url: 'https://www.google.com/', name: 'Google Search', displayOrder: 1
+        }
+      })
+    })
+    .then(function ([instance, created]) {
+      // log(instance.get({ plain: true }));
+      // log(created);
+
+      log('--Creating Initial Data: Link(Facebook)--');
+      return models.SQLink.findOrCreate({
+        where: {
+          url: 'https://www.facebook.com/'
+        },
+        defaults: { // set the default properties if it doesn't exist
+          userID: 1, url: 'https://www.facebook.com/', name: 'Facebook', displayOrder: 2
+        }
+      })
+    })
+    .then(function ([instance, created]) {
+      // log(instance.get({ plain: true }));
+      // log(created);
+
+      log('--Creating Initial Data: Link(Youtube)--');
+      return models.SQLink.findOrCreate({
+        where: {
+          url: 'https://www.youtube.com/'
+        },
+        defaults: { // set the default properties if it doesn't exist
+          userID: 1, url: 'https://www.youtube.com/', name: 'Youtube', displayOrder: 3
         }
       })
     })
@@ -302,7 +345,7 @@ export function connectDB(modelRequested: string) {
           url: 'http://feeds.bbci.co.uk/news/world/rss.xml', feedSourceID: 1
         },
         defaults: { // set the default properties if it doesn't exist
-          cachedTitle: 'BBC World News', url: 'http://feeds.bbci.co.uk/news/world/rss.xml', cachedWebsiteURL: 'http://www.bbc.com/news/world', lastCachedDate: Date()
+          cachedTitle: 'BBC World News', url: 'http://feeds.bbci.co.uk/news/world/rss.xml', cachedWebsiteURL: 'http://www.bbc.com/news/world', lastCachedDate: new Date('2017-09-15 16:43:08.669 +00:00')
         }
       })
     })
@@ -316,7 +359,7 @@ export function connectDB(modelRequested: string) {
           url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', feedSourceID: 2
         },
         defaults: { // set the default properties if it doesn't exist
-          cachedTitle: 'NYTimes US News', url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', cachedWebsiteURL: 'https://www.nytimes.com/section/us', lastCachedDate: Date()
+          cachedTitle: 'NYTimes US News', url: 'http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', cachedWebsiteURL: 'https://www.nytimes.com/section/us', lastCachedDate: new Date('2017-09-15 16:43:08.669 +00:00')
         }
       })
     })
@@ -330,7 +373,7 @@ export function connectDB(modelRequested: string) {
           url: 'http://sports-ak.espn.go.com/espn/rss/news', feedSourceID: 3
         },
         defaults: { // set the default properties if it doesn't exist
-          cachedTitle: 'ESPN', url: 'http://sports-ak.espn.go.com/espn/rss/news', cachedWebsiteURL: 'http://www.espn.com/', lastCachedDate: Date()
+          cachedTitle: 'ESPN', url: 'http://sports-ak.espn.go.com/espn/rss/news', cachedWebsiteURL: 'http://www.espn.com/', lastCachedDate: new Date('2017-09-15 16:43:08.669 +00:00')
         }
       })
     })
@@ -344,7 +387,7 @@ export function connectDB(modelRequested: string) {
           url: 'https://news.ycombinator.com/rss', feedSourceID: 4
         },
         defaults: { // set the default properties if it doesn't exist
-          cachedTitle: 'Hacker News', url: 'https://news.ycombinator.com/rss', cachedWebsiteURL: 'https://news.ycombinator.com/', lastCachedDate: Date()
+          cachedTitle: 'Hacker News', url: 'https://news.ycombinator.com/rss', cachedWebsiteURL: 'https://news.ycombinator.com/', lastCachedDate: new Date('2017-09-15 16:43:08.669 +00:00')
         }
       })
     })

@@ -3,7 +3,7 @@ import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/r
 import * as styles from "./styles.css";
 import { STORE_LINK } from "../../../constants/stores";
 import { LinkStore, UserStore } from "../../../stores";
-
+import { observer } from 'mobx-react';
 
 export interface LinkSectionProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
@@ -15,6 +15,7 @@ export interface LinkSectionState {
   /* empty */
 }
 
+@observer
 export class LinkSection extends React.Component<LinkSectionProps, LinkSectionState> {
 
   constructor(props?: LinkSectionProps, context?: any) {
