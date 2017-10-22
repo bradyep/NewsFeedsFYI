@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
+import { Roles } from "../../../../../../nffyi-common/constants/roles";
 import * as styles from "./styles.css";
 import { STORE_LINK } from "../../../constants/stores";
 import { LinkStore, UserStore } from "../../../stores";
@@ -27,7 +27,7 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
     handleSave(text: string) {
       if (text.length) {
         this.props.addTodo({ text });
-      }]
+      }
     }
    */
 

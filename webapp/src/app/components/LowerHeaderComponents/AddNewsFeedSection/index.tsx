@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
 import { UserStore } from "../../../stores";
-import { FormGroup, InputGroup, Button } from "react-bootstrap";
+import { FormGroup, InputGroup, Button, Modal, ControlLabel, FormControl, DropdownButton, MenuItem } from "react-bootstrap";
 import { observer } from 'mobx-react';
 
 export interface AddNewsFeedSectionProps {
@@ -9,7 +9,12 @@ export interface AddNewsFeedSectionProps {
 }
 
 export interface AddNewsFeedSectionState {
-  /* empty */
+  selectedPage: number,
+  feedName: string,
+  feedURL: string,
+  itemsToDisplay: number,
+  addFeedError: boolean,
+  showModal: boolean;
 }
 
 @observer
@@ -17,16 +22,83 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
   constructor(props?: AddNewsFeedSectionProps, context?: any) {
     super(props, context);
-    // this.handleSave = this.handleSave.bind(this);
+    this.state = {
+      showModal: false, selectedPage: -1, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false
+    };
+    this.closeModal = this.closeModal.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.attemptToAddFeed = this.attemptToAddFeed.bind(this);
   }
 
-/* 
-  handleSave(text: string) {
-    if (text.length) {
-      this.props.addTodo({ text });
-    }
+  closeModal() {
+    this.setState({ showModal: false });
   }
- */
+
+  openModal() {
+    this.setState({ showModal: true });
+    // console.log("Hey! " + this.state.showModal.toString());
+  }
+
+  handleChange(e: any) {
+    // log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
+    this.setState({ [e.currentTarget.id]: e.currentTarget.value });
+  }
+
+  async attemptToAddFeed() {
+
+  }
+
+  renderAddNewsFeedModal() {
+    const { addFeedError } = this.state;
+    // const validationState = errorAuthenticating === true ? "error" : null;
+    const validationState = false;
+
+    return (
+      <div className="static-modal" >
+        <Modal show={this.state.showModal} onHide={this.closeModal}>
+          <Modal.Header>
+            <Modal.Title>Add News Feed</Modal.Title>
+          </Modal.Header>
+
+          <Modal.Body>
+            <form>
+              <FormGroup controlId="page">
+                <ControlLabel>Add to Page: </ControlLabel>
+                <DropdownButton title="General News" id="1">
+                  <MenuItem eventKey="1" active>General News</MenuItem>
+                  <MenuItem eventKey="2">Development</MenuItem>
+                  <MenuItem eventKey="3">Design</MenuItem>
+                </DropdownButton>
+              </FormGroup>
+              <FormGroup controlId="feedName">
+                <ControlLabel>Feed Name: </ControlLabel>
+                <FormControl onChange={this.handleChange} type="text" placeholder="NYTimes US News" />
+              </FormGroup>
+              <FormGroup controlId="feedURL">
+                <ControlLabel>Feed RSS URL: </ControlLabel>
+                <FormControl onChange={this.handleChange} type="text" placeholder="http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" />
+              </FormGroup>
+              <FormGroup controlId="numberOfItemsToDisplay">
+                <ControlLabel>Number of Items to Display: </ControlLabel>
+                <DropdownButton title="1" id="1">
+                  <MenuItem eventKey="1" active>1</MenuItem>
+                  <MenuItem eventKey="2">2</MenuItem>
+                  <MenuItem eventKey="3">3</MenuItem>
+                </DropdownButton>
+              </FormGroup>
+            </form>
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button onClick={this.closeModal}>Cancel</Button>
+            <Button bsStyle="primary" onClick={this.attemptToAddFeed}>Sign In</Button>
+          </Modal.Footer>
+
+        </Modal>
+      </div>
+    )
+  }
 
   render() {
     const { userStore } = this.props;
@@ -35,7 +107,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
     return (
       <div className="col-md-2">
-        <Button bsStyle="primary" disabled={disabled}>Add News Feed</Button>
+        {this.renderAddNewsFeedModal()}
+        <Button bsStyle="primary" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
       </div>
     );
   }

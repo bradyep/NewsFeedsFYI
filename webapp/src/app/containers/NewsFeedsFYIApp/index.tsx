@@ -105,14 +105,14 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
         <section className="container">
           <div className="row">
-            <PageSection />
+            <PageSection userStore={this.injected[STORE_USER]} />
             <GoogleSearchSection />
             <AddNewsFeedSection userStore={this.injected[STORE_USER]} />
           </div>
         </section>
 
         <main className="container">
-          <NewsFeeds pageStore={this.injected[STORE_PAGE]} />
+          <NewsFeeds pageStore={this.injected[STORE_PAGE]} userStore={this.injected[STORE_USER]} />
         </main>
 
         <footer className="container">

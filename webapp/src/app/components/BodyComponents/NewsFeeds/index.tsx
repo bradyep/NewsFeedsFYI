@@ -2,13 +2,15 @@ import * as React from 'react';
 // import { TodoTextInput } from '../TodoTextInput';
 // import { TodoModel } from '../../models/TodoModel';
 import * as styles from './styles.css';
-import { PageStore } from '../../../stores';
+import { PageStore, UserStore } from '../../../stores';
 import { UserFeedModel } from "../../../../../../nffyi-common/models";
 import { observer } from 'mobx-react';
+import { Roles } from "../../../../../../nffyi-common/constants/roles";
 
 export interface NewsFeedsProps {
   // addTodo: (todo: Partial<TodoModel>) => any;
-  pageStore: PageStore
+  pageStore: PageStore,
+  userStore: UserStore
 }
 
 export interface NewsFeedsState {
@@ -32,21 +34,32 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
    */
 
   renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
+    const { userStore } = this.props;
+    const { currentUser } = userStore;
     const displayedNewsItems = userFeedModel.newsItems.slice(0, userFeedModel.itemDisplayCount);
 
     return (
       <div className={styles.newsSection} key={key} >
         <div className={styles.newsSectionHeader}>
           <h4 className={styles.feedHeader}>
-            <a href={userFeedModel.titleURL} target="_blank">{userFeedModel.name}</a>
+            {currentUser.roleID != Roles.GUEST &&
+              <span>
+                <i className={`fa fa-ellipsis-v ${styles.badGrippyBar}`} aria-hidden="true"></i>
+                <i className={`fa fa-ellipsis-v ${styles.badGrippyBar}`} aria-hidden="true"></i>
+              </span>
+            }
+            <a href={userFeedModel.titleURL} target="_blank" className={styles.titleURL}>{userFeedModel.name}</a>
+            {currentUser.roleID != Roles.GUEST &&
+              <i className={`fa fa-cog ${styles.settings}`} aria-hidden="true"></i>
+            }
           </h4>
         </div>
         <div className={styles.newsSectionHeaderContent}>
           <ul>
-            {displayedNewsItems.map((newsItem, i) => 
+            {displayedNewsItems.map((newsItem, i) =>
               <li key={i} className={styles.newsFeedItem}>
                 <a href={newsItem.link} target="_blank">{newsItem.title}</a>
-              </li>  
+              </li>
             )}
           </ul>
         </div>

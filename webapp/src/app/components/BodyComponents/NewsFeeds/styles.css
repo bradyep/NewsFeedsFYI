@@ -54,3 +54,23 @@
 .newsFeedItem a:visited {
   color: #61c;
 }
+
+.FADragHandle:before {
+  content: "\f142 \f142";
+  letter-spacing: 0.1em;
+}
+
+.badGrippyBar {
+  color: #A8A8A8;
+  font-size: 1.2em;
+}
+
+.titleURL {
+  margin-left: 8px;
+}
+
+.settings {
+  display: block;
+  float: right;
+  font-size: 1.3em;
+}
