@@ -3,6 +3,9 @@ import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/r
 import { UserStore } from "../../../stores";
 import { FormGroup, InputGroup, Button, Modal, ControlLabel, FormControl, DropdownButton, MenuItem } from "react-bootstrap";
 import { observer } from 'mobx-react';
+import { MAX_NEWS_ITEMS } from '../../../../../../nffyi-common/constants/newsfeeds';
+import * as logModule from 'debug';
+const log = logModule('webapp:AddNewsFeedSection');
 
 export interface AddNewsFeedSectionProps {
   userStore: UserStore
@@ -28,6 +31,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     this.closeModal = this.closeModal.bind(this);
     this.openModal = this.openModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleItemCountChange = this.handleItemCountChange.bind(this);
     this.attemptToAddFeed = this.attemptToAddFeed.bind(this);
   }
 
@@ -41,8 +45,13 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   handleChange(e: any) {
-    // log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
+    log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
     this.setState({ [e.currentTarget.id]: e.currentTarget.value });
+  }
+
+  handleItemCountChange(itemCount: any): any {
+    log('event: ' + itemCount);
+    this.setState({ itemsToDisplay: +itemCount });    
   }
 
   async attemptToAddFeed() {
@@ -53,6 +62,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const { addFeedError } = this.state;
     // const validationState = errorAuthenticating === true ? "error" : null;
     const validationState = false;
+    let numberOfItemsOptions = [];
+    for (let i = 1; i <= MAX_NEWS_ITEMS; i++) {
+      numberOfItemsOptions.push(<MenuItem key={i} eventKey={i}>{i}</MenuItem>)
+    }
 
     return (
       <div className="static-modal" >
@@ -81,10 +94,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
               </FormGroup>
               <FormGroup controlId="numberOfItemsToDisplay">
                 <ControlLabel>Number of Items to Display: </ControlLabel>
-                <DropdownButton title="1" id="1">
-                  <MenuItem eventKey="1" active>1</MenuItem>
-                  <MenuItem eventKey="2">2</MenuItem>
-                  <MenuItem eventKey="3">3</MenuItem>
+                <DropdownButton title={this.state.itemsToDisplay.toString()} id="itemsToDisplay" onSelect={this.handleItemCountChange}>
+                  {numberOfItemsOptions}
                 </DropdownButton>
               </FormGroup>
             </form>

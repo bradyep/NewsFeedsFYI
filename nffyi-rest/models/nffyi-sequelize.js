@@ -295,13 +295,39 @@ function connectDB(modelRequested) {
         .then(function ([instance, created]) {
         log(instance.get({ plain: true }));
         log(created);
-        log('--Creating Initial Data: Page(Pro Page One)--');
+        log('--Creating Initial Data: Page(Pro Page One | General News)--');
         return models.SQPage.findOrCreate({
             where: {
-                pageID: 2, Name: 'Pro Page One'
+                pageID: 2, Name: 'General News'
             },
             defaults: {
-                userID: 3, name: 'Pro Page One', displayOrder: 1
+                userID: 3, name: 'General News', displayOrder: 1
+            }
+        });
+    })
+        .then(function ([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+        log('--Creating Initial Data: Page(Pro Page Two | Development)--');
+        return models.SQPage.findOrCreate({
+            where: {
+                pageID: 3, Name: 'Development'
+            },
+            defaults: {
+                userID: 3, name: 'Development', displayOrder: 2
+            }
+        });
+    })
+        .then(function ([instance, created]) {
+        log(instance.get({ plain: true }));
+        log(created);
+        log('--Creating Initial Data: Page(Pro Page Three | Design)--');
+        return models.SQPage.findOrCreate({
+            where: {
+                pageID: 4, Name: 'Design'
+            },
+            defaults: {
+                userID: 3, name: 'Design', displayOrder: 3
             }
         });
     })
