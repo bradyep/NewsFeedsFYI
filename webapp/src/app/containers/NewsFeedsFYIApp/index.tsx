@@ -13,7 +13,7 @@ import { Navbar } from 'react-bootstrap';
 import * as logModule from 'debug';
 const log = logModule('webapp:NewsFeedsFYIApp');
 const error = logModule('webapp:error');
-import { getCurrentUser, getLinks, getUsersFirstPage } from "../../index";
+import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated } from "../../index";
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
@@ -56,10 +56,10 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
     let currentUser: UserModel | undefined;
     let links: LinkModel[] | undefined;
-    let firstPage: PageModel | undefined;
+    let pagesWithfirstPopulated: PageModel[] | undefined;
 
     try {
-      [currentUser, links, firstPage] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersFirstPage(getPagesURL, getPageURL)]);
+      [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
     } catch (err) {
       error("Problem Getting Data For Stores For User Change: " + err.toString());
     }
@@ -73,8 +73,8 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     linkStore.clearOutLinks();
     if (links) links.map((link) => linkStore.addLink(link));
   
-    if (firstPage) {
-      pageStore.setPages([firstPage]);
+    if (pagesWithfirstPopulated) {
+      pageStore.setPages(pagesWithfirstPopulated);
     } else {
       throw new Error("Could Not Get First Page for User Change");    
     }

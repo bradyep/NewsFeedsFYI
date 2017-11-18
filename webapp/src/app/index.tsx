@@ -46,7 +46,8 @@ export async function getLinks(url: string): Promise<LinkModel[] | undefined> {
   }
 }
 
-export async function getUsersFirstPage(pagesURL: string, pageURL: string): Promise<PageModel | undefined> {
+/** Gets all the page data for the user, but only populates UserFeeds on the initial page */
+export async function getUsersPagesWithFirstPopulated(pagesURL: string, pageURL: string): Promise<PageModel[] | undefined> {
   try {
     log("Getting User's Pages");
     const pagesResponse = await fetch(pagesURL, { credentials: "include" });
@@ -63,7 +64,8 @@ export async function getUsersFirstPage(pagesURL: string, pageURL: string): Prom
     // Assemble Initial Page
     initialPage.userFeeds = userFeedsData;
 
-    return initialPage;
+    // return initialPage;
+    return pagesData;
   } catch (err) {
     error("Problem Getting First Page: " + err.toString());
     return undefined;
@@ -78,10 +80,10 @@ export async function getUsersFirstPage(pagesURL: string, pageURL: string): Prom
   
   let currentUser: UserModel | undefined;
   let links: LinkModel[] | undefined;
-  let firstPage: PageModel | undefined;
+  let pagesWithfirstPopulated: PageModel[] | undefined;
 
   try {
-    [currentUser, links, firstPage] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersFirstPage(getPagesURL, getPageURL)]);
+    [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
   } catch (err) {
     error("Problem Getting Data For Stores: " + err.toString());
   }
@@ -101,8 +103,8 @@ export async function getUsersFirstPage(pagesURL: string, pageURL: string): Prom
   (window as any).NFYI.linkStore = linkStore;
   rootStores = { ...rootStores, [STORE_LINK]: linkStore };
 
-  if (firstPage) {
-    const pageStore = new PageStore([firstPage]);
+  if (pagesWithfirstPopulated) {
+    const pageStore = new PageStore(pagesWithfirstPopulated);
     (window as any).NFYI.pageStore = pageStore;
     rootStores = { ...rootStores, [STORE_PAGE]: pageStore };    
   } else {
