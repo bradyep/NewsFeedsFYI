@@ -1,23 +1,28 @@
 import * as React from "react";
 import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
-import { UserStore } from "../../../stores";
+import { UserStore, PageStore } from "../../../stores";
 import { FormGroup, InputGroup, Button, Modal, ControlLabel, FormControl, DropdownButton, MenuItem } from "react-bootstrap";
 import { observer } from 'mobx-react';
 import { MAX_NEWS_ITEMS } from '../../../../../../nffyi-common/constants/newsfeeds';
+import { REST_DOMAIN } from '../../../constants/network';
 import * as logModule from 'debug';
 const log = logModule('webapp:AddNewsFeedSection');
+const error = logModule('webapp:error');
+import { UserFeedModel } from '../../../../../../nffyi-common/models';
 
 export interface AddNewsFeedSectionProps {
-  userStore: UserStore
+  userStore: UserStore,
+  pageStore: PageStore
 }
 
 export interface AddNewsFeedSectionState {
-  selectedPage: number,
+  selectedPageID: number,
   feedName: string,
   feedURL: string,
   itemsToDisplay: number,
   addFeedError: boolean,
-  showModal: boolean;
+  showModal: boolean,
+  errorCreatingNewFeed: boolean  
 }
 
 @observer
@@ -26,7 +31,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   constructor(props?: AddNewsFeedSectionProps, context?: any) {
     super(props, context);
     this.state = {
-      showModal: false, selectedPage: -1, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false
+      showModal: false, selectedPageID: -1, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false, errorCreatingNewFeed: false
     };
     this.closeModal = this.closeModal.bind(this);
     this.openModal = this.openModal.bind(this);
@@ -55,7 +60,35 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   async attemptToAddFeed() {
+    try {
+      const url = REST_DOMAIN + '/userfeeds';
+      let headers = new Headers();
+      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+      const authenticationResponse = await fetch(url, {
+        credentials: "include",
+        method: "post",
+        // headers: {
+        //   "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+        // },
+        headers: headers,
+        //   userFeedsModel.create(new UserFeedModel(req.body.name, req.body.itemDisplayCount, req.body.pageID))
+        body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID
+      });
 
+      const userFeedModel: UserFeedModel = await authenticationResponse.json();
+      // const text: string = await authenticationResponse.text();
+      log("Create New UserFeed Attempt Returned: ");
+      log(userFeedModel);
+      // log("Authentication Attempt Returned: " + text);
+      // Add the returned UserFeed to the proper Page in the PageStore
+      
+      // this.props.changeCurrentUser();
+      this.closeModal();
+      this.setState({ errorCreatingNewFeed: false });
+    } catch (err) {
+      error("Error while trying to authenticate: " + err);
+      this.setState({ errorCreatingNewFeed: true });
+    }
   }
 
   renderAddNewsFeedModal() {
@@ -66,6 +99,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     for (let i = 1; i <= MAX_NEWS_ITEMS; i++) {
       numberOfItemsOptions.push(<MenuItem key={i} eventKey={i}>{i}</MenuItem>)
     }
+    const { pageStore } = this.props;
+    const { pages } = pageStore;
 
     return (
       <div className="static-modal" >
@@ -78,10 +113,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
             <form>
               <FormGroup controlId="page">
                 <ControlLabel>Add to Page: </ControlLabel>
-                <DropdownButton title="General News" id="1">
-                  <MenuItem eventKey="1" active>General News</MenuItem>
-                  <MenuItem eventKey="2">Development</MenuItem>
-                  <MenuItem eventKey="3">Design</MenuItem>
+                <DropdownButton title={pages[0].name} id={pages[0].pageID.toString()}>
+                  {pages.map((page, i) => 
+                    <MenuItem key={i} eventKey={page.pageID}>{page.name}</MenuItem>  
+                  )}
                 </DropdownButton>
               </FormGroup>
               <FormGroup controlId="feedName">
@@ -103,7 +138,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
           <Modal.Footer>
             <Button onClick={this.closeModal}>Cancel</Button>
-            <Button bsStyle="primary" onClick={this.attemptToAddFeed}>Sign In</Button>
+            <Button bsStyle="primary" onClick={this.attemptToAddFeed}>Create Feed</Button>
           </Modal.Footer>
 
         </Modal>

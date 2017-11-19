@@ -181,6 +181,9 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
 router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
   authorizeRequest(req, res, next, true);
 
+  // Figure out what the column, displayOrder and feedSourceID are going to be
+
+  
   userFeedsModel.create(new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
     .then(userFeed => {
       log('Attempted to create UserFeed: ' + util.inspect(userFeed));

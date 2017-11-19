@@ -8,14 +8,15 @@ import { UserFeedModel } from './';
 
 // module.exports = class Note {
 export class PageModel {
-    pageID?: number; // PK
-    userID?: number; // FK
+    // QUESTION: Why is this nullable? When would we ever have a PageModel without a pageID?
+    pageID: number; // PK
+    userID: number; // FK
     @observable public name: string;
     @observable public displayOrder: number;
 
     @observable public userFeeds: UserFeedModel[];
 
-    constructor(name:string, displayOrder:number, userID?:number, pageID?:number) {
+    constructor(name:string, displayOrder:number, userID:number, pageID:number) {
         this.name = name;
         this.displayOrder = displayOrder;
         this.userID = userID;

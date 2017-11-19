@@ -57,14 +57,15 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   async attemptSignIn() {
     try {
       const url = REST_DOMAIN + '/authenticate';
-      let signInHeaders = new Headers();
-      signInHeaders.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+      let headers = new Headers();
+      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
       const authenticationResponse = await fetch(url, {
         credentials: "include",
         method: "post",
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        },
+        headers: headers,
+        // headers: {
+          // "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+        // },
         body: "username=" + this.state.username + "&password=" + this.state.password
       });
 
@@ -85,12 +86,15 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   async attemptSignOut() {
     try {
       const url = REST_DOMAIN + '/logout';
+      let headers = new Headers();
+      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");      
       const logOutResponse = await fetch(url, {
         credentials: "include",
         method: "get",
-        headers: {
+        headers: headers
+/*         headers: {
           "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        }
+        } */
       });
 
       // const userData: UserModel = await logOutResponse.json();
