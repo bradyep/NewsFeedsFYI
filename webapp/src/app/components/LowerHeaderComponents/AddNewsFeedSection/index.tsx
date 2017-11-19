@@ -37,6 +37,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     this.openModal = this.openModal.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleItemCountChange = this.handleItemCountChange.bind(this);
+    this.handlePageChange = this.handlePageChange.bind(this);
     this.attemptToAddFeed = this.attemptToAddFeed.bind(this);
   }
 
@@ -59,29 +60,33 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     this.setState({ itemsToDisplay: +itemCount });    
   }
 
+  handlePageChange(pageID: any): any {
+    log('event: ' + pageID);
+    this.setState({ selectedPageID: +pageID });    
+  }
+
   async attemptToAddFeed() {
+    const { pageStore } = this.props;
+
     try {
+      log('Attempting to Create New UserFeed');
       const url = REST_DOMAIN + '/userfeeds';
       let headers = new Headers();
       headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-      const authenticationResponse = await fetch(url, {
+      const addFeedResponse = await fetch(url, {
         credentials: "include",
         method: "post",
-        // headers: {
-        //   "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        // },
         headers: headers,
-        //   userFeedsModel.create(new UserFeedModel(req.body.name, req.body.itemDisplayCount, req.body.pageID))
-        body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID
+        body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
       });
 
-      const userFeedModel: UserFeedModel = await authenticationResponse.json();
+      const userFeedModel: UserFeedModel = await addFeedResponse.json();
       // const text: string = await authenticationResponse.text();
       log("Create New UserFeed Attempt Returned: ");
       log(userFeedModel);
       // log("Authentication Attempt Returned: " + text);
       // Add the returned UserFeed to the proper Page in the PageStore
-      
+      pageStore.addUserFeed(this.state.selectedPageID, userFeedModel);
       // this.props.changeCurrentUser();
       this.closeModal();
       this.setState({ errorCreatingNewFeed: false });
@@ -101,6 +106,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     }
     const { pageStore } = this.props;
     const { pages } = pageStore;
+    const selectedPage = pages.find(p => p.pageID == +this.state.selectedPageID);
+    const selectedPageTitle = selectedPage ? selectedPage.name : "NoPage";
 
     return (
       <div className="static-modal" >
@@ -113,7 +120,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
             <form>
               <FormGroup controlId="page">
                 <ControlLabel>Add to Page: </ControlLabel>
-                <DropdownButton title={pages[0].name} id={pages[0].pageID.toString()}>
+                <DropdownButton title={selectedPageTitle} id={this.state.selectedPageID.toString()}  onSelect={this.handlePageChange}>
                   {pages.map((page, i) => 
                     <MenuItem key={i} eventKey={page.pageID}>{page.name}</MenuItem>  
                   )}

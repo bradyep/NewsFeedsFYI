@@ -58,6 +58,23 @@ function read(feedSourceID) {
 }
 exports.read = read;
 ;
+function getByURL(url) {
+    return modelDef.connectDB('SQFeedSource')
+        .then(SQFeedSource => {
+        return SQFeedSource['find']({ where: { url } })
+            .then(feedSource => {
+            if (!feedSource) {
+                // throw new Error("No feedSource found for " + feedSourceID);
+                return null;
+            }
+            else {
+                return new FeedSourceModel_1.default(feedSource.url, feedSource.cachedTitle, feedSource.cachedWebsiteURL, feedSource.lastCachedDate, feedSource.feedSourceID);
+            }
+        });
+    });
+}
+exports.getByURL = getByURL;
+;
 function destroy(feedSourceID) {
     return modelDef.connectDB('SQFeedSource')
         .then(SQFeedSource => {

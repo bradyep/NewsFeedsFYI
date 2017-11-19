@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments)).next());
+    });
+};
 const express = require("express");
 var router = express.Router();
 const util = require("util");
@@ -7,11 +15,10 @@ const cachedNewsItemsModel = require("../models/cached-newsitems-sequelize");
 const feedSourcesModel = require("../models/feedsources-sequelize");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:router-userFeeds');
-// import errorModule = require('debug');
 const error = logModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
-// import UserFeedModel = require('../models/UserFeed');
 const models_1 = require("../../nffyi-common/models");
+const newsfeeds_1 = require("../../nffyi-common/constants/newsfeeds");
 const pagesModel = require("../models/pages-sequelize");
 const FeedSourceModel_1 = require("../models/FeedSourceModel");
 /* GET all UserFeeds for requesting User */
@@ -65,7 +72,7 @@ var getUserFeeds = function (pageID) {
         var keyPromises = keylist.map(key => {
             // return userFeedsModel.read(key, pageID)
             return userFeedsModel.readAsync(key, pageID)
-                .then(userFeed => {
+                .then((userFeed) => {
                 var usfm = new models_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, userFeed.titleURL);
                 return usfm;
             });
@@ -100,17 +107,17 @@ var authorizeRequest = function (req, res, next, isPost) {
     // Authorize - Page should be associated with current User
     let userID = req.user ? req.user.userID : 1;
     let pageKeys;
-    let pageIDToUse = isPost ? req.body.pageid : req.params.pageid;
+    let pageIDToUse = isPost ? req.body.pageID : req.params.pageid;
     pagesModel.keylist(userID)
         .then(keylist => {
         pageKeys = keylist;
+        if (pageKeys.indexOf(+pageIDToUse) < 0) {
+            let err = new Error('Not Authorized');
+            err.status = 403;
+            next(err);
+        }
     })
         .catch(err => { error('router-user-feeds/authorization ' + err); next(err); });
-    if (pageKeys.indexOf(pageIDToUse) < 0) {
-        let err = new Error('Not Authorized');
-        err.status = 403;
-        next(err);
-    }
     // /Authorize
 };
 // GET single UserFeed
@@ -140,17 +147,49 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
     })
         .catch(err => { next(err); });
 });
+function findFeedSourceID(url) {
+    return feedSourcesModel.getByURL(url)
+        .then(fs => {
+        return fs ? fs.feedSourceID : 0;
+    })
+        .then((possibleFeedSourceID) => {
+        if (possibleFeedSourceID === 0) {
+            feedSourcesModel.create(new FeedSourceModel_1.default(url, "Cached Title", "Cached Website URL", new Date()))
+                .then((fsm) => { return fsm.feedSourceID; });
+        }
+        else {
+            // If we already have the feedSourceID, return a contrived Promise
+            return possibleFeedSourceID;
+        }
+    });
+} // /function findFeedSourceID(): Promise<number> {
 // POST new UserFeed
 router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
-    authorizeRequest(req, res, next, true);
-    // Figure out what the column, displayOrder and feedSourceID are going to be
-    userFeedsModel.create(new models_1.UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
-        .then(userFeed => {
-        log('Attempted to create UserFeed: ' + util.inspect(userFeed));
-        res.json(userFeed);
-    })
-        .catch(err => { next(err); });
-});
+    (() => __awaiter(this, void 0, void 0, function* () {
+        log('Attempting to create new UserFeed');
+        authorizeRequest(req, res, next, true);
+        // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
+        // Figure out what the column and displayOrder are going to be
+        const userFeeds = yield getUserFeeds(req.body.pageID);
+        let columnDescriptors = [];
+        for (let i = 0; i < newsfeeds_1.NUMBER_OF_COLUMNS; i++) {
+            const currentColumnNumber = i + 1;
+            const numberOfUserFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
+            columnDescriptors.push({ 'columnNumber': currentColumnNumber, 'userFeedCount': numberOfUserFeedsInColumn });
+        }
+        columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
+        const columnID = columnDescriptors[0].columnNumber;
+        const displayOrder = columnDescriptors[0].userFeedCount + 1;
+        // Figure out what the feedSourceID is going to be
+        const feedSourceID = yield findFeedSourceID(req.body.feedURL);
+        userFeedsModel.create(new models_1.UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
+            .then(userFeed => {
+            log('Attempted to create UserFeed: ' + util.inspect(userFeed));
+            res.json(userFeed);
+        })
+            .catch(err => { next(err); });
+    }))();
+}); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 // DELETE existing UserFeed
 router.delete('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
     authorizeRequest(req, res, next, false);

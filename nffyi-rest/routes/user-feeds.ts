@@ -6,10 +6,8 @@ import cachedNewsItemsModel = require('../models/cached-newsitems-sequelize');
 import feedSourcesModel = require('../models/feedsources-sequelize');
 import logModule = require('debug');
 const log = logModule('nffyi-rest:router-userFeeds');
-// import errorModule = require('debug');
 const error = logModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-// import UserFeedModel = require('../models/UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
 import { NUMBER_OF_COLUMNS } from '../../nffyi-common/constants/newsfeeds';
 import pagesModel = require('../models/pages-sequelize');
@@ -35,49 +33,44 @@ router.get('/page/:pageid', function (req, res, next) {
 
   getUserFeeds(req.params.pageid)
     .then(userFeedList => {
-      const feedSourceIDs:Set<number> = userFeedList.map(ufl => ufl.feedSourceID);
+      const feedSourceIDs: Set<number> = userFeedList.map(ufl => ufl.feedSourceID);
       getCachedNewsItems([...feedSourceIDs])
-      .then(cnis => {
-        // Place all cnis with their userFeeds
-        userFeedList.map(uf => {
-          cnis.map(cni => {
-            if (uf.feedSourceID === cni.feedSourceID) {
-              uf.newsItems.push(cni);
-            }
-          });
-        });
-
-        getFeedSources([...feedSourceIDs])
-        .then(fss => {
-          // Place FeedSource's CachedWebsiteURL onto the UserFeed's getFeedSources titleURL
+        .then(cnis => {
+          // Place all cnis with their userFeeds
           userFeedList.map(uf => {
-            fss.map(fs => {
-              if (uf.feedSourceID === fs.feedSourceID) {
-                uf.titleURL = fs.cachedWebsiteURL;
+            cnis.map(cni => {
+              if (uf.feedSourceID === cni.feedSourceID) {
+                uf.newsItems.push(cni);
               }
             });
           });
 
-          res.json(userFeedList);
-
+          getFeedSources([...feedSourceIDs])
+            .then(fss => {
+              // Place FeedSource's CachedWebsiteURL onto the UserFeed's getFeedSources titleURL
+              userFeedList.map(uf => {
+                fss.map(fs => {
+                  if (uf.feedSourceID === fs.feedSourceID) {
+                    uf.titleURL = fs.cachedWebsiteURL;
+                  }
+                });
+              });
+              res.json(userFeedList);
+            });
         });
-
-        
-
-      });
     })
     .catch(err => { error('router-userFeeds ' + err); next(err); });
 });
 
 // We are returning as type 'any', but this actually returns an array of UserFeedModel
-var getUserFeeds = function (pageID: number):any {
+var getUserFeeds = function (pageID: number): Promise<any> {
   return userFeedsModel.keylist(pageID)
     .then(keylist => {
       var keyPromises = keylist.map(key => {
         // return userFeedsModel.read(key, pageID)
         return userFeedsModel.readAsync(key, pageID)
-          .then(userFeed => {
-            var usfm = new UserFeedModel(
+          .then((userFeed: UserFeedModel) => {
+            var usfm: UserFeedModel = new UserFeedModel(
               userFeed.column,
               userFeed.displayOrder,
               userFeed.name,
@@ -88,33 +81,33 @@ var getUserFeeds = function (pageID: number):any {
             );
 
             return usfm;
-          }); 
-      }); 
+          });
+      });
       return Promise.all(keyPromises);
-    }); 
+    });
 };
 
-var getCachedNewsItems = function (feedSourceIDs: Array<number>):any {
+var getCachedNewsItems = function (feedSourceIDs: Array<number>): any {
   return cachedNewsItemsModel.getKeysForMultipleFeedSourceID(feedSourceIDs)
-  .then(keylist => {
-    var keyPromises = keylist.map(key => {
-      return cachedNewsItemsModel.read(key)
-        .then(cni => {
-          var cnim = new CachedNewsItemModel(
-            cni.title,
-            cni.link,
-            cni.description,
-            cni.feedSourceID,
-            cni.cachedNewsItemID
-          );
-          return cnim;
-        }); 
-    }); 
-    return Promise.all(keyPromises);
-  }); 
+    .then(keylist => {
+      var keyPromises = keylist.map(key => {
+        return cachedNewsItemsModel.read(key)
+          .then(cni => {
+            var cnim = new CachedNewsItemModel(
+              cni.title,
+              cni.link,
+              cni.description,
+              cni.feedSourceID,
+              cni.cachedNewsItemID
+            );
+            return cnim;
+          });
+      });
+      return Promise.all(keyPromises);
+    });
 };
 
-var getFeedSources = function (feedSourceIDs: Array<number>):any {
+var getFeedSources = function (feedSourceIDs: Array<number>): any {
   var keyPromises = feedSourceIDs.map(key => {
     return feedSourcesModel.read(key)
       .then(fs => {
@@ -126,8 +119,8 @@ var getFeedSources = function (feedSourceIDs: Array<number>):any {
           fs.feedSourceID
         );
         return fsm;
-      }); 
-  }); 
+      });
+  });
   return Promise.all(keyPromises);
 };
 
@@ -135,18 +128,19 @@ var authorizeRequest = function (req, res, next, isPost: boolean) {
   // Authorize - Page should be associated with current User
   let userID: number = req.user ? req.user.userID : 1;
   let pageKeys: Array<number>;
-  let pageIDToUse = isPost ? req.body.pageid : req.params.pageid;
+  let pageIDToUse = isPost ? req.body.pageID : req.params.pageid;
+
   pagesModel.keylist(userID)
     .then(keylist => {
       pageKeys = keylist;
+      if (pageKeys.indexOf(+pageIDToUse) < 0) {
+        let err: any = new Error('Not Authorized');
+        err.status = 403;
+        next(err);
+      }
     })
     .catch(err => { error('router-user-feeds/authorization ' + err); next(err); });
 
-  if (pageKeys.indexOf(pageIDToUse) < 0) {
-    let err: any = new Error('Not Authorized');
-    err.status = 403;
-    next(err);
-  }
   // /Authorize
 };
 
@@ -178,20 +172,54 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
     .catch(err => { next(err); });
 });
 
+function findFeedSourceID(url: string): Promise<number> {
+  return feedSourcesModel.getByURL(url)
+    .then(fs => {
+      return fs ? fs.feedSourceID : 0;
+    })
+    .then((possibleFeedSourceID: number) => {
+      if (possibleFeedSourceID === 0) {
+        feedSourcesModel.create(new FeedSourceModel(url, "Cached Title", "Cached Website URL", new Date()))
+          .then((fsm: FeedSourceModel) => { return fsm.feedSourceID })
+      } else {
+        // If we already have the feedSourceID, return a contrived Promise
+        return possibleFeedSourceID;
+      }
+    });
+} // /function findFeedSourceID(): Promise<number> {
+
 // POST new UserFeed
 router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
-  authorizeRequest(req, res, next, true);
 
-  // Figure out what the column, displayOrder and feedSourceID are going to be
+  (async () => {
+    log('Attempting to create new UserFeed');
+    authorizeRequest(req, res, next, true);
+    // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
 
+    // Figure out what the column and displayOrder are going to be
+    const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
+    let columnDescriptors = [];
+    for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
+      const currentColumnNumber: number = i + 1;
+      const numberOfUserFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
+      columnDescriptors.push({ 'columnNumber': currentColumnNumber, 'userFeedCount': numberOfUserFeedsInColumn });
+    }
+    columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
+    const columnID = columnDescriptors[0].columnNumber;
+    const displayOrder = columnDescriptors[0].userFeedCount + 1;
 
-  userFeedsModel.create(new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
-    .then(userFeed => {
-      log('Attempted to create UserFeed: ' + util.inspect(userFeed));
-      res.json(userFeed);
-    })
-    .catch(err => { next(err); });
-});
+    // Figure out what the feedSourceID is going to be
+    const feedSourceID = await findFeedSourceID(req.body.feedURL);
+
+    userFeedsModel.create(new UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
+      .then(userFeed => {
+        log('Attempted to create UserFeed: ' + util.inspect(userFeed));
+        res.json(userFeed);
+      })
+      .catch(err => { next(err); });
+  })();
+
+}); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 
 // DELETE existing UserFeed
 router.delete('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {

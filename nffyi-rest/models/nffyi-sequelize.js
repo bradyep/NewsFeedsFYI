@@ -11,6 +11,7 @@ var models = { SQRole: null, SQUser: null, SQLink: null, SQPage: null, SQUserFee
 function connectDB(modelRequested) {
     log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
     if (models[modelRequested]) {
+        // If the requested model is there, return a contrived Promise
         return new Promise((resolve, reject) => {
             resolve(models[modelRequested]);
         });

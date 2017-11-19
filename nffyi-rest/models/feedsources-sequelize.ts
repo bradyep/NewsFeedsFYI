@@ -6,7 +6,7 @@ import errorModule = require('debug');
 import modelDef = require('./nffyi-sequelize');
 import FeedSourceModel from './FeedSourceModel';
 
-export function create(feedSource:FeedSourceModel) {
+export function create(feedSource:FeedSourceModel): Promise<FeedSourceModel> {
     return modelDef.connectDB('SQFeedSource')
     .then(SQFeedSource => {
         return SQFeedSource['create']({
@@ -52,6 +52,21 @@ export function read(feedSourceID) {
             }
         });
     });
+};
+
+export function getByURL(url: string):Promise<FeedSourceModel | null> {
+  return modelDef.connectDB('SQFeedSource')
+  .then(SQFeedSource => {
+      return SQFeedSource['find']({ where: { url } })
+      .then(feedSource => {
+          if (!feedSource) {
+              // throw new Error("No feedSource found for " + feedSourceID);
+              return null;
+          } else {
+              return new FeedSourceModel(feedSource.url, feedSource.cachedTitle, feedSource.cachedWebsiteURL, feedSource.lastCachedDate, feedSource.feedSourceID);
+          }
+      });
+  });
 };
 
 export function destroy(feedSourceID) {
