@@ -1,1 +1,1 @@
-{"version":3,"file":"newsfeeds.js","sourceRoot":"","sources":["../../constants/newsfeeds.ts"],"names":[],"mappings":";;AAAa,QAAA,qBAAqB,GAAU,EAAE,CAAC;AAClC,QAAA,cAAc,GAAU,EAAE,CAAC"}
+{"version":3,"file":"newsfeeds.js","sourceRoot":"","sources":["../../constants/newsfeeds.ts"],"names":[],"mappings":";AAAa,QAAA,qBAAqB,GAAU,EAAE,CAAC;AAClC,QAAA,cAAc,GAAU,EAAE,CAAC;AAC3B,QAAA,iBAAiB,GAAU,CAAC,CAAC"}

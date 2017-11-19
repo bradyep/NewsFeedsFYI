@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Roles;
 (function (Roles) {
     Roles[Roles["ADMIN"] = 1] = "ADMIN";

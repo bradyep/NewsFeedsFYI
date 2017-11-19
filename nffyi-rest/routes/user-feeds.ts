@@ -11,6 +11,7 @@ const error = logModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
 // import UserFeedModel = require('../models/UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
+import { NUMBER_OF_COLUMNS } from '../../nffyi-common/constants/newsfeeds';
 import pagesModel = require('../models/pages-sequelize');
 import FeedSourceModel from '../models/FeedSourceModel';
 import * as mobx from 'mobx';
@@ -183,7 +184,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 
   // Figure out what the column, displayOrder and feedSourceID are going to be
 
-  
+
   userFeedsModel.create(new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID))
     .then(userFeed => {
       log('Attempted to create UserFeed: ' + util.inspect(userFeed));
