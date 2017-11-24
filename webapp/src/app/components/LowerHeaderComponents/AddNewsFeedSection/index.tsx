@@ -8,7 +8,7 @@ import { REST_DOMAIN } from '../../../constants/network';
 import * as logModule from 'debug';
 const log = logModule('webapp:AddNewsFeedSection');
 const error = logModule('webapp:error');
-import { UserFeedModel } from '../../../../../../nffyi-common/models';
+import { UserFeedModel, PageModel } from '../../../../../../nffyi-common/models';
 
 export interface AddNewsFeedSectionProps {
   userStore: UserStore,
@@ -73,9 +73,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   async attemptToAddFeed(): Promise<void> {
     const { pageStore } = this.props;
     let userFeedModel: UserFeedModel;
+    const pageIDToUse: number = this.state.selectedPageID;
 
     try {
-      log('Attempting to Create New UserFeed: name=' + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL);
+      log('Attempting to Create New UserFeed: name=' + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + pageIDToUse + "&feedURL=" + this.state.feedURL);
       const url = REST_DOMAIN + '/userfeeds';
       let headers = new Headers();
       headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -83,7 +84,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
         credentials: "include",
         method: "post",
         headers: headers,
-        body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
+        body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + pageIDToUse + "&feedURL=" + this.state.feedURL
       });
 
       userFeedModel = await addFeedResponse.json();
@@ -100,7 +101,11 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     }
     // Add the returned UserFeed to the proper Page in the PageStore
     try {
-      pageStore.addUserFeed(this.state.selectedPageID, userFeedModel);
+      // const page: PageModel | undefined = pageStore.pages.find(p => p.pageID === pageIDToUse);
+      // if (!page) throw new Error('Could not find page in pageStore to add new UserFeed to');
+      pageStore.addUserFeed(pageIDToUse, userFeedModel);
+      // page.test();
+      // page.addUserFeed(userFeedModel);
     } catch (err) {
       error("[webpack error we may be able to ignore] Error while trying add feed to pageStore: " + err.toString());
       // this.setState({ errorCreatingNewFeed: true });

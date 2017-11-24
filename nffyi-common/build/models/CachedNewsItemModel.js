@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-rest:CachedNewsItem');
 var error = logModule('nffyi-rest:error');
@@ -30,5 +29,6 @@ var CachedNewsItemModel = (function () {
 }());
 exports.CachedNewsItemModel = CachedNewsItemModel;
 ;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = CachedNewsItemModel;
 //# sourceMappingURL=CachedNewsItemModel.js.map

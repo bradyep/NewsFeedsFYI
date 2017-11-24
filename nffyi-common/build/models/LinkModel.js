@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-common:Link');
 var error = logModule('nffyi-common:error');
@@ -36,13 +35,14 @@ var LinkModel = (function () {
         log(json + ' => ' + link);
         return link;
     };
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", Number)
-    ], LinkModel.prototype, "displayOrder", void 0);
     return LinkModel;
 }());
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Number)
+], LinkModel.prototype, "displayOrder", void 0);
 exports.LinkModel = LinkModel;
 ;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LinkModel;
 //# sourceMappingURL=LinkModel.js.map

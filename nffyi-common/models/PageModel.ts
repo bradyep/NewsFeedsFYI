@@ -16,6 +16,10 @@ export class PageModel {
 
     @observable public userFeeds: UserFeedModel[];
 
+    test() {
+      console.log('hey!');
+    }
+
     constructor(name:string, displayOrder:number, userID:number, pageID:number) {
         this.name = name;
         this.displayOrder = displayOrder;
@@ -24,7 +28,7 @@ export class PageModel {
     }
 
     @action
-    addUserFeed(userFeed: UserFeedModel) {
+    addUserFeed(userFeed: UserFeedModel): void {
       this.userFeeds.push(userFeed);
     }
     

@@ -36,7 +36,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
     const { userStore } = this.props;
     const { currentUser } = userStore;
-    const displayedNewsItems = userFeedModel.newsItems.slice(0, userFeedModel.itemDisplayCount);
+    const displayedNewsItems = userFeedModel.newsItems ? userFeedModel.newsItems.slice(0, userFeedModel.itemDisplayCount) : [];
 
     return (
       <div className={styles.newsSection} key={key} >

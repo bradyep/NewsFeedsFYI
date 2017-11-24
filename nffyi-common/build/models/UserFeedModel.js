@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-rest:UserFeed');
 var error = logModule('nffyi-rest:error');
@@ -39,37 +38,38 @@ var UserFeedModel = (function () {
         log(json + ' => ' + userFeed, null);
         return userFeed;
     };
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", Number)
-    ], UserFeedModel.prototype, "pageID", void 0);
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", Number)
-    ], UserFeedModel.prototype, "column", void 0);
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", Number)
-    ], UserFeedModel.prototype, "displayOrder", void 0);
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", String)
-    ], UserFeedModel.prototype, "name", void 0);
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", Number)
-    ], UserFeedModel.prototype, "itemDisplayCount", void 0);
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", String)
-    ], UserFeedModel.prototype, "titleURL", void 0);
-    __decorate([
-        mobx_1.observable,
-        __metadata("design:type", Array)
-    ], UserFeedModel.prototype, "newsItems", void 0);
     return UserFeedModel;
 }());
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Number)
+], UserFeedModel.prototype, "pageID", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Number)
+], UserFeedModel.prototype, "column", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Number)
+], UserFeedModel.prototype, "displayOrder", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", String)
+], UserFeedModel.prototype, "name", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Number)
+], UserFeedModel.prototype, "itemDisplayCount", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", String)
+], UserFeedModel.prototype, "titleURL", void 0);
+__decorate([
+    mobx_1.observable,
+    __metadata("design:type", Array)
+], UserFeedModel.prototype, "newsItems", void 0);
 exports.UserFeedModel = UserFeedModel;
 ;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = UserFeedModel;
 //# sourceMappingURL=UserFeedModel.js.map
