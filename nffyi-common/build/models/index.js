@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var CachedNewsItemModel_1 = require("./CachedNewsItemModel");
 exports.CachedNewsItemModel = CachedNewsItemModel_1.CachedNewsItemModel;
 var UserFeedModel_1 = require("./UserFeedModel");
