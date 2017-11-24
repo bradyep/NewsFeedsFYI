@@ -14,6 +14,11 @@ import pagesModel = require('../models/pages-sequelize');
 import FeedSourceModel from '../models/FeedSourceModel';
 import * as mobx from 'mobx';
 
+interface ColumnDescriptor {
+  columnNumber: number,
+  userFeedCount: number
+}
+
 /* GET all UserFeeds for requesting User */
 // NOTE: We probably do not need this
 /*
@@ -172,25 +177,36 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
     .catch(err => { next(err); });
 });
 
-function findFeedSourceID(url: string): Promise<number> {
-  return feedSourcesModel.getByURL(url)
-    .then(fs => {
-      return fs ? fs.feedSourceID : 0;
-    })
-    .then((possibleFeedSourceID: number) => {
-      if (possibleFeedSourceID === 0) {
-        feedSourcesModel.create(new FeedSourceModel(url, "Cached Title", "Cached Website URL", new Date()))
-          .then((fsm: FeedSourceModel) => { return fsm.feedSourceID })
-      } else {
-        // If we already have the feedSourceID, return a contrived Promise
-        return possibleFeedSourceID;
-      }
-    });
+async function findFeedSourceID(url: string): Promise<number> {
+  log('[findFeedSourceID] Attempting to get existing userFeed for url = ' + url);
+  let existingFeedSourceModel: FeedSourceModel;
+  try {
+    existingFeedSourceModel = await feedSourcesModel.getByURL(url);
+  } catch (err) {
+    error('[user-feeds.findFeedSourceID] Problem getting existing FeedSourceModel: ' + err.toString());
+  }
+  if (existingFeedSourceModel) { 
+    log('Found existing source feed, existingFeedSourceModel.feedSourceID = ' + existingFeedSourceModel.feedSourceID);
+    return existingFeedSourceModel.feedSourceID;
+  };
+  log('[findFeedSourceID] Attempting to create new FeedSourceModel with url = ' + url);  
+  let newFeedSourceModel: FeedSourceModel;
+  try {
+    // Determine cachedTitle and cachedWebsiteURL
+    
+
+    newFeedSourceModel = await feedSourcesModel.create(new FeedSourceModel(url, "Cached Title", "Cached Website URL", new Date(0)));
+  } catch (err) {
+    error('[user-feeds.findFeedSourceID] Problem creating new FeedSourceModel: ' + err.toString());
+  }
+
+  log('We created a new FeedSourceModel and newFeedSourceModel.feedSourceID = ' + newFeedSourceModel.feedSourceID.toString());
+
+  return newFeedSourceModel.feedSourceID;
 } // /function findFeedSourceID(): Promise<number> {
 
 // POST new UserFeed
 router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
-
   (async () => {
     log('Attempting to create new UserFeed');
     authorizeRequest(req, res, next, true);
@@ -198,11 +214,15 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 
     // Figure out what the column and displayOrder are going to be
     const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
-    let columnDescriptors = [];
+    let columnDescriptors = new Array<ColumnDescriptor>();
     for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
       const currentColumnNumber: number = i + 1;
-      const numberOfUserFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
-      columnDescriptors.push({ 'columnNumber': currentColumnNumber, 'userFeedCount': numberOfUserFeedsInColumn });
+      const userFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
+      const numberOfUserFeedsInColumn = userFeedsInColumn ? userFeedsInColumn.length : 0;
+      columnDescriptors.push({ columnNumber: currentColumnNumber, userFeedCount: numberOfUserFeedsInColumn });
+    }
+    if (columnDescriptors.length !== NUMBER_OF_COLUMNS) {
+      error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + NUMBER_OF_COLUMNS + '. They should be the same.');
     }
     columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
     const columnID = columnDescriptors[0].columnNumber;

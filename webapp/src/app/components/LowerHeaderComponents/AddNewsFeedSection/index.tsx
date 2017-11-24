@@ -28,10 +28,12 @@ export interface AddNewsFeedSectionState {
 @observer
 export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNewsFeedSectionState> {
 
-  constructor(props?: AddNewsFeedSectionProps, context?: any) {
+  constructor(props: AddNewsFeedSectionProps, context?: any) {
     super(props, context);
+    const initialSelectedPageID = props.pageStore.pages[0].pageID;
+
     this.state = {
-      showModal: false, selectedPageID: -1, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false, errorCreatingNewFeed: false
+      showModal: false, selectedPageID: initialSelectedPageID, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false, errorCreatingNewFeed: false
     };
     this.closeModal = this.closeModal.bind(this);
     this.openModal = this.openModal.bind(this);
@@ -51,7 +53,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   handleChange(e: any) {
-    log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
+    // log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
     this.setState({ [e.currentTarget.id]: e.currentTarget.value });
   }
 
@@ -106,8 +108,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     }
     const { pageStore } = this.props;
     const { pages } = pageStore;
-    const selectedPage = pages.find(p => p.pageID == +this.state.selectedPageID);
-    const selectedPageTitle = selectedPage ? selectedPage.name : "NoPage";
+    const selectedPage = pages.find(p => p.pageID == +this.state.selectedPageID) || pages[0];
+    const selectedPageTitle = selectedPage.name;
 
     return (
       <div className="static-modal" >
@@ -120,7 +122,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
             <form>
               <FormGroup controlId="page">
                 <ControlLabel>Add to Page: </ControlLabel>
-                <DropdownButton title={selectedPageTitle} id={this.state.selectedPageID.toString()}  onSelect={this.handlePageChange}>
+                <DropdownButton title={selectedPageTitle} id={this.state.selectedPageID.toString()} onSelect={this.handlePageChange}>
                   {pages.map((page, i) => 
                     <MenuItem key={i} eventKey={page.pageID}>{page.name}</MenuItem>  
                   )}

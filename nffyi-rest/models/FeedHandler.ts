@@ -6,7 +6,7 @@ export default class FeedHandler {
   // thing:string;
   // test () { return ""; }
   static parse (url:string) {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       var items:Array<any> = [];
       const feedparser = new FeedParser();
 
@@ -16,9 +16,7 @@ export default class FeedHandler {
 
       feedparser.on('readable', () => {
         let item;
-
         while(item = feedparser.read()) { items.push(item); }
-
         return items;
       });
 

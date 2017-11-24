@@ -1,20 +1,16 @@
 import logModule = require('debug');
 const log = logModule('nffyi-rest:userFeeds-model');
-// import errorModule = require('debug');
 const error = logModule('nffyi-rest:error');
-// import FeedHandler = require('./FeedHandler');
 import FeedHandler from './FeedHandler';
 import feedSourcesModel = require('../models/feedsources-sequelize');
 import cachedNewsItemModel = require('../models/cached-newsitems-sequelize');
 import FeedSourceModel from '../models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
-// import UserFeed = require('./UserFeed');
 import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
 import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/constants/newsfeeds';
 
 var VAR_MINUTES_TO_CAHCE_FEED: number = MINUTES_TO_CAHCE_FEED;
 var VAR_MAX_NEWS_ITEMS: number = MAX_NEWS_ITEMS;
-// log(VAR_MINUTES_TO_CAHCE_FEED.toString());
 
 export function create(userFeed: UserFeedModel) {
   return modelDef.connectDB('SQUserFeed')

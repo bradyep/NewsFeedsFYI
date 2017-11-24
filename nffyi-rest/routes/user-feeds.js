@@ -148,19 +148,31 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
         .catch(err => { next(err); });
 });
 function findFeedSourceID(url) {
-    return feedSourcesModel.getByURL(url)
-        .then(fs => {
-        return fs ? fs.feedSourceID : 0;
-    })
-        .then((possibleFeedSourceID) => {
-        if (possibleFeedSourceID === 0) {
-            feedSourcesModel.create(new FeedSourceModel_1.default(url, "Cached Title", "Cached Website URL", new Date()))
-                .then((fsm) => { return fsm.feedSourceID; });
+    return __awaiter(this, void 0, void 0, function* () {
+        log('[findFeedSourceID] Attempting to get existing userFeed for url = ' + url);
+        let existingFeedSourceModel;
+        try {
+            existingFeedSourceModel = yield feedSourcesModel.getByURL(url);
         }
-        else {
-            // If we already have the feedSourceID, return a contrived Promise
-            return possibleFeedSourceID;
+        catch (err) {
+            error('[user-feeds.findFeedSourceID] Problem getting existing FeedSourceModel: ' + err.toString());
         }
+        if (existingFeedSourceModel) {
+            log('Found existing source feed, existingFeedSourceModel.feedSourceID = ' + existingFeedSourceModel.feedSourceID);
+            return existingFeedSourceModel.feedSourceID;
+        }
+        ;
+        log('[findFeedSourceID] Attempting to create new FeedSourceModel with url = ' + url);
+        let newFeedSourceModel;
+        try {
+            // Determine cachedTitle and cachedWebsiteURL
+            newFeedSourceModel = yield feedSourcesModel.create(new FeedSourceModel_1.default(url, "Cached Title", "Cached Website URL", new Date(0)));
+        }
+        catch (err) {
+            error('[user-feeds.findFeedSourceID] Problem creating new FeedSourceModel: ' + err.toString());
+        }
+        log('We created a new FeedSourceModel and newFeedSourceModel.feedSourceID = ' + newFeedSourceModel.feedSourceID.toString());
+        return newFeedSourceModel.feedSourceID;
     });
 } // /function findFeedSourceID(): Promise<number> {
 // POST new UserFeed
@@ -171,11 +183,15 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
         // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
         // Figure out what the column and displayOrder are going to be
         const userFeeds = yield getUserFeeds(req.body.pageID);
-        let columnDescriptors = [];
+        let columnDescriptors = new Array();
         for (let i = 0; i < newsfeeds_1.NUMBER_OF_COLUMNS; i++) {
             const currentColumnNumber = i + 1;
-            const numberOfUserFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
-            columnDescriptors.push({ 'columnNumber': currentColumnNumber, 'userFeedCount': numberOfUserFeedsInColumn });
+            const userFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
+            const numberOfUserFeedsInColumn = userFeedsInColumn ? userFeedsInColumn.length : 0;
+            columnDescriptors.push({ columnNumber: currentColumnNumber, userFeedCount: numberOfUserFeedsInColumn });
+        }
+        if (columnDescriptors.length !== newsfeeds_1.NUMBER_OF_COLUMNS) {
+            error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + newsfeeds_1.NUMBER_OF_COLUMNS + '. They should be the same.');
         }
         columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
         const columnID = columnDescriptors[0].columnNumber;
