@@ -23,7 +23,8 @@ export class PageModel {
         this.pageID = pageID;
     }
 
-    @action public addUserFeed(userFeed: UserFeedModel) {
+    @action
+    addUserFeed(userFeed: UserFeedModel) {
       this.userFeeds.push(userFeed);
     }
     

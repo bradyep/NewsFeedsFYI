@@ -73,7 +73,8 @@ export class PageStore {
     try {
       const page: PageModel | undefined = this.pages.find(p => p.pageID === pageID);
       if (!page) { throw new Error('Asked to add userFeed to page that doesnt exist'); }
-      page.addUserFeed(userFeed);
+      // page.addUserFeed(userFeed);
+      page.userFeeds.push(userFeed);
     } catch (err) {
       throw new Error('Error calling PageStore.addUserFeed: ' + err.toString());
     }
