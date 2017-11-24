@@ -22,7 +22,7 @@ export interface AddNewsFeedSectionState {
   itemsToDisplay: number,
   addFeedError: boolean,
   showModal: boolean,
-  errorCreatingNewFeed: boolean  
+  errorCreatingNewFeed: boolean
 }
 
 @observer
@@ -30,10 +30,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
   constructor(props: AddNewsFeedSectionProps, context?: any) {
     super(props, context);
-    const initialSelectedPageID = props.pageStore.pages[0].pageID;
-
+    // const initialSelectedPageID = props.pageStore.pages[0].pageID;
+    // Starting with a bad selectedPageID. This should be changed when the user opens a modal
     this.state = {
-      showModal: false, selectedPageID: initialSelectedPageID, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false, errorCreatingNewFeed: false
+      showModal: false, selectedPageID: -1, feedName: "", feedURL: "", itemsToDisplay: 3, addFeedError: false, errorCreatingNewFeed: false
     };
     this.closeModal = this.closeModal.bind(this);
     this.openModal = this.openModal.bind(this);
@@ -48,7 +48,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   openModal() {
-    this.setState({ showModal: true });
+    // Set selectedPageID here
+    const { pageStore } = this.props;
+    const initalPageID = pageStore.pages[0].pageID;
+    this.setState({ showModal: true, selectedPageID: initalPageID });
     // console.log("Hey! " + this.state.showModal.toString());
   }
 
@@ -59,19 +62,20 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
   handleItemCountChange(itemCount: any): any {
     log('event: ' + itemCount);
-    this.setState({ itemsToDisplay: +itemCount });    
+    this.setState({ itemsToDisplay: +itemCount });
   }
 
   handlePageChange(pageID: any): any {
     log('event: ' + pageID);
-    this.setState({ selectedPageID: +pageID });    
+    this.setState({ selectedPageID: +pageID });
   }
 
-  async attemptToAddFeed() {
+  async attemptToAddFeed(): Promise<void> {
     const { pageStore } = this.props;
+    let userFeedModel: UserFeedModel;
 
     try {
-      log('Attempting to Create New UserFeed');
+      log('Attempting to Create New UserFeed: name=' + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL);
       const url = REST_DOMAIN + '/userfeeds';
       let headers = new Headers();
       headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -82,20 +86,30 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
         body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
       });
 
-      const userFeedModel: UserFeedModel = await addFeedResponse.json();
+      userFeedModel = await addFeedResponse.json();
       // const text: string = await authenticationResponse.text();
       log("Create New UserFeed Attempt Returned: ");
       log(userFeedModel);
-      // log("Authentication Attempt Returned: " + text);
-      // Add the returned UserFeed to the proper Page in the PageStore
-      pageStore.addUserFeed(this.state.selectedPageID, userFeedModel);
-      // this.props.changeCurrentUser();
       this.closeModal();
-      this.setState({ errorCreatingNewFeed: false });
+      // this.setState({ errorCreatingNewFeed: false });
+      log('Done Creating new UserFeed');
     } catch (err) {
-      error("Error while trying to authenticate: " + err);
+      error("Error while trying add feed: " + err.toString());
       this.setState({ errorCreatingNewFeed: true });
+      throw new Error('--Error while trying add feed--');
     }
+    // Add the returned UserFeed to the proper Page in the PageStore
+    try {
+      pageStore.addUserFeed(this.state.selectedPageID, userFeedModel);
+    } catch (err) {
+      error("[webpack error we may be able to ignore] Error while trying add feed to pageStore: " + err.toString());
+      // this.setState({ errorCreatingNewFeed: true });
+      // throw new Error('--Error while trying add feed to pageStore--');
+    }
+
+    this.setState({ errorCreatingNewFeed: false });
+
+    return;
   }
 
   renderAddNewsFeedModal() {
@@ -123,8 +137,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
               <FormGroup controlId="page">
                 <ControlLabel>Add to Page: </ControlLabel>
                 <DropdownButton title={selectedPageTitle} id={this.state.selectedPageID.toString()} onSelect={this.handlePageChange}>
-                  {pages.map((page, i) => 
-                    <MenuItem key={i} eventKey={page.pageID}>{page.name}</MenuItem>  
+                  {pages.map((page, i) =>
+                    <MenuItem key={i} eventKey={page.pageID}>{page.name}</MenuItem>
                   )}
                 </DropdownButton>
               </FormGroup>

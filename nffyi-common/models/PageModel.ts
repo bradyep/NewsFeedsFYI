@@ -3,7 +3,7 @@ import * as logModule from 'debug';
     const log = logModule('nffyi-common:Page');
 // import errorModule = require('debug');
     const error = logModule('nffyi-common:error');
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 import { UserFeedModel } from './';
 
 // module.exports = class Note {
@@ -21,6 +21,10 @@ export class PageModel {
         this.displayOrder = displayOrder;
         this.userID = userID;
         this.pageID = pageID;
+    }
+
+    @action public addUserFeed(userFeed: UserFeedModel) {
+      this.userFeeds.push(userFeed);
     }
     
     get JSON() {

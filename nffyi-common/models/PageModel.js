@@ -19,6 +19,9 @@ class PageModel {
         this.userID = userID;
         this.pageID = pageID;
     }
+    addUserFeed(userFeed) {
+        this.userFeeds.push(userFeed);
+    }
     get JSON() {
         return JSON.stringify({
             pageID: this.pageID, userID: this.userID, name: this.name, displayOrder: this.displayOrder
@@ -40,6 +43,9 @@ __decorate([
 __decorate([
     mobx_1.observable
 ], PageModel.prototype, "userFeeds", void 0);
+__decorate([
+    mobx_1.action
+], PageModel.prototype, "addUserFeed", null);
 exports.PageModel = PageModel;
 ; // /class Page
 Object.defineProperty(exports, "__esModule", { value: true });

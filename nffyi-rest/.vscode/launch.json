@@ -15,7 +15,7 @@
       "env": {
         "SEQUELIZE_CONNECT": "models/sequelize-sqlite.yaml",
         // "DEBUG": "nffyi-rest:*",
-        "DEBUG": "nffyi-rest:router-userFeeds,nffyi-rest:error",
+        "DEBUG": "nffyi-rest:router-userFeeds,nffyi-rest:error,nffyi-rest:userFeeds-model",
         "PORT": "3000"
       }
     },

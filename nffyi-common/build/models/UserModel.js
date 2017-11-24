@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var logModule = require("debug");
 var log = logModule('nffyi-common:User');
 var error = logModule('nffyi-common:error');
@@ -30,6 +31,5 @@ var UserModel = (function () {
 }());
 exports.UserModel = UserModel;
 ;
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = UserModel;
 //# sourceMappingURL=UserModel.js.map
