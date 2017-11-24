@@ -10,13 +10,17 @@ export class CachedNewsItemModel {
     title: string;
     link: string;
     description: string;
+    feedSourceWebTitle?: string;
+    feedSourceWebURL?: string;
 
-    constructor(title:string, link:string, description:string, feedSourceID?:number, cachedNewsItemID?:number) {
+    constructor(title: string, link: string, description: string, feedSourceID?: number, cachedNewsItemID?: number, feedSourceWebTitle?: string, feedSourceWebURL?: string) {
         this.title = title;
         this.link = link;
         this.description = description;
         this.feedSourceID = feedSourceID;
         this.cachedNewsItemID = cachedNewsItemID;
+        this.feedSourceWebTitle = feedSourceWebTitle;
+        this.feedSourceWebURL = feedSourceWebURL;
     }
     
     get JSON() {

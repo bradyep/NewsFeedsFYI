@@ -1,34 +1,35 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var logModule = require("debug");
-var log = logModule('nffyi-rest:CachedNewsItem');
-var error = logModule('nffyi-rest:error');
-var CachedNewsItemModel = (function () {
-    function CachedNewsItemModel(title, link, description, feedSourceID, cachedNewsItemID) {
+// import * as util from 'util';
+const logModule = require("debug");
+const log = logModule('nffyi-rest:CachedNewsItem');
+// import * as errorModule from 'debug';
+const error = logModule('nffyi-rest:error');
+class CachedNewsItemModel {
+    constructor(title, link, description, feedSourceID, cachedNewsItemID, feedSourceWebTitle, feedSourceWebURL) {
         this.title = title;
         this.link = link;
         this.description = description;
         this.feedSourceID = feedSourceID;
         this.cachedNewsItemID = cachedNewsItemID;
+        this.feedSourceWebTitle = feedSourceWebTitle;
+        this.feedSourceWebURL = feedSourceWebURL;
     }
-    Object.defineProperty(CachedNewsItemModel.prototype, "JSON", {
-        get: function () {
-            return JSON.stringify({
-                cachedNewsItemID: this.cachedNewsItemID, feedSourceID: this.feedSourceID, title: this.title, link: this.link, description: this.description
-            });
-        },
-        enumerable: true,
-        configurable: true
-    });
-    CachedNewsItemModel.fromJSON = function (json) {
+    get JSON() {
+        return JSON.stringify({
+            cachedNewsItemID: this.cachedNewsItemID, feedSourceID: this.feedSourceID, title: this.title, link: this.link, description: this.description
+        });
+    }
+    static fromJSON(json) {
         var data = JSON.parse(json);
         var cachedNewsItem = new CachedNewsItemModel(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
+        // log(json +' => '+ util.inspect(cachedNewsItem));
         log(json + ' => ' + cachedNewsItem);
         return cachedNewsItem;
-    };
-    return CachedNewsItemModel;
-}());
+    }
+}
 exports.CachedNewsItemModel = CachedNewsItemModel;
-;
+; // /class CachedNewsItem
+Object.defineProperty(exports, "__esModule", { value: true });
+// export = CachedNewsItemModel;
 exports.default = CachedNewsItemModel;
 //# sourceMappingURL=CachedNewsItemModel.js.map

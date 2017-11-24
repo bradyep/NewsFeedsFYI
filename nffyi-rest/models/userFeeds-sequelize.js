@@ -89,7 +89,7 @@ function getNewsItemsFromFeedAsync(url, feedSourceID) {
                     .replace(/ *\([^)]*\) */g, "")
                     .replace(/\s\s+/g, ' ')
                     .substr(0, 240);
-                let cachedNewsItem = new models_1.CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID);
+                let cachedNewsItem = new models_1.CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
                 cachedNewsItems.push(cachedNewsItem);
             });
             return cachedNewsItems;

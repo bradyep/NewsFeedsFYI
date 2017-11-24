@@ -77,7 +77,7 @@ export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: numbe
         .replace(/\s\s+/g, ' ')
         .substr(0, 240);
 
-      let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID);
+      let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
       cachedNewsItems.push(cachedNewsItem);
     });
 

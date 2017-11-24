@@ -177,6 +177,31 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
     .catch(err => { next(err); });
 });
 
+async function createFeedSource(url: string): Promise<number> {
+  log('[findFeedSourceID] Attempting to create new FeedSourceModel with url = ' + url);  
+  let newFeedSourceModel: FeedSourceModel;
+  // This is as good a place as any to populate the cachedNewsItems for this feedSource
+  try {
+    let newlyFetchedCachedNewsItems: CachedNewsItemModel[] = await userFeedsModel.getNewsItemsFromFeedAsync(url, 0);
+    log('Got back ' + newlyFetchedCachedNewsItems.length + ' items from userFeedsModel.getNewsItemsFromFeedAsync');
+    // Determine cachedTitle and cachedWebsiteURL
+    const { feedSourceWebTitle } = newlyFetchedCachedNewsItems[0];
+    const { feedSourceWebURL } = newlyFetchedCachedNewsItems[0];
+    log('feedSourceWebTitle: ' + feedSourceWebTitle + ', feedSourceWebURL: ' + feedSourceWebURL);
+    newFeedSourceModel = await feedSourcesModel.create(new FeedSourceModel(url, feedSourceWebTitle, feedSourceWebURL, new Date()));
+    // Add the returned FeedSourceID to the cahcedNewsItems and commit them to the database
+    newlyFetchedCachedNewsItems.forEach(cni => cni.feedSourceID = newFeedSourceModel.feedSourceID);
+    const updateCachedNewsItemsReturn: string[] = await userFeedsModel.updateCachedNewsItemsAsync(newlyFetchedCachedNewsItems);
+    log('Got back ' + updateCachedNewsItemsReturn.length + ' items from calling userFeedsModel.updateCachedNewsItemsAsync()');
+  } catch (err) {
+    error('[user-feeds.findFeedSourceID] Problem creating new FeedSourceModel: ' + err.toString());
+  }
+
+  log('We created a new FeedSourceModel and newFeedSourceModel.feedSourceID = ' + newFeedSourceModel.feedSourceID.toString());
+
+  return newFeedSourceModel.feedSourceID;
+}
+
 async function findFeedSourceID(url: string): Promise<number> {
   log('[findFeedSourceID] Attempting to get existing userFeed for url = ' + url);
   let existingFeedSourceModel: FeedSourceModel;
@@ -189,20 +214,8 @@ async function findFeedSourceID(url: string): Promise<number> {
     log('Found existing source feed, existingFeedSourceModel.feedSourceID = ' + existingFeedSourceModel.feedSourceID);
     return existingFeedSourceModel.feedSourceID;
   };
-  log('[findFeedSourceID] Attempting to create new FeedSourceModel with url = ' + url);  
-  let newFeedSourceModel: FeedSourceModel;
-  try {
-    // Determine cachedTitle and cachedWebsiteURL
-    
 
-    newFeedSourceModel = await feedSourcesModel.create(new FeedSourceModel(url, "Cached Title", "Cached Website URL", new Date(0)));
-  } catch (err) {
-    error('[user-feeds.findFeedSourceID] Problem creating new FeedSourceModel: ' + err.toString());
-  }
-
-  log('We created a new FeedSourceModel and newFeedSourceModel.feedSourceID = ' + newFeedSourceModel.feedSourceID.toString());
-
-  return newFeedSourceModel.feedSourceID;
+  return await createFeedSource(url);
 } // /function findFeedSourceID(): Promise<number> {
 
 // POST new UserFeed
@@ -238,7 +251,6 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
       })
       .catch(err => { next(err); });
   })();
-
 }); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 
 // DELETE existing UserFeed
