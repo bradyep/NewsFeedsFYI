@@ -117,40 +117,45 @@ function updateCachedNewsItemsAsync(cachedNewsItems) {
     });
 }
 exports.updateCachedNewsItemsAsync = updateCachedNewsItemsAsync;
+function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Determine whether FeedSource's cache is up to date
+        const SQFeedSourceModel = yield modelDef.connectDB('SQFeedSource');
+        let feedSourceModel = yield SQFeedSourceModel['find']({ where: { feedSourceID } });
+        if (!feedSourceModel)
+            error("Cannot find FeedSource for supplied feedSourceID: " + feedSourceID);
+        const now = new Date();
+        const { lastCachedDate } = feedSourceModel;
+        const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
+        const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60)));
+        log('[Reading From FeedSourceID = ' + feedSourceID + '] The current time is: ' + now.toString() + '. The FeedSource was last cached at: ' + lastCachedDate.toString() + '. The difference in minutes is: ' + diffInMinutes);
+        if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
+            log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is out of date, fetching updated newsfeed");
+            const newNewsItems = yield getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID);
+            log('Got ' + newNewsItems.length + 'back from calling userfeeds-sequelize.getNewsItemsFromFeedAsync');
+            const deleteOldCachedNewsItemsReturn = yield cachedNewsItemModel.destroyByFeedSourceID(feedSourceID);
+            log('Deleted ' + deleteOldCachedNewsItemsReturn.length + ' items from calling cachedNewsItemModel.destroyByFeedSourceID');
+            const updateCachedNewsItemsReturn = yield updateCachedNewsItemsAsync(newNewsItems);
+            log('Updated ' + updateCachedNewsItemsReturn.length + ' items from calling userfeeds-sequelize.updateCachedNewsItemsAsync');
+            // Put together a real feedSourceModel and update its lastCachedDate
+            let realFeedSourceModel = new FeedSourceModel_1.default(feedSourceModel.url, feedSourceModel.cachedTitle, feedSourceModel.cachedWebsiteURL, new Date(), feedSourceModel.feedSourceID);
+            const updateFeedSourceReturn = yield feedSourcesModel.update(realFeedSourceModel);
+            return true;
+        }
+        else {
+            log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is up to date, fetching from cache");
+            return false;
+        }
+    });
+}
+exports.updateFeedSourceCachedNewsItemsIfNeeded = updateFeedSourceCachedNewsItemsIfNeeded;
 function readAsync(feedSourceID, pageID) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const SQFeedSourceModel = yield modelDef.connectDB('SQFeedSource');
-            let feedSourceModel = yield SQFeedSourceModel['find']({ where: { feedSourceID } });
-            if (!feedSourceModel)
-                error("Cannot find FeedSource for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
-            // Determine whether FeedSource's cache is up to date
-            const now = new Date();
-            const { lastCachedDate } = feedSourceModel;
-            const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
-            // log('diffInMilliseconds: ' + diffInMilliseconds);
-            const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60)));
-            // log('diffInMinutes: ' + diffInMinutes);
-            log('[Reading From FeedSourceID = ' + feedSourceID + '] The current time is: ' + now.toString() + '. The FeedSource was last cached at: ' + lastCachedDate.toString() + '. The difference in minutes is: ' + diffInMinutes);
-            if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
-                log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is out of date, fetching updated newsfeed");
-                const newNewsItems = yield getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID);
-                log('Got ' + newNewsItems.length + 'back from calling userfeeds-sequelize.getNewsItemsFromFeedAsync');
-                const deleteOldCachedNewsItemsReturn = yield cachedNewsItemModel.destroyByFeedSourceID(feedSourceID);
-                log('Deleted ' + deleteOldCachedNewsItemsReturn.length + ' items from calling cachedNewsItemModel.destroyByFeedSourceID');
-                const updateCachedNewsItemsReturn = yield updateCachedNewsItemsAsync(newNewsItems);
-                log('Updated ' + updateCachedNewsItemsReturn.length + ' items from calling userfeeds-sequelize.updateCachedNewsItemsAsync');
-                // Put together a real feedSourceModel and update its lastCachedDate
-                let realFeedSourceModel = new FeedSourceModel_1.default(feedSourceModel.url, feedSourceModel.cachedTitle, feedSourceModel.cachedWebsiteURL, new Date(), feedSourceModel.feedSourceID);
-                const updateFeedSourceReturn = yield feedSourcesModel.update(realFeedSourceModel);
-                const userFeedModel = yield getUserFeedAsync(feedSourceID, pageID);
-                return userFeedModel;
-            }
-            else {
-                log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + "Cache is up to date, fetching from cache");
-                const userFeedModel = yield getUserFeedAsync(feedSourceID, pageID);
-                return userFeedModel;
-            }
+            const cachedNewsItemsUpdated = updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
+            log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
+            const userFeedModel = yield getUserFeedAsync(feedSourceID, pageID);
+            return userFeedModel;
         }
         catch (err) {
             error("Error Calling readAsync: " + err);

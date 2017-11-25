@@ -23,7 +23,7 @@ export class UserFeedModel {
     // Cannot use the syntax below
     // @observable public newsItems: CachedNewsItemModel[];
 
-    constructor(column:number, displayOrder:number, name:string, itemDisplayCount:number, pageID?:number, feedSourceID?:number, titleURL?:string) {
+    constructor(column: number, displayOrder: number, name: string, itemDisplayCount: number, pageID?: number, feedSourceID?: number, titleURL?: string, newsItems?: CachedNewsItemModel[]) {
         this.column = column;
         this.displayOrder = displayOrder;
         this.name = name;
@@ -31,19 +31,19 @@ export class UserFeedModel {
         this.pageID = pageID;
         this.feedSourceID = feedSourceID;
 
-        this.newsItems = [];
+        this.newsItems = newsItems || [];
         this.titleURL = titleURL || "";
     }
     
     get JSON() {
         return JSON.stringify({
-            feedSourceID: this.feedSourceID, pageID: this.pageID, column: this.column, displayOrder: this.displayOrder, name: this.name, itemDisplayCount: this.itemDisplayCount
+            feedSourceID: this.feedSourceID, pageID: this.pageID, column: this.column, displayOrder: this.displayOrder, name: this.name, itemDisplayCount: this.itemDisplayCount, newsItems: this.newsItems
         });
     }
     
     static fromJSON(json:string) {
         var data = JSON.parse(json);
-        var userFeed = new UserFeedModel(data.column, data.displayOrder, data.name, data.itemDisplayCount, data.pageID, data.feedSourceID);
+        var userFeed = new UserFeedModel(data.column, data.displayOrder, data.name, data.itemDisplayCount, data.pageID, data.feedSourceID, data.titleURL, data.newsItems);
         log(json + ' => ' + userFeed, null);
         return userFeed;
     }

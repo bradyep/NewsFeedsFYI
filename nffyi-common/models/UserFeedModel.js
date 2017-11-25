@@ -15,24 +15,24 @@ const mobx_1 = require("mobx");
 class UserFeedModel {
     // Cannot use the syntax below
     // @observable public newsItems: CachedNewsItemModel[];
-    constructor(column, displayOrder, name, itemDisplayCount, pageID, feedSourceID, titleURL) {
+    constructor(column, displayOrder, name, itemDisplayCount, pageID, feedSourceID, titleURL, newsItems) {
         this.column = column;
         this.displayOrder = displayOrder;
         this.name = name;
         this.itemDisplayCount = itemDisplayCount;
         this.pageID = pageID;
         this.feedSourceID = feedSourceID;
-        this.newsItems = [];
+        this.newsItems = newsItems || [];
         this.titleURL = titleURL || "";
     }
     get JSON() {
         return JSON.stringify({
-            feedSourceID: this.feedSourceID, pageID: this.pageID, column: this.column, displayOrder: this.displayOrder, name: this.name, itemDisplayCount: this.itemDisplayCount
+            feedSourceID: this.feedSourceID, pageID: this.pageID, column: this.column, displayOrder: this.displayOrder, name: this.name, itemDisplayCount: this.itemDisplayCount, newsItems: this.newsItems
         });
     }
     static fromJSON(json) {
         var data = JSON.parse(json);
-        var userFeed = new UserFeedModel(data.column, data.displayOrder, data.name, data.itemDisplayCount, data.pageID, data.feedSourceID);
+        var userFeed = new UserFeedModel(data.column, data.displayOrder, data.name, data.itemDisplayCount, data.pageID, data.feedSourceID, data.titleURL, data.newsItems);
         log(json + ' => ' + userFeed, null);
         return userFeed;
     }

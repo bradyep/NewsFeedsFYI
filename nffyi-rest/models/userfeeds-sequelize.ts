@@ -12,7 +12,7 @@ import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/consta
 var VAR_MINUTES_TO_CAHCE_FEED: number = MINUTES_TO_CAHCE_FEED;
 var VAR_MAX_NEWS_ITEMS: number = MAX_NEWS_ITEMS;
 
-export function create(userFeed: UserFeedModel) {
+export function create(userFeed: UserFeedModel): Promise<UserFeedModel> {
   return modelDef.connectDB('SQUserFeed')
     .then(SQUserFeed => {
       return SQUserFeed['create']({
@@ -57,7 +57,7 @@ export async function getUserFeedAsync(feedSourceID: number, pageID: number): Pr
     let dbUserFeedModel: UserFeedModel = await SQUserFeedModel['find']({ where: { feedSourceID, pageID } });
     if (!dbUserFeedModel) throw new Error("Cannot find UserFeed for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
     let userFeedModel = new UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
-    
+
     return userFeedModel;
   } catch (err) {
     error("Error Calling getUserFeedAsync: " + err);
@@ -69,7 +69,7 @@ export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: numbe
     const newsItems: any = await FeedHandler.parse(url);
     let feedItems = newsItems.slice(0, VAR_MAX_NEWS_ITEMS);
     let cachedNewsItems = new Array<CachedNewsItemModel>();
-    
+
     feedItems.map((item: any) => {
       let shortCleanDesc = item.description
         .replace(/<\/?[^>]+(>|$)/g, "")
@@ -82,9 +82,9 @@ export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: numbe
     });
 
     return cachedNewsItems;
-    
+
   } catch (err) {
-    error("Error Calling getNewsItemsFromFeedAsync: " + err);    
+    error("Error Calling getNewsItemsFromFeedAsync: " + err);
   }
 }
 
@@ -99,25 +99,22 @@ export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItem
 
     return Promise.all(insertPromises);
   } catch (err) {
-    error("Error Calling updateCachedNewsItemsAsync: " + err);    
+    error("Error Calling updateCachedNewsItemsAsync: " + err);
   }
 }
 
-export async function readAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel> {
-  try {
+export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: number): Promise<boolean> {
+    // Determine whether FeedSource's cache is up to date
     const SQFeedSourceModel = await modelDef.connectDB('SQFeedSource');
     let feedSourceModel: FeedSourceModel = await SQFeedSourceModel['find']({ where: { feedSourceID } });
-    if (!feedSourceModel) error("Cannot find FeedSource for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
+    if (!feedSourceModel) error("Cannot find FeedSource for supplied feedSourceID: " + feedSourceID);
 
-    // Determine whether FeedSource's cache is up to date
     const now = new Date();
     const { lastCachedDate } = feedSourceModel;
     const diffInMilliseconds = now.getTime() - lastCachedDate.getTime();
-    // log('diffInMilliseconds: ' + diffInMilliseconds);
     const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60)));
-    // log('diffInMinutes: ' + diffInMinutes);
     log('[Reading From FeedSourceID = ' + feedSourceID + '] The current time is: ' + now.toString() + '. The FeedSource was last cached at: ' + lastCachedDate.toString() + '. The difference in minutes is: ' + diffInMinutes);
-    
+
     if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
       log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is out of date, fetching updated newsfeed");
       const newNewsItems: CachedNewsItemModel[] = await getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID);
@@ -126,18 +123,23 @@ export async function readAsync(feedSourceID: number, pageID: number): Promise<U
       log('Deleted ' + deleteOldCachedNewsItemsReturn.length + ' items from calling cachedNewsItemModel.destroyByFeedSourceID');
       const updateCachedNewsItemsReturn: string[] = await updateCachedNewsItemsAsync(newNewsItems);
       log('Updated ' + updateCachedNewsItemsReturn.length + ' items from calling userfeeds-sequelize.updateCachedNewsItemsAsync');
-
       // Put together a real feedSourceModel and update its lastCachedDate
       let realFeedSourceModel: FeedSourceModel = new FeedSourceModel(feedSourceModel.url, feedSourceModel.cachedTitle, feedSourceModel.cachedWebsiteURL, new Date(), feedSourceModel.feedSourceID);
       const updateFeedSourceReturn: any = await feedSourcesModel.update(realFeedSourceModel);
-
-      const userFeedModel = await getUserFeedAsync(feedSourceID, pageID);
-      return userFeedModel;
+      return true;
     } else {
-      log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + "Cache is up to date, fetching from cache");
-      const userFeedModel = await getUserFeedAsync(feedSourceID, pageID);
-      return userFeedModel;
+      log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is up to date, fetching from cache");
+      return false;
     }
+}
+
+export async function readAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel> {
+  try {
+    const cachedNewsItemsUpdated = updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
+    log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
+
+    const userFeedModel = await getUserFeedAsync(feedSourceID, pageID);
+    return userFeedModel;
   } catch (err) {
     error("Error Calling readAsync: " + err);
   }

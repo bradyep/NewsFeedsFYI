@@ -244,9 +244,19 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     // Figure out what the feedSourceID is going to be
     const feedSourceID = await findFeedSourceID(req.body.feedURL);
 
+    // We should also get the CachedNewsItemModels for this new UserFeed
+    const cachedNewsItemsUpdated = userFeedsModel.updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
+    log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
+    const cachedNewsItems: CachedNewsItemModel[] = await getCachedNewsItems([feedSourceID]);
+    
+    // It's confusing as hell, but we need to stick the newsItems in the userFeed.dataValues property
     userFeedsModel.create(new UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
-      .then(userFeed => {
+      .then((userFeed: any) => {
+        // userFeed.newsItems = cachedNewsItems;
+        userFeed.dataValues.newsItems = new Array<CachedNewsItemModel>();
+        userFeed.dataValues.newsItems.push(...cachedNewsItems);
         log('Attempted to create UserFeed: ' + util.inspect(userFeed));
+        log('Number of CachedNewsItems: ' + userFeed.dataValues.newsItems.length);
         res.json(userFeed);
       })
       .catch(err => { next(err); });
