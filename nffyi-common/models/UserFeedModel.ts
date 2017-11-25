@@ -1,8 +1,8 @@
 // import * as util from 'util';
 import * as logModule from 'debug';
-    const log = logModule('nffyi-rest:UserFeed');
+    const log = logModule('nffyi-common:UserFeed');
 // import errorModule = require('debug');
-    const error = logModule('nffyi-rest:error');
+    const error = logModule('nffyi-common:error');
 import { observable } from 'mobx';
 import { CachedNewsItemModel } from './';
 

@@ -1,8 +1,8 @@
 // import * as util from 'util';
 import * as logModule from 'debug';
-    const log = logModule('nffyi-rest:CachedNewsItem');
+    const log = logModule('nffyi-common:CachedNewsItem');
 // import * as errorModule from 'debug';
-    const error = logModule('nffyi-rest:error');
+    const error = logModule('nffyi-common:error');
 
 export class CachedNewsItemModel {
     cachedNewsItemID?: number; // PK

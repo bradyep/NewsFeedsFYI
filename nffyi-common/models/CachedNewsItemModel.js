@@ -1,9 +1,9 @@
 "use strict";
 // import * as util from 'util';
 const logModule = require("debug");
-const log = logModule('nffyi-rest:CachedNewsItem');
+const log = logModule('nffyi-common:CachedNewsItem');
 // import * as errorModule from 'debug';
-const error = logModule('nffyi-rest:error');
+const error = logModule('nffyi-common:error');
 class CachedNewsItemModel {
     constructor(title, link, description, feedSourceID, cachedNewsItemID, feedSourceWebTitle, feedSourceWebURL) {
         this.title = title;
