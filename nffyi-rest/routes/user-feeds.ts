@@ -178,7 +178,7 @@ router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, 
 });
 
 async function createFeedSource(url: string): Promise<number> {
-  log('[findFeedSourceID] Attempting to create new FeedSourceModel with url = ' + url);  
+  log('[findFeedSourceID] Attempting to create new FeedSourceModel with url = ' + url);
   let newFeedSourceModel: FeedSourceModel;
   // This is as good a place as any to populate the cachedNewsItems for this feedSource
   try {
@@ -210,7 +210,7 @@ async function findFeedSourceID(url: string): Promise<number> {
   } catch (err) {
     error('[user-feeds.findFeedSourceID] Problem getting existing FeedSourceModel: ' + err.toString());
   }
-  if (existingFeedSourceModel) { 
+  if (existingFeedSourceModel) {
     log('Found existing source feed, existingFeedSourceModel.feedSourceID = ' + existingFeedSourceModel.feedSourceID);
     return existingFeedSourceModel.feedSourceID;
   };
@@ -219,48 +219,46 @@ async function findFeedSourceID(url: string): Promise<number> {
 } // /function findFeedSourceID(): Promise<number> {
 
 // POST new UserFeed
-router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
-  (async () => {
-    log('Attempting to create new UserFeed');
-    authorizeRequest(req, res, next, true);
-    // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
+router.post('/', authRouter.ensureAuthenticated, async function (req, res, next) {
+  log('Attempting to create new UserFeed');
+  authorizeRequest(req, res, next, true);
+  // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
 
-    // Figure out what the column and displayOrder are going to be
-    const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
-    let columnDescriptors = new Array<ColumnDescriptor>();
-    for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
-      const currentColumnNumber: number = i + 1;
-      const userFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
-      const numberOfUserFeedsInColumn = userFeedsInColumn ? userFeedsInColumn.length : 0;
-      columnDescriptors.push({ columnNumber: currentColumnNumber, userFeedCount: numberOfUserFeedsInColumn });
-    }
-    if (columnDescriptors.length !== NUMBER_OF_COLUMNS) {
-      error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + NUMBER_OF_COLUMNS + '. They should be the same.');
-    }
-    columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
-    const columnID = columnDescriptors[0].columnNumber;
-    const displayOrder = columnDescriptors[0].userFeedCount + 1;
+  // Figure out what the column and displayOrder are going to be
+  const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
+  let columnDescriptors = new Array<ColumnDescriptor>();
+  for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
+    const currentColumnNumber: number = i + 1;
+    const userFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
+    const numberOfUserFeedsInColumn = userFeedsInColumn ? userFeedsInColumn.length : 0;
+    columnDescriptors.push({ columnNumber: currentColumnNumber, userFeedCount: numberOfUserFeedsInColumn });
+  }
+  if (columnDescriptors.length !== NUMBER_OF_COLUMNS) {
+    error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + NUMBER_OF_COLUMNS + '. They should be the same.');
+  }
+  columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
+  const columnID = columnDescriptors[0].columnNumber;
+  const displayOrder = columnDescriptors[0].userFeedCount + 1;
 
-    // Figure out what the feedSourceID is going to be
-    const feedSourceID = await findFeedSourceID(req.body.feedURL);
+  // Figure out what the feedSourceID is going to be
+  const feedSourceID = await findFeedSourceID(req.body.feedURL);
 
-    // We should also get the CachedNewsItemModels for this new UserFeed
-    const cachedNewsItemsUpdated = userFeedsModel.updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
-    log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
-    const cachedNewsItems: CachedNewsItemModel[] = await getCachedNewsItems([feedSourceID]);
-    
-    // It's confusing as hell, but we need to stick the newsItems in the userFeed.dataValues property
-    userFeedsModel.create(new UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
-      .then((userFeed: any) => {
-        // userFeed.newsItems = cachedNewsItems;
-        userFeed.dataValues.newsItems = new Array<CachedNewsItemModel>();
-        userFeed.dataValues.newsItems.push(...cachedNewsItems);
-        log('Attempted to create UserFeed: ' + util.inspect(userFeed));
-        log('Number of CachedNewsItems: ' + userFeed.dataValues.newsItems.length);
-        res.json(userFeed);
-      })
-      .catch(err => { next(err); });
-  })();
+  // We should also get the CachedNewsItemModels for this new UserFeed
+  const cachedNewsItemsUpdated = userFeedsModel.updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
+  log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
+  const cachedNewsItems: CachedNewsItemModel[] = await getCachedNewsItems([feedSourceID]);
+
+  // It's confusing as hell, but we need to stick the newsItems in the userFeed.dataValues property
+  userFeedsModel.create(new UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
+    .then((userFeed: any) => {
+      // userFeed.newsItems = cachedNewsItems;
+      userFeed.dataValues.newsItems = new Array<CachedNewsItemModel>();
+      userFeed.dataValues.newsItems.push(...cachedNewsItems);
+      log('Attempted to create UserFeed: ' + util.inspect(userFeed));
+      log('Number of CachedNewsItems: ' + userFeed.dataValues.newsItems.length);
+      res.json(userFeed);
+    })
+    .catch(err => { next(err); });
 }); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 
 // DELETE existing UserFeed

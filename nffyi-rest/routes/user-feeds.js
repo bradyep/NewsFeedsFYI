@@ -192,7 +192,7 @@ function findFeedSourceID(url) {
 } // /function findFeedSourceID(): Promise<number> {
 // POST new UserFeed
 router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
-    (() => __awaiter(this, void 0, void 0, function* () {
+    return __awaiter(this, void 0, void 0, function* () {
         log('Attempting to create new UserFeed');
         authorizeRequest(req, res, next, true);
         // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
@@ -228,7 +228,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
             res.json(userFeed);
         })
             .catch(err => { next(err); });
-    }))();
+    });
 }); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 // DELETE existing UserFeed
 router.delete('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
