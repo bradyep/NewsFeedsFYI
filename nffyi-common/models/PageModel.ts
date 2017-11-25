@@ -1,14 +1,11 @@
-// import * as util from 'util';
 import * as logModule from 'debug';
-    const log = logModule('nffyi-common:Page');
-// import errorModule = require('debug');
-    const error = logModule('nffyi-common:error');
+const log = logModule('nffyi-common:Page');
+const error = logModule('nffyi-common:error');
 import { observable, action } from 'mobx';
 import { UserFeedModel } from './';
 
-// module.exports = class Note {
 export class PageModel {
-    // QUESTION: Why is this nullable? When would we ever have a PageModel without a pageID?
+    // QUESTION: Why would pageID be nullable? When would we ever have a PageModel without a pageID?
     pageID: number; // PK
     userID: number; // FK
     @observable public name: string;
@@ -46,5 +43,4 @@ export class PageModel {
     }
 }; // /class Page
 
-// export = Page;
 export default PageModel;

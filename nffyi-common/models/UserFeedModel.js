@@ -5,13 +5,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-// import * as util from 'util';
 const logModule = require("debug");
 const log = logModule('nffyi-common:UserFeed');
-// import errorModule = require('debug');
 const error = logModule('nffyi-common:error');
 const mobx_1 = require("mobx");
-// module.exports = class Note {
 class UserFeedModel {
     // Cannot use the syntax below
     // @observable public newsItems: CachedNewsItemModel[];
@@ -61,6 +58,5 @@ __decorate([
 exports.UserFeedModel = UserFeedModel;
 ; // /class UserFeed
 Object.defineProperty(exports, "__esModule", { value: true });
-// export = UserFeed;
 exports.default = UserFeedModel;
 //# sourceMappingURL=UserFeedModel.js.map

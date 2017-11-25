@@ -1,12 +1,9 @@
-// import * as util from 'util';
 import * as logModule from 'debug';
-    const log = logModule('nffyi-common:UserFeed');
-// import errorModule = require('debug');
-    const error = logModule('nffyi-common:error');
+const log = logModule('nffyi-common:UserFeed');
+const error = logModule('nffyi-common:error');
 import { observable } from 'mobx';
 import { CachedNewsItemModel } from './';
 
-// module.exports = class Note {
 export class UserFeedModel {
     readonly feedSourceID?: number; // FK
     @observable public pageID?: number; // FK
@@ -49,5 +46,4 @@ export class UserFeedModel {
     }
 }; // /class UserFeed
 
-// export = UserFeed;
 export default UserFeedModel;

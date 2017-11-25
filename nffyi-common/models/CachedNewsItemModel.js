@@ -1,8 +1,6 @@
 "use strict";
-// import * as util from 'util';
 const logModule = require("debug");
 const log = logModule('nffyi-common:CachedNewsItem');
-// import * as errorModule from 'debug';
 const error = logModule('nffyi-common:error');
 class CachedNewsItemModel {
     constructor(title, link, description, feedSourceID, cachedNewsItemID, feedSourceWebTitle, feedSourceWebURL) {
@@ -30,6 +28,5 @@ class CachedNewsItemModel {
 exports.CachedNewsItemModel = CachedNewsItemModel;
 ; // /class CachedNewsItem
 Object.defineProperty(exports, "__esModule", { value: true });
-// export = CachedNewsItemModel;
 exports.default = CachedNewsItemModel;
 //# sourceMappingURL=CachedNewsItemModel.js.map
