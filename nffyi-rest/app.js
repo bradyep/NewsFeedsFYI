@@ -5,10 +5,6 @@ const logger = require("morgan");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-// import FileStoreModule = require('session-file-store');
-// const FileStore = FileStoreModule(session);
-// Define Routes
-const index = require("./routes/index");
 const users = require("./routes/users");
 const links = require("./routes/links");
 const pages = require("./routes/pages");
@@ -55,7 +51,7 @@ app.use(session({
 }));
 authenticate.initPassport(app);
 // Use Routes
-app.use('/', index);
+// app.use('/', index);
 app.use('/users', users);
 app.use('/links', links);
 app.use('/pages', pages);

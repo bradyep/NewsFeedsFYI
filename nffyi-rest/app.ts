@@ -65,7 +65,7 @@ app.use(session({
 authenticate.initPassport(app);
 
 // Use Routes
-app.use('/', index);
+// app.use('/', index);
 app.use('/users', users);
 app.use('/links', links);
 app.use('/pages', pages);
