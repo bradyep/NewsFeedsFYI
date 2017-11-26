@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Roles } from "../../../../../../nffyi-common/constants/roles";
+// import { Roles } from "../../../../../../nffyi-common/constants/roles";
+import { Roles } from "../../../constants/common/roles";
 import * as styles from "./styles.css";
 import { STORE_LINK } from "../../../constants/stores";
 import { LinkStore, UserStore } from "../../../stores";

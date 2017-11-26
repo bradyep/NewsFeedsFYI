@@ -1,14 +1,17 @@
 import * as React from "react";
-import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
+// import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
+import { Roles, ROLE_DB_NAMES } from "../../../constants/common/roles";
 import { UserStore, PageStore } from "../../../stores";
 import { FormGroup, InputGroup, Button, Modal, ControlLabel, FormControl, DropdownButton, MenuItem } from "react-bootstrap";
 import { observer } from 'mobx-react';
-import { MAX_NEWS_ITEMS } from '../../../../../../nffyi-common/constants/newsfeeds';
+// import { MAX_NEWS_ITEMS } from '../../../../../../nffyi-common/constants/newsfeeds';
+import { MAX_NEWS_ITEMS } from '../../../constants/common/newsfeeds';
 import { REST_DOMAIN } from '../../../constants/network';
 import * as logModule from 'debug';
 const log = logModule('webapp:AddNewsFeedSection');
 const error = logModule('webapp:error');
-import { UserFeedModel, PageModel } from '../../../../../../nffyi-common/models';
+// import { UserFeedModel, PageModel } from '../../../../../../nffyi-common/models';
+import { UserFeedModel, PageModel } from '../../../models/common';
 
 export interface AddNewsFeedSectionProps {
   userStore: UserStore,
