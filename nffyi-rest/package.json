@@ -6,7 +6,8 @@
   "scripts": {
     "start": "SEQUELIZE_CONNECT=models/sequelize-sqlite.yaml node ./bin/www",
     "winstart": "set SEQUELIZE_CONNECT='models/sequelize-sqlite.yaml'&& node ./bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker": "node ./bin/www" 
   },
   "keywords": [
     "newsfeeds",

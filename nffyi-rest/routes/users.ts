@@ -10,7 +10,8 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
 // import UserModel = require('../models/User');
-import { UserModel } from '../../nffyi-common/models';
+// import { UserModel } from '../../nffyi-common/models';
+import { UserModel } from '../models/common';
 import { GUEST_ID, ADMIN_ID } from '../constants/users';
 
 /* GET users listing. */

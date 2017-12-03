@@ -4,7 +4,8 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 
 import modelDef = require('./nffyi-sequelize');
-import { UserModel } from '../../nffyi-common/models';
+// import { UserModel } from '../../nffyi-common/models';
+import { UserModel } from './common';
 
 export function create(user:UserModel) {
     return modelDef.connectDB('SQUser')

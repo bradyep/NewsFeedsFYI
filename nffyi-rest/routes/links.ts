@@ -9,9 +9,10 @@ import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
 // import LinkModel = require('../models/Link');
-import { LinkModel } from '../../nffyi-common/models';
+// import { LinkModel } from '../../nffyi-common/models';
 // import UserModel = require('../models/User');
-import { UserModel } from '../../nffyi-common/models';
+// import { UserModel } from '../../nffyi-common/models';
+import { LinkModel, UserModel } from '../models/common';
 
 /* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function(req, res, next) {

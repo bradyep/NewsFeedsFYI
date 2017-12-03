@@ -2,10 +2,10 @@ import logModule = require('debug');
   const log = logModule('nffyi-rest:cachedNewsItems-model');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
-
 import modelDef = require('./nffyi-sequelize');
 // import CachedNewsItemModel = require('./CachedNewsItemModel');
-import { CachedNewsItemModel } from '../../nffyi-common/models';
+// import { CachedNewsItemModel } from '../../nffyi-common/models';
+import { CachedNewsItemModel } from './common';
 
 export function create(cachedNewsItem:CachedNewsItemModel) {
     return modelDef.connectDB('SQCachedNewsItem')

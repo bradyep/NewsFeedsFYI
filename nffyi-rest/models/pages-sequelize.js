@@ -5,7 +5,8 @@ const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const modelDef = require("./nffyi-sequelize");
 // import PageModel = require('./page');
-const models_1 = require("../../nffyi-common/models");
+// import { PageModel } from '../../nffyi-common/models';
+const common_1 = require("./common");
 function create(page) {
     return modelDef.connectDB('SQPage')
         .then(SQPage => {
@@ -49,7 +50,7 @@ function read(pageID) {
                 return null;
             }
             else {
-                return new models_1.PageModel(page.name, page.displayOrder, page.userID, page.pageID);
+                return new common_1.PageModel(page.name, page.displayOrder, page.userID, page.pageID);
             }
         });
     });

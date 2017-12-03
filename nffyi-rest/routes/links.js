@@ -10,7 +10,10 @@ const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 // import LinkModel = require('../models/Link');
-const models_1 = require("../../nffyi-common/models");
+// import { LinkModel } from '../../nffyi-common/models';
+// import UserModel = require('../models/User');
+// import { UserModel } from '../../nffyi-common/models';
+const common_1 = require("../models/common");
 /* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function (req, res, next) {
     let userID = req.user ? req.user.userID : 1;
@@ -25,7 +28,7 @@ var getKeyList = function (userID) {
         .then(keylist => {
         var keyPromises = keylist.map(key => {
             return linksModel.read(key).then(link => {
-                return new models_1.LinkModel(link.url, link.name, link.displayOrder, link.linkID, link.userID);
+                return new common_1.LinkModel(link.url, link.name, link.displayOrder, link.linkID, link.userID);
             });
         });
         return Promise.all(keyPromises);
@@ -51,7 +54,7 @@ router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
     let userID = req.user ? req.user.userID : 1;
     // Authorize
     if (userID === req.body.userID || req.user.userID === 2) {
-        let updateLink = new models_1.LinkModel(req.body.url, req.body.name, req.body.displayOrder, req.params.linkID, req.body.userID);
+        let updateLink = new common_1.LinkModel(req.body.url, req.body.name, req.body.displayOrder, req.params.linkID, req.body.userID);
         linksModel.update(updateLink)
             .then(link => {
             if (!link)
@@ -73,7 +76,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     let userID = req.user ? req.user.userID : 1;
     // Authorize
     if (userID === req.body.userID || req.user.userID === 2) {
-        linksModel.create(new models_1.LinkModel(req.body.url, req.body.name, req.body.displayOrder, null, userID))
+        linksModel.create(new common_1.LinkModel(req.body.url, req.body.name, req.body.displayOrder, null, userID))
             .then(link => {
             log('Attempted to create Link: ' + util.inspect(link));
             res.json(link);

@@ -5,7 +5,8 @@ FROM node:6.12
 ENV SEQUELIZE_CONNECT="models/sequelize-sqlite.yaml"
 ENV DEBUG="nffyi-rest:*"
 ENV PORT="3000"
-ENV REST_LISTEN="0.0.0.0"
+# Listen for connections only from this location
+# ENV REST_LISTEN="0.0.0.0"
 
 # App code copied to /usr/src/app
 RUN mkdir -p /usr/src/app
@@ -18,5 +19,7 @@ RUN ["apt-get", "install", "-y", "vim"]
 RUN ["apt-get", "install", "-y", "sqlite3", "libsqlite3-dev"]
 RUN ["npm", "install", "--unsafe-perm"]
 
-EXPOSE 3000
-CMD npm run start
+# This container should listen on the TCP port below
+# EXPOSE 3000
+# CMD npm run docker
+ENTRYPOINT ["npm", "run", "docker"]

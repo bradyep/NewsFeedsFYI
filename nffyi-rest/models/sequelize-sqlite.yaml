@@ -2,5 +2,5 @@ dbname: nffyi-rest
 username:
 password:
 params:
-    dialect: sqlite
     storage: nffyi-rest-sequelize.sqlite3
+    dialect: sqlite

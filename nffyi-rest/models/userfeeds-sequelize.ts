@@ -6,8 +6,10 @@ import feedSourcesModel = require('../models/feedsources-sequelize');
 import cachedNewsItemModel = require('../models/cached-newsitems-sequelize');
 import FeedSourceModel from '../models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
-import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
-import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/constants/newsfeeds';
+// import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
+import { UserFeedModel, CachedNewsItemModel } from './common';
+// import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/constants/newsfeeds';
+import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../constants/common/newsfeeds';
 
 var VAR_MINUTES_TO_CAHCE_FEED: number = MINUTES_TO_CAHCE_FEED;
 var VAR_MAX_NEWS_ITEMS: number = MAX_NEWS_ITEMS;
