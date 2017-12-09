@@ -30,6 +30,10 @@ export class UserStore {
     this.currentUser = user;
   }
 
+  public nodeenv() {
+    return process.env.NODE_ENV;
+  }
+
 }
 
 export default UserStore;

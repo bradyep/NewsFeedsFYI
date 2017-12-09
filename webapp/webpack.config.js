@@ -100,6 +100,9 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: 'assets/index.html'
+    }),
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: 'development'
     })
   ],
   devServer: {
