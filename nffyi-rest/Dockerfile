@@ -2,7 +2,8 @@
 FROM node:6.12
 
 # Set environment values
-ENV SEQUELIZE_CONNECT="models/sequelize-sqlite.yaml"
+# ENV SEQUELIZE_CONNECT="models/sequelize-sqlite.yaml"
+ENV SEQUELIZE_CONNECT="models/sequelize-sqlite-docker.yaml"
 ENV DEBUG="nffyi-rest:*"
 ENV PORT="3000"
 # Listen for connections only from this location

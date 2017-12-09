@@ -1,0 +1,6 @@
+dbname: nffyi-rest
+username:
+password:
+params:
+    storage: /var/lib/nffyi-data/nffyi-rest-sequelize.sqlite3
+    dialect: sqlite
