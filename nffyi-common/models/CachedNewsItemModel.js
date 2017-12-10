@@ -1,9 +1,10 @@
 "use strict";
-const logModule = require("debug");
-const log = logModule('nffyi-common:CachedNewsItem');
-const error = logModule('nffyi-common:error');
-class CachedNewsItemModel {
-    constructor(title, link, description, feedSourceID, cachedNewsItemID, feedSourceWebTitle, feedSourceWebURL) {
+Object.defineProperty(exports, "__esModule", { value: true });
+var logModule = require("debug");
+var log = logModule('nffyi-common:CachedNewsItem');
+var error = logModule('nffyi-common:error');
+var CachedNewsItemModel = (function () {
+    function CachedNewsItemModel(title, link, description, feedSourceID, cachedNewsItemID, feedSourceWebTitle, feedSourceWebURL) {
         this.title = title;
         this.link = link;
         this.description = description;
@@ -12,21 +13,24 @@ class CachedNewsItemModel {
         this.feedSourceWebTitle = feedSourceWebTitle;
         this.feedSourceWebURL = feedSourceWebURL;
     }
-    get JSON() {
-        return JSON.stringify({
-            cachedNewsItemID: this.cachedNewsItemID, feedSourceID: this.feedSourceID, title: this.title, link: this.link, description: this.description
-        });
-    }
-    static fromJSON(json) {
+    Object.defineProperty(CachedNewsItemModel.prototype, "JSON", {
+        get: function () {
+            return JSON.stringify({
+                cachedNewsItemID: this.cachedNewsItemID, feedSourceID: this.feedSourceID, title: this.title, link: this.link, description: this.description
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CachedNewsItemModel.fromJSON = function (json) {
         var data = JSON.parse(json);
         var cachedNewsItem = new CachedNewsItemModel(data.title, data.link, data.description, data.feedSourceID, data.cachedNewsItemID);
-        // log(json +' => '+ util.inspect(cachedNewsItem));
         log(json + ' => ' + cachedNewsItem);
         return cachedNewsItem;
-    }
-}
+    };
+    return CachedNewsItemModel;
+}());
 exports.CachedNewsItemModel = CachedNewsItemModel;
-; // /class CachedNewsItem
-Object.defineProperty(exports, "__esModule", { value: true });
+;
 exports.default = CachedNewsItemModel;
 //# sourceMappingURL=CachedNewsItemModel.js.map
