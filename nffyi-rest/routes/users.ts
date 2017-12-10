@@ -11,7 +11,8 @@ import errorModule = require('debug');
 import authRouter = require('./authenticate');
 // import UserModel = require('../models/User');
 // import { UserModel } from '../../nffyi-common/models';
-import { UserModel } from '../models/common';
+// import { UserModel } from '../models/common';
+import { UserModel } from 'nffyi-common';
 import { GUEST_ID, ADMIN_ID } from '../constants/users';
 
 /* GET users listing. */

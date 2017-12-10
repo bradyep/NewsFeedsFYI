@@ -2,8 +2,9 @@ import util = require('util');
 import usersModel = require('./models/users-sequelize');
 // import UserModel = require('./models/User');
 // import { UserModel } from '../nffyi-common/models';
-import { UserModel } from './models/common';
-
+// import { UserModel } from './models/common';
+import { UserModel } from 'nffyi-common';
+// let UserModel = models.UserModel;
 
 // May need to set up environment variables
 // $env:SEQUELIZE_CONNECT='models/sequelize-sqlite.yaml'

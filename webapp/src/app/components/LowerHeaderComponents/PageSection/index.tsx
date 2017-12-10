@@ -5,7 +5,8 @@ import { DropdownButton, MenuItem } from 'react-bootstrap';
 import { observer } from 'mobx-react';
 import { UserStore, PageStore } from "../../../stores";
 // import { Roles } from "../../../../../../nffyi-common/constants/roles";
-import { Roles } from "../../../constants/common//roles";
+// import { Roles } from "../../../constants/common//roles";
+import { Roles } from "nffyi-common";
 import * as styles from './styles.css';
 
 export interface PageSectionProps {

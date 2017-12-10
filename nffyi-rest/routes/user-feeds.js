@@ -18,9 +18,10 @@ const log = logModule('nffyi-rest:router-userFeeds');
 const error = logModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 // import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
-const common_1 = require("../models/common");
+// import { UserFeedModel, CachedNewsItemModel } from '../models/common';
+const nffyi_common_1 = require("nffyi-common");
 // import { NUMBER_OF_COLUMNS } from '../../nffyi-common/constants/newsfeeds';
-const newsfeeds_1 = require("../constants/common/newsfeeds");
+// import { NUMBER_OF_COLUMNS } from '../constants/common/newsfeeds';
 const pagesModel = require("../models/pages-sequelize");
 const FeedSourceModel_1 = require("../models/FeedSourceModel");
 /* GET all UserFeeds for requesting User */
@@ -75,7 +76,7 @@ var getUserFeeds = function (pageID) {
             // return userFeedsModel.read(key, pageID)
             return userFeedsModel.readAsync(key, pageID)
                 .then((userFeed) => {
-                var usfm = new common_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, userFeed.titleURL);
+                var usfm = new nffyi_common_1.UserFeedModel(userFeed.column, userFeed.displayOrder, userFeed.name, userFeed.itemDisplayCount, userFeed.pageID, userFeed.feedSourceID, userFeed.titleURL);
                 return usfm;
             });
         });
@@ -88,7 +89,7 @@ var getCachedNewsItems = function (feedSourceIDs) {
         var keyPromises = keylist.map(key => {
             return cachedNewsItemsModel.read(key)
                 .then(cni => {
-                var cnim = new common_1.CachedNewsItemModel(cni.title, cni.link, cni.description, cni.feedSourceID, cni.cachedNewsItemID);
+                var cnim = new nffyi_common_1.CachedNewsItemModel(cni.title, cni.link, cni.description, cni.feedSourceID, cni.cachedNewsItemID);
                 return cnim;
             });
         });
@@ -139,7 +140,7 @@ router.get('/:feedsourceid/:pageid', (req, res, next) => {
 // Update existing UserFeed
 router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
     authorizeRequest(req, res, next, false);
-    let updateUserFeed = new common_1.UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.params.pageid, req.params.feedsourceid);
+    let updateUserFeed = new nffyi_common_1.UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.params.pageid, req.params.feedsourceid);
     userFeedsModel.update(updateUserFeed)
         .then(userFeed => {
         if (!userFeed)
@@ -201,14 +202,14 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
         // Figure out what the column and displayOrder are going to be
         const userFeeds = yield getUserFeeds(req.body.pageID);
         let columnDescriptors = new Array();
-        for (let i = 0; i < newsfeeds_1.NUMBER_OF_COLUMNS; i++) {
+        for (let i = 0; i < nffyi_common_1.NUMBER_OF_COLUMNS; i++) {
             const currentColumnNumber = i + 1;
             const userFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
             const numberOfUserFeedsInColumn = userFeedsInColumn ? userFeedsInColumn.length : 0;
             columnDescriptors.push({ columnNumber: currentColumnNumber, userFeedCount: numberOfUserFeedsInColumn });
         }
-        if (columnDescriptors.length !== newsfeeds_1.NUMBER_OF_COLUMNS) {
-            error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + newsfeeds_1.NUMBER_OF_COLUMNS + '. They should be the same.');
+        if (columnDescriptors.length !== nffyi_common_1.NUMBER_OF_COLUMNS) {
+            error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + nffyi_common_1.NUMBER_OF_COLUMNS + '. They should be the same.');
         }
         columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
         const columnID = columnDescriptors[0].columnNumber;
@@ -220,7 +221,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
         log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
         const cachedNewsItems = yield getCachedNewsItems([feedSourceID]);
         // It's confusing as hell, but we need to stick the newsItems in the userFeed.dataValues property
-        userFeedsModel.create(new common_1.UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
+        userFeedsModel.create(new nffyi_common_1.UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
             .then((userFeed) => {
             // userFeed.newsItems = cachedNewsItems;
             userFeed.dataValues.newsItems = new Array();

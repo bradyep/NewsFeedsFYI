@@ -16,11 +16,12 @@ const cachedNewsItemModel = require("../models/cached-newsitems-sequelize");
 const FeedSourceModel_1 = require("../models/FeedSourceModel");
 const modelDef = require("./nffyi-sequelize");
 // import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
-const common_1 = require("./common");
+// import { UserFeedModel, CachedNewsItemModel } from './common';
+const nffyi_common_1 = require("nffyi-common");
 // import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/constants/newsfeeds';
-const newsfeeds_1 = require("../constants/common/newsfeeds");
-var VAR_MINUTES_TO_CAHCE_FEED = newsfeeds_1.MINUTES_TO_CAHCE_FEED;
-var VAR_MAX_NEWS_ITEMS = newsfeeds_1.MAX_NEWS_ITEMS;
+// import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../constants/common/newsfeeds';
+var VAR_MINUTES_TO_CAHCE_FEED = nffyi_common_1.MINUTES_TO_CAHCE_FEED;
+var VAR_MAX_NEWS_ITEMS = nffyi_common_1.MAX_NEWS_ITEMS;
 function create(userFeed) {
     return modelDef.connectDB('SQUserFeed')
         .then(SQUserFeed => {
@@ -70,7 +71,7 @@ function getUserFeedAsync(feedSourceID, pageID) {
             let dbUserFeedModel = yield SQUserFeedModel['find']({ where: { feedSourceID, pageID } });
             if (!dbUserFeedModel)
                 throw new Error("Cannot find UserFeed for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
-            let userFeedModel = new common_1.UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
+            let userFeedModel = new nffyi_common_1.UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
             return userFeedModel;
         }
         catch (err) {
@@ -91,7 +92,7 @@ function getNewsItemsFromFeedAsync(url, feedSourceID) {
                     .replace(/ *\([^)]*\) */g, "")
                     .replace(/\s\s+/g, ' ')
                     .substr(0, 240);
-                let cachedNewsItem = new common_1.CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
+                let cachedNewsItem = new nffyi_common_1.CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
                 cachedNewsItems.push(cachedNewsItem);
             });
             return cachedNewsItems;

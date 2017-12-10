@@ -2,10 +2,11 @@ import * as React from 'react';
 import * as styles from './styles.css';
 import { PageStore, UserStore } from '../../../stores';
 // import { UserFeedModel } from "../../../../../../nffyi-common/models";
-import { UserFeedModel } from "../../../models/common";
+// import { UserFeedModel } from "../../../models/common";
+import { UserFeedModel, Roles } from "nffyi-common";
 import { observer } from 'mobx-react';
 // import { Roles } from "../../../../../../nffyi-common/constants/roles";
-import { Roles } from "../../../constants/common/roles";
+// import { Roles } from "../../../constants/common/roles";
 
 export interface NewsFeedsProps {
   // addTodo: (todo: Partial<TodoModel>) => any;

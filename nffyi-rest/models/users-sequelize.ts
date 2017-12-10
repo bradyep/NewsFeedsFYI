@@ -5,7 +5,8 @@ import errorModule = require('debug');
 
 import modelDef = require('./nffyi-sequelize');
 // import { UserModel } from '../../nffyi-common/models';
-import { UserModel } from './common';
+// import { UserModel } from './common';
+import { UserModel } from 'nffyi-common';
 
 export function create(user:UserModel) {
     return modelDef.connectDB('SQUser')

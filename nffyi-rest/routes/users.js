@@ -12,7 +12,8 @@ const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 // import UserModel = require('../models/User');
 // import { UserModel } from '../../nffyi-common/models';
-const common_1 = require("../models/common");
+// import { UserModel } from '../models/common';
+const nffyi_common_1 = require("nffyi-common");
 const users_1 = require("../constants/users");
 /* GET users listing. */
 // router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
@@ -91,7 +92,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     // We should authorize this action in order to prevent new
     // User spam
     // usersModel.create(req.body.username, req.body.password, req.body.email)
-    usersModel.create(new common_1.UserModel(req.body.username, req.body.password, req.body.email, 3))
+    usersModel.create(new nffyi_common_1.UserModel(req.body.username, req.body.password, req.body.email, 3))
         .then(user => {
         log('Attempted to create User: ' + util.inspect(user));
         res.json(user);

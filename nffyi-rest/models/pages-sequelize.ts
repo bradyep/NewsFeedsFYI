@@ -5,7 +5,8 @@ import errorModule = require('debug');
 import modelDef = require('./nffyi-sequelize');
 // import PageModel = require('./page');
 // import { PageModel } from '../../nffyi-common/models';
-import { PageModel } from './common';
+// import { PageModel } from './common';
+import { PageModel } from 'nffyi-common';
 
 export function create(page:PageModel) {
     return modelDef.connectDB('SQPage')

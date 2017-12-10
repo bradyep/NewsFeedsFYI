@@ -11,7 +11,8 @@ const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
 // import PageModel = require('../models/Page');
 // import { PageModel, UserModel } from '../../nffyi-common/models';
-const common_1 = require("../models/common");
+// import { PageModel, UserModel } from '../models/common';
+const nffyi_common_1 = require("nffyi-common");
 // import UserModel = require('../models/User');
 /* GET all Pages for requesting User */
 router.get('/', function (req, res, next) {
@@ -27,7 +28,7 @@ var getKeyList = function (userID) {
         .then(keylist => {
         var keyPromises = keylist.map(key => {
             return pagesModel.read(key).then(page => {
-                return new common_1.PageModel(page.name, page.displayOrder, page.userID, page.pageID);
+                return new nffyi_common_1.PageModel(page.name, page.displayOrder, page.userID, page.pageID);
             });
         });
         return Promise.all(keyPromises);
@@ -59,7 +60,7 @@ router.put('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
     let userID = req.user ? req.user.userID : 1;
     // Authorize
     if (userID === req.body.userID || req.user.userID === 2) {
-        let updatePage = new common_1.PageModel(req.body.name, req.body.displayOrder, req.body.userID, req.params.pageID);
+        let updatePage = new nffyi_common_1.PageModel(req.body.name, req.body.displayOrder, req.body.userID, req.params.pageID);
         pagesModel.update(updatePage)
             .then(page => {
             if (!page)
@@ -80,7 +81,7 @@ router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
     let userID = req.user ? req.user.userID : 1;
     // Authorize
     if (userID === req.body.userID || req.user.userID === 2) {
-        pagesModel.create(new common_1.PageModel(req.body.name, req.body.displayOrder, userID, null))
+        pagesModel.create(new nffyi_common_1.PageModel(req.body.name, req.body.displayOrder, userID, null))
             .then(page => {
             log('Attempted to create Page: ' + util.inspect(page));
             res.json(page);

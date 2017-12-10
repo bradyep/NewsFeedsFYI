@@ -12,7 +12,8 @@ import authRouter = require('./authenticate');
 // import { LinkModel } from '../../nffyi-common/models';
 // import UserModel = require('../models/User');
 // import { UserModel } from '../../nffyi-common/models';
-import { LinkModel, UserModel } from '../models/common';
+// import { LinkModel, UserModel } from '../models/common';
+import { LinkModel, UserModel } from 'nffyi-common';
 
 /* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function(req, res, next) {

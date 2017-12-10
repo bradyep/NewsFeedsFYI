@@ -6,7 +6,8 @@ const error = errorModule('nffyi-rest:error');
 const modelDef = require("./nffyi-sequelize");
 // import LinkModel = require('./link');
 // import { LinkModel } from '../../nffyi-common/models';
-const common_1 = require("./common");
+// import { LinkModel } from './common';
+const nffyi_common_1 = require("nffyi-common");
 function create(link) {
     return modelDef.connectDB('SQLink')
         .then(SQLink => {
@@ -52,7 +53,7 @@ function read(linkID) {
                 return null;
             }
             else {
-                return new common_1.LinkModel(link.url, link.name, link.displayOrder, link.linkID, link.userID);
+                return new nffyi_common_1.LinkModel(link.url, link.name, link.displayOrder, link.linkID, link.userID);
             }
         });
     });
