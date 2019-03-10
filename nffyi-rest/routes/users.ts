@@ -1,17 +1,12 @@
-// import express = require("express");
 import * as express from "express";
 var router = express.Router();
 import * as util from 'util';
-// import User = require('../models/User');
 import * as usersModel from '../models/users-sequelize';
 import logModule = require('debug');
   const log = logModule('nffyi-rest:router-users');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-// import UserModel = require('../models/User');
-// import { UserModel } from '../../nffyi-common/models';
-// import { UserModel } from '../models/common';
 import { UserModel } from 'nffyi-common';
 import { GUEST_ID, ADMIN_ID } from '../constants/users';
 
