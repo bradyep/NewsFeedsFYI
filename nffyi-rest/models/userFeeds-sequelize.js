@@ -4,9 +4,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const logModule = require("debug");
 const log = logModule('nffyi-rest:userFeeds-model');
 const error = logModule('nffyi-rest:error');
@@ -87,11 +88,12 @@ function getNewsItemsFromFeedAsync(url, feedSourceID) {
             let feedItems = newsItems.slice(0, VAR_MAX_NEWS_ITEMS);
             let cachedNewsItems = new Array();
             feedItems.map((item) => {
-                let shortCleanDesc = item.description
+                let shortCleanDesc = item.description ? item.description
                     .replace(/<\/?[^>]+(>|$)/g, "")
                     .replace(/ *\([^)]*\) */g, "")
                     .replace(/\s\s+/g, ' ')
-                    .substr(0, 240);
+                    .substr(0, 240)
+                    : 'Description was null';
                 let cachedNewsItem = new nffyi_common_1.CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
                 cachedNewsItems.push(cachedNewsItem);
             });
@@ -120,9 +122,9 @@ function updateCachedNewsItemsAsync(cachedNewsItems) {
     });
 }
 exports.updateCachedNewsItemsAsync = updateCachedNewsItemsAsync;
+/** Determines whether a FeedSource's cache is up to date */
 function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Determine whether FeedSource's cache is up to date
         const SQFeedSourceModel = yield modelDef.connectDB('SQFeedSource');
         let feedSourceModel = yield SQFeedSourceModel['find']({ where: { feedSourceID } });
         if (!feedSourceModel)
@@ -155,7 +157,7 @@ exports.updateFeedSourceCachedNewsItemsIfNeeded = updateFeedSourceCachedNewsItem
 function readAsync(feedSourceID, pageID) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const cachedNewsItemsUpdated = updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
+            const cachedNewsItemsUpdated = yield updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
             log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
             const userFeedModel = yield getUserFeedAsync(feedSourceID, pageID);
             return userFeedModel;
@@ -180,6 +182,7 @@ function destroy(feedSourceID, pageID) {
 }
 exports.destroy = destroy;
 ;
+/** Returns all feedSourceIDs for a given pageID */
 function keylist(pageID) {
     return modelDef.connectDB('SQUserFeed')
         .then(SQUserFeed => {

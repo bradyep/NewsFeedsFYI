@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const logModule = require("debug");
 const log = logModule('nffyi-rest:cachedNewsItems-model');
 const errorModule = require("debug");
@@ -45,6 +46,7 @@ function update(cachedNewsItem) {
 }
 exports.update = update;
 ;
+/** Returns the CachedNewsItemModel for a given key */
 function read(cachedNewsItemID) {
     return modelDef.connectDB('SQCachedNewsItem')
         .then(SQCachedNewsItem => {

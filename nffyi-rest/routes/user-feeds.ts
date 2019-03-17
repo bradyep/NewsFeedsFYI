@@ -1,6 +1,6 @@
-import express = require("express");
-var router = express.Router();
-import util = require('util');
+import * as express from 'express';
+  const router = express.Router();
+import * as util from 'util'
 import userFeedsModel = require('../models/userfeeds-sequelize');
 import cachedNewsItemsModel = require('../models/cached-newsitems-sequelize');
 import feedSourcesModel = require('../models/feedsources-sequelize');
@@ -35,7 +35,7 @@ router.get('/', function(req, res, next) {
 });
 */
 
-// GET UserFeeds By PageID
+/** GET UserFeeds By PageID */
 router.get('/page/:pageid', function (req, res, next) {
   // authorizeRequest(req, res, next, false);
 
@@ -70,11 +70,11 @@ router.get('/page/:pageid', function (req, res, next) {
     .catch(err => { error('router-userFeeds ' + err); next(err); });
 });
 
-// We are returning as type 'any', but this actually returns an array of UserFeedModel
-var getUserFeeds = function (pageID: number): Promise<any> {
+/** Returns all UserFeedModels for a given page id */
+const getUserFeeds = (pageID: number): Promise<any> =>  {
   return userFeedsModel.keylist(pageID)
     .then(keylist => {
-      var keyPromises = keylist.map(key => {
+      const keyPromises = keylist.map(key => {
         // return userFeedsModel.read(key, pageID)
         return userFeedsModel.readAsync(key, pageID)
           .then((userFeed: UserFeedModel) => {
@@ -95,7 +95,8 @@ var getUserFeeds = function (pageID: number): Promise<any> {
     });
 };
 
-var getCachedNewsItems = function (feedSourceIDs: Array<number>): any {
+/** Gets all CachedNewsItemModels associated with a supplied array of feedSourceIds */
+const getCachedNewsItems = (feedSourceIDs: Array<number>): any => {
   return cachedNewsItemsModel.getKeysForMultipleFeedSourceID(feedSourceIDs)
     .then(keylist => {
       var keyPromises = keylist.map(key => {
@@ -115,7 +116,8 @@ var getCachedNewsItems = function (feedSourceIDs: Array<number>): any {
     });
 };
 
-var getFeedSources = function (feedSourceIDs: Array<number>): any {
+/** Returns an array of FeedSourceModels given an array of their IDs */
+const getFeedSources = (feedSourceIDs: Array<number>): Promise<FeedSourceModel[]> => {
   var keyPromises = feedSourceIDs.map(key => {
     return feedSourcesModel.read(key)
       .then(fs => {

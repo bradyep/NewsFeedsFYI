@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const util = require("util");
 const express = require("express");
 exports.router = express.Router();
@@ -30,6 +31,7 @@ function ensureAuthenticated(req, res, next) {
         err = new Error('Not Authenticated');
         err.status = 401;
         next(err);
+        // }, 1000);
     }
 }
 exports.ensureAuthenticated = ensureAuthenticated;

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const logModule = require("debug");
 const log = logModule('nffyi-rest:pages-model');
 const errorModule = require("debug");

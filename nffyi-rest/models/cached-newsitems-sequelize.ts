@@ -42,7 +42,8 @@ export function update(cachedNewsItem:CachedNewsItemModel) {
     });
 };
 
-export function read(cachedNewsItemID) {
+/** Returns the CachedNewsItemModel for a given key */
+export function read(cachedNewsItemID): Promise<CachedNewsItemModel> {
     return modelDef.connectDB('SQCachedNewsItem')
     .then(SQCachedNewsItem => {
         return SQCachedNewsItem['find']({ where: { cachedNewsItemID } })
