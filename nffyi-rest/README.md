@@ -8,6 +8,8 @@ This is the REST application that makes up the backend.
 
 ## Usage
 
+The build task is defined in tasks.json and can be invoked with `shift + ctrl + B`. This runs tsc on 'watch' mode.
+
 Currently it must be run from VS Code so that the required environmental variable are set.
 
 ## Environmental Variables

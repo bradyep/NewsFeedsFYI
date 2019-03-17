@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const logModule = require("debug");
 const log = logModule('nffyi-rest:feedSources-model');
 const errorModule = require("debug");
@@ -41,6 +42,7 @@ function update(pFeedSource) {
 }
 exports.update = update;
 ;
+/** Returns FeedSourceModel from the database for a given ID */
 function read(feedSourceID) {
     return modelDef.connectDB('SQFeedSource')
         .then(SQFeedSource => {

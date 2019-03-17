@@ -1,18 +1,13 @@
 "use strict";
-// import express = require("express");
 const express = require("express");
 var router = express.Router();
 const util = require("util");
-// import User = require('../models/User');
 const usersModel = require("../models/users-sequelize");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:router-users');
 const errorModule = require("debug");
 const error = errorModule('nffyi-rest:error');
 const authRouter = require("./authenticate");
-// import UserModel = require('../models/User');
-// import { UserModel } from '../../nffyi-common/models';
-// import { UserModel } from '../models/common';
 const nffyi_common_1 = require("nffyi-common");
 const users_1 = require("../constants/users");
 /* GET users listing. */
