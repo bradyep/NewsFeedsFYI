@@ -1,5 +1,5 @@
-// IMPORTANT: This route should no longer be needed!
 "use strict";
+// IMPORTANT: This route should no longer be needed!
 // var express = require('express');
 const express = require("express");
 var router = express.Router();

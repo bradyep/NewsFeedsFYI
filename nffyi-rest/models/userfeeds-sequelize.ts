@@ -74,11 +74,12 @@ export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: numbe
     let cachedNewsItems = new Array<CachedNewsItemModel>();
 
     feedItems.map((item: any) => {
-      let shortCleanDesc = item.description
+      let shortCleanDesc = item.description ? item.description
         .replace(/<\/?[^>]+(>|$)/g, "")
         .replace(/ *\([^)]*\) */g, "")
         .replace(/\s\s+/g, ' ')
-        .substr(0, 240);
+        .substr(0, 240)
+          : 'Description was null'
 
       let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
       cachedNewsItems.push(cachedNewsItem);
@@ -106,8 +107,8 @@ export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItem
   }
 }
 
+/** Determines whether a FeedSource's cache is up to date */
 export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: number): Promise<boolean> {
-    // Determine whether FeedSource's cache is up to date
     const SQFeedSourceModel = await modelDef.connectDB('SQFeedSource');
     let feedSourceModel: FeedSourceModel = await SQFeedSourceModel['find']({ where: { feedSourceID } });
     if (!feedSourceModel) error("Cannot find FeedSource for supplied feedSourceID: " + feedSourceID);
@@ -138,7 +139,7 @@ export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: numb
 
 export async function readAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel> {
   try {
-    const cachedNewsItemsUpdated = updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
+    const cachedNewsItemsUpdated = await updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
     log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
 
     const userFeedModel = await getUserFeedAsync(feedSourceID, pageID);
@@ -159,6 +160,7 @@ export function destroy(feedSourceID, pageID) {
     });
 };
 
+/** Returns all feedSourceIDs for a given pageID */
 export function keylist(pageID: number) {
   return modelDef.connectDB('SQUserFeed')
     .then(SQUserFeed => {

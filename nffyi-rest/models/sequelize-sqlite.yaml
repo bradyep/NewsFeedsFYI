@@ -4,3 +4,4 @@ password:
 params:
     storage: nffyi-rest-sequelize.sqlite3
     dialect: sqlite
+    logging: false

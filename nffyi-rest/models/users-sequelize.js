@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const logModule = require("debug");
 const log = logModule('nffyi-rest:users-model');
 const errorModule = require("debug");
@@ -55,6 +56,17 @@ function read(userID) {
             }
             else {
                 return new nffyi_common_1.UserModel(user.username, user.password, user.email, user.roleID, user.userID, user.lastAccessDate);
+                // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
+                // var test = new User();
+                /*
+                            return {
+                                userID: user.userID,
+                                userName: user.userName,
+                                password: user.password,
+                                email: user.email,
+                                lastAccessDate: user.lastAccessDate
+                            };
+                            */
             }
         });
     });

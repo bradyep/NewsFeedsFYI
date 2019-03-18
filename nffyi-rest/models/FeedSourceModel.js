@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const util = require("util");
 const logModule = require("debug");
 const log = logModule('nffyi-rest:FeedSource');
@@ -27,6 +28,5 @@ class FeedSourceModel {
 }
 exports.FeedSourceModel = FeedSourceModel;
 ; // /class FeedSource
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FeedSourceModel;
 //# sourceMappingURL=FeedSourceModel.js.map

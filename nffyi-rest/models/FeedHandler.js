@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // import request from 'request';
 const request = require("request");
 const FeedParser = require("feedparser");
@@ -26,6 +27,5 @@ class FeedHandler {
         }); // /return new Promise( (resolve, reject) => {
     } // static parse (options) {
 } // /export default class FeedHandler
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = FeedHandler;
 //# sourceMappingURL=FeedHandler.js.map

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const util = require("util");
 const usersModel = require("./models/users-sequelize");
 // import UserModel = require('./models/User');

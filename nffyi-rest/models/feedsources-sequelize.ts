@@ -39,7 +39,8 @@ export function update(pFeedSource: FeedSourceModel) {
     });
 };
 
-export function read(feedSourceID) {
+/** Returns FeedSourceModel from the database for a given ID */
+export function read(feedSourceID): Promise<FeedSourceModel> {
     return modelDef.connectDB('SQFeedSource')
     .then(SQFeedSource => {
         return SQFeedSource['find']({ where: { feedSourceID } })
