@@ -1,7 +1,7 @@
 import * as express from 'express';
   const router = express.Router();
 import * as util from 'util'
-import userFeedsModel = require('../models/userfeeds-sequelize');
+import userFeedsModel = require('../models/userFeeds-sequelize');
 import cachedNewsItemsModel = require('../models/cached-newsitems-sequelize');
 import feedSourcesModel = require('../models/feedsources-sequelize');
 import logModule = require('debug');

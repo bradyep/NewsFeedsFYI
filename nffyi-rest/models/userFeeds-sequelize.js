@@ -206,4 +206,4 @@ function count() {
 }
 exports.count = count;
 ;
-//# sourceMappingURL=userfeeds-sequelize.js.map
+//# sourceMappingURL=userFeeds-sequelize.js.map
