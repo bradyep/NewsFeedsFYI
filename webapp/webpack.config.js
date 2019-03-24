@@ -9,6 +9,7 @@ var outPath = path.join(__dirname, './dist');
 // plugins
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   context: sourcePath,
@@ -103,7 +104,10 @@ module.exports = {
     }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development'
-    })
+    }),
+    new CopyWebpackPlugin([
+      {from:'assets', to:'assets'}
+    ])
   ],
   devServer: {
     contentBase: sourcePath,

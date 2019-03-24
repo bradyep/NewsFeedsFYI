@@ -1,3 +1,11 @@
 node_modules
 bower_components
 logs*
+.vscode
+.DS_STORE
+.module-cache
+*.log*
+build
+dist
+*.sqlite3
+*.map

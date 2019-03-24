@@ -4,13 +4,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments)).next());
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 const express = require("express");
-var router = express.Router();
+const router = express.Router();
 const util = require("util");
-const userFeedsModel = require("../models/userfeeds-sequelize");
+const userFeedsModel = require("../models/userFeeds-sequelize");
 const cachedNewsItemsModel = require("../models/cached-newsitems-sequelize");
 const feedSourcesModel = require("../models/feedsources-sequelize");
 const logModule = require("debug");
@@ -36,7 +36,7 @@ router.get('/', function(req, res, next) {
   .catch(err => { error('router-userFeeds ' + err); next(err); });
 });
 */
-// GET UserFeeds By PageID
+/** GET UserFeeds By PageID */
 router.get('/page/:pageid', function (req, res, next) {
     // authorizeRequest(req, res, next, false);
     getUserFeeds(req.params.pageid)
@@ -68,11 +68,11 @@ router.get('/page/:pageid', function (req, res, next) {
     })
         .catch(err => { error('router-userFeeds ' + err); next(err); });
 });
-// We are returning as type 'any', but this actually returns an array of UserFeedModel
-var getUserFeeds = function (pageID) {
+/** Returns all UserFeedModels for a given page id */
+const getUserFeeds = (pageID) => {
     return userFeedsModel.keylist(pageID)
         .then(keylist => {
-        var keyPromises = keylist.map(key => {
+        const keyPromises = keylist.map(key => {
             // return userFeedsModel.read(key, pageID)
             return userFeedsModel.readAsync(key, pageID)
                 .then((userFeed) => {
@@ -83,7 +83,8 @@ var getUserFeeds = function (pageID) {
         return Promise.all(keyPromises);
     });
 };
-var getCachedNewsItems = function (feedSourceIDs) {
+/** Gets all CachedNewsItemModels associated with a supplied array of feedSourceIds */
+const getCachedNewsItems = (feedSourceIDs) => {
     return cachedNewsItemsModel.getKeysForMultipleFeedSourceID(feedSourceIDs)
         .then(keylist => {
         var keyPromises = keylist.map(key => {
@@ -96,7 +97,8 @@ var getCachedNewsItems = function (feedSourceIDs) {
         return Promise.all(keyPromises);
     });
 };
-var getFeedSources = function (feedSourceIDs) {
+/** Returns an array of FeedSourceModels given an array of their IDs */
+const getFeedSources = (feedSourceIDs) => {
     var keyPromises = feedSourceIDs.map(key => {
         return feedSourcesModel.read(key)
             .then(fs => {
