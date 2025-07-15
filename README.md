@@ -20,7 +20,7 @@ newsfeeds.fyi - All Your News, at a Glance!
 
 ## Misc
 
-* The data directory is /var/lib/nffyi-data
+* The data directory in the docker image is /var/lib/nffyi-data
 
 # Server
 

@@ -13,7 +13,6 @@
         "noImplicitReturns": true,
         "removeComments": true,
         "strictNullChecks": true,
-        "watch": true,
         "jsx": "react",
         "outDir": "build",
         "lib": [
