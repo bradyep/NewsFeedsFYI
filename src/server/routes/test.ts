@@ -32,7 +32,7 @@ router.get('/', function(req, res, next) {
 var getKeyTitlesList = function() {
     return usersModel.keylist()
     .then(keylist => {
-        var keyPromises = keylist.map(key => {
+        var keyPromises = keylist.map((key: any) => {
             return usersModel.read(key).then(user => {
                 return { userID: user.userID, username: user.username };
             });

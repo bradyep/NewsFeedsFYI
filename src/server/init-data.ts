@@ -1,10 +1,6 @@
 import util = require('util');
 import usersModel = require('./models/users-sequelize');
-// import UserModel = require('./models/User');
-// import { UserModel } from '../nffyi-common/models';
-// import { UserModel } from './models/common';
-import { UserModel } from 'nffyi-common';
-// let UserModel = models.UserModel;
+import { UserModel } from '../common/models';
 
 // May need to set up environment variables
 // $env:SEQUELIZE_CONNECT='models/sequelize-sqlite.yaml'
@@ -13,6 +9,7 @@ import { UserModel } from 'nffyi-common';
 // Get-ChildItem env:
 
 // Create Users
+// TODO: Eventually remove this as it poses a security risk
 let adminUser = new UserModel('admin', 'Passw0rd', 'admin@newsfeeds.fyi', 1);
 usersModel.create(adminUser)
 .then(user => {

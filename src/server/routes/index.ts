@@ -27,8 +27,13 @@ router.get('/logout', function(req, res, next) {
   //   res.redirect('/'); //Inside a callback… bulletproof!
   // });
 
-  req.logout();
-  res.redirect('/');
+  req.logout(function(err) {
+    if (err) {
+      error(err);
+      return next(err);
+    }
+    res.redirect('/');
+  });
 });
 
 // module.exports = router;

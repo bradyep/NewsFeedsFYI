@@ -56,7 +56,7 @@ export function read(feedSourceID: any): Promise<FeedSourceModel> {
     });
 };
 
-export function getByURL(url: string):Promise<FeedSourceModel | null> {
+export function getByURL(url: string):Promise<FeedSourceModel | undefined> {
   return modelDef.connectDB('SQFeedSource')
   .then((SQFeedSource: any) => {
       return SQFeedSource['find']({ where: { url } })

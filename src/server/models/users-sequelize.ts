@@ -2,15 +2,12 @@ import logModule = require('debug');
   const log = logModule('nffyi-rest:users-model');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
-
 import modelDef = require('./nffyi-sequelize');
-// import { UserModel } from '../../nffyi-common/models';
-// import { UserModel } from './common';
-import { UserModel } from 'nffyi-common';
+import { UserModel } from '../../common/models';
 
 export function create(user:UserModel) {
     return modelDef.connectDB('SQUser')
-    .then(SQUser => {
+    .then((SQUser: any) => {
         return SQUser['create']({
             username: user.username,
             password: user.password,
@@ -21,11 +18,11 @@ export function create(user:UserModel) {
     });
 };
 
-export function update(userID, username, password, email) {
+export function update(userID: number, username: string, password: string, email: string) {
     return modelDef.connectDB('SQUser')
-    .then(SQUser => {
+    .then((SQUser: any) => {
         return SQUser['find']({ where: { userID } })
-        .then(user => {
+        .then((user: any) => {
             if (!user) {
                 // throw new Error("No User found for userID " + userID);
                 return null;
@@ -42,11 +39,11 @@ export function update(userID, username, password, email) {
 };
 
 /** Get one User from the Database */
-export function read(userID) {
+export function read(userID: number) {
     return modelDef.connectDB('SQUser')
-    .then(SQUser => {
+    .then((SQUser: any) => {
         return SQUser['find']({ where: { userID } })
-        .then(user => {
+        .then((user: any) => {
             if (!user) {
                 // throw new Error("No user found for " + userID);
                 return null;
@@ -68,11 +65,11 @@ export function read(userID) {
     });
 };
 
-export function destroy(userID) {
+export function destroy(userID: number) {
     return modelDef.connectDB('SQUser')
-    .then(SQUser => {
+    .then((SQUser: any) => {
         return SQUser['find']({ where: { userID } })
-        .then(user => {
+        .then((user: any) => {
             if (!user) return null;
             else return user.destroy();
         });
@@ -81,19 +78,19 @@ export function destroy(userID) {
 
 export function keylist() {
     return modelDef.connectDB('SQUser')
-    .then(SQUser => {
+    .then((SQUser: any) => {
         return SQUser['findAll']({ attributes: [ 'userID' ] })
-        .then(users => {
-            return users.map(user => user.userID);
+        .then((users: any) => {
+            return users.map((user: any) => user.userID);
         });
     });
 };
 
 export function count() {
     return modelDef.connectDB('SQUser')
-    .then(SQUser => {
+    .then((SQUser: any) => {
         return SQUser['count']()
-        .then(count => {
+        .then((count: any) => {
             log('COUNT ' + count);
             return count;
         });
@@ -101,8 +98,8 @@ export function count() {
 };
 
 /** Check if supplied credentials are valid */
-export function userPasswordCheck(username, password) {
-    return modelDef.connectDB('SQUser').then(SQUser => {
+export function userPasswordCheck(username: string, password: string) {
+    return modelDef.connectDB('SQUser').then((SQUser: any) => {
         return SQUser['find']({ where: { username } })
     })
     .then(user => {

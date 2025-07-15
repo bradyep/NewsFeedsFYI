@@ -5,7 +5,7 @@ import { observable, action } from 'mobx';
 import { UserFeedModel } from './';
 
 export class PageModel {
-    pageID: number; // PK
+    pageID: number | undefined; // PK
     userID: number; // FK
     @observable public name: string;
     @observable public displayOrder: number;
@@ -15,7 +15,7 @@ export class PageModel {
       console.log('hey!');
     }
 
-    constructor(name:string, displayOrder:number, userID:number, pageID:number) {
+    constructor(name: string, displayOrder: number, userID: number, pageID?: number) {
         this.name = name;
         this.displayOrder = displayOrder;
         this.userID = userID;

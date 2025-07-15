@@ -7,7 +7,7 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import { UserModel } from 'nffyi-common';
+import { UserModel } from '../../common/models';
 import { GUEST_ID, ADMIN_ID } from '../constants/users';
 
 /* GET users listing. */
@@ -41,7 +41,7 @@ import { GUEST_ID, ADMIN_ID } from '../constants/users';
 var getKeyList = function() {
     return usersModel.keylist()
     .then(keylist => {
-        var keyPromises = keylist.map(key => {
+        var keyPromises = keylist.map((key: any) => {
             return usersModel.read(key).then(user => {
                 return { 
                   userID: user.userID, 
@@ -61,7 +61,7 @@ var getKeyList = function() {
 router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to see another User's data
 
-  usersModel.read(req.params.userid)
+  usersModel.read(+req.params.userid)
   .then((user:UserModel) => {
     if (!user) next();
     else res.json(user);
@@ -73,8 +73,7 @@ router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
 router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be admin to update any User than oneself
 
-
-  usersModel.update(req.params.userid, req.body.username, req.body.password, req.body.email)
+  usersModel.update(+req.params.userid, req.body.username, req.body.password, req.body.email)
   .then(user => {
     if (!user) next();
     else res.json(user);
@@ -101,7 +100,7 @@ router.delete('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to delete Users other than oneself
   
 
-  usersModel.destroy(req.params.userid)
+  usersModel.destroy(+req.params.userid)
   .then(user => {
     if (!user) next();
     else res.json(user);

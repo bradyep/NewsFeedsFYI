@@ -7,7 +7,7 @@ import { PageModel } from '../../common/models';
 
 export function create(page:PageModel) {
     return modelDef.connectDB('SQPage')
-    .then(SQPage => {
+    .then((SQPage: any) => {
         return SQPage['create']({
             // pageID: page.pageID, // Auto-Generated
             userID: page.userID,
@@ -19,9 +19,9 @@ export function create(page:PageModel) {
 
 export function update(page:PageModel) {
     return modelDef.connectDB('SQPage')
-    .then(SQPage => {
+    .then((SQPage: any) => {
         return SQPage['find']({ where: { pageID: page.pageID } })
-        .then(page => {
+        .then((page: any) => {
             if (!page) {
                 // throw new Error("No page found for pageID " + pageID);
                 return null;
@@ -35,11 +35,11 @@ export function update(page:PageModel) {
     });
 };
 
-export function read(pageID) {
+export function read(pageID: any) {
     return modelDef.connectDB('SQPage')
-    .then(SQPage => {
+    .then((SQPage: any) => {
         return SQPage['find']({ where: { pageID } })
-        .then(page => {
+        .then((page: any) => {
             if (!page) {
                 // throw new Error("No page found for " + pageID);
                 return null;
@@ -50,11 +50,11 @@ export function read(pageID) {
     });
 };
 
-export function destroy(pageID) {
+export function destroy(pageID: any) {
     return modelDef.connectDB('SQPage')
-    .then(SQPage => {
+    .then((SQPage: any) => {
         return SQPage['find']({ where: { pageID } })
-        .then(page => {
+        .then((page: any) => {
             if (!page) return null;
             else return page.destroy();
         });
@@ -63,19 +63,19 @@ export function destroy(pageID) {
 
 export function keylist(userID:number) {
     return modelDef.connectDB('SQPage')
-    .then(SQPage => {
+    .then((SQPage: any) => {
         return SQPage['findAll']({ where: { userID }, attributes: [ 'pageID' ] })
-        .then(pages => {
-            return pages.map(page => page.pageID);
+        .then((pages: any) => {
+            return pages.map((page: any) => page.pageID);
         });
     });
 };
 
 export function count() {
     return modelDef.connectDB('SQPage')
-    .then(SQPage => {
+    .then((SQPage: any) => {
         return SQPage['count']()
-        .then(count => {
+        .then((count: any) => {
             log('COUNT ' + count);
             return count;
         });

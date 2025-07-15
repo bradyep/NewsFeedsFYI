@@ -1,18 +1,13 @@
 import express = require("express");
 var router = express.Router();
 import util = require('util');
-// import User = require('../models/User');
 import pagesModel = require('../models/pages-sequelize');
 import logModule = require('debug');
   const log = logModule('nffyi-rest:router-pages');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import authRouter = require('./authenticate');
-// import PageModel = require('../models/Page');
-// import { PageModel, UserModel } from '../../nffyi-common/models';
-// import { PageModel, UserModel } from '../models/common';
-import { PageModel, UserModel } from 'nffyi-common';
-// import UserModel = require('../models/User');
+import { PageModel, UserModel } from '../../common/models';
 
 /* GET all Pages for requesting User */
 router.get('/', function(req, res, next) {
@@ -27,7 +22,7 @@ router.get('/', function(req, res, next) {
 var getKeyList = function(userID:number) {
     return pagesModel.keylist(userID)
     .then(keylist => {
-        var keyPromises = keylist.map(key => {
+        var keyPromises = keylist.map((key: any) => {
             return pagesModel.read(key).then(page => {
                 return new PageModel ( 
                   page.name,
@@ -49,7 +44,7 @@ router.get('/:pageid', (req, res, next) => {
     if (!page) next();
     else { 
       // Authorize
-        if (userID === page.userID || req.user.userID === 2) {
+        if (userID === page.userID || req.user && req.user.userID === 2) {
           res.json(page);
         } else {
             let err:any = new Error('Not Authenticated');
@@ -65,8 +60,8 @@ router.get('/:pageid', (req, res, next) => {
 router.put('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
-  if (userID === req.body.userID || req.user.userID === 2) {
-    let updatePage = new PageModel(req.body.name, req.body.displayOrder, req.body.userID, req.params.pageID);
+  if (userID === req.body.userID || req.user && req.user.userID === 2) {
+    let updatePage = new PageModel(req.body.name, req.body.displayOrder, req.body.userID, +req.params.pageid);
     pagesModel.update(updatePage)
     .then(page => {
       if (!page) next();
@@ -84,8 +79,8 @@ router.put('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
 router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
-  if (userID === req.body.userID || req.user.userID === 2) {
-    pagesModel.create(new PageModel(req.body.name, req.body.displayOrder, userID, null))
+  if (userID === req.body.userID || req.user && req.user.userID === 2) {
+    pagesModel.create(new PageModel(req.body.name, req.body.displayOrder, userID))
     .then(page => {
       log('Attempted to create Page: ' + util.inspect(page));
       res.json(page);
@@ -102,7 +97,7 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
 router.delete('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
   let userID:number = req.user ? req.user.userID : 1;
   // Authorize
-  if (userID === req.body.userID || req.user.userID === 2) {
+  if (userID === req.body.userID || req.user && req.user.userID === 2) {
     pagesModel.destroy(req.params.pageid)
     .then(page => {
       if (!page) next();

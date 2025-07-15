@@ -14,7 +14,7 @@ var VAR_MAX_NEWS_ITEMS: number = MAX_NEWS_ITEMS;
 
 export function create(userFeed: UserFeedModel): Promise<UserFeedModel> {
   return modelDef.connectDB('SQUserFeed')
-    .then(SQUserFeed => {
+    .then((SQUserFeed: any) => {
       return SQUserFeed['create']({
         column: userFeed.column,
         displayOrder: userFeed.displayOrder,
@@ -28,14 +28,14 @@ export function create(userFeed: UserFeedModel): Promise<UserFeedModel> {
 
 export function update(userFeed: UserFeedModel) {
   return modelDef.connectDB('SQUserFeed')
-    .then(SQUserFeed => {
+    .then((SQUserFeed: any) => {
       return SQUserFeed['find']({
         where: {
           feedSourceID: userFeed.feedSourceID,
           pageID: userFeed.pageID
         }
       })
-        .then(userFeed => {
+        .then((userFeed: any) => {
           if (!userFeed) {
             // throw new Error("No userFeed found for userFeedID " + userFeedID);
             return null;
@@ -51,9 +51,9 @@ export function update(userFeed: UserFeedModel) {
     });
 };
 
-export async function getUserFeedAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel> {
+  export async function getUserFeedAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel | undefined> {
   try {
-    const SQUserFeedModel = await modelDef.connectDB('SQUserFeed');
+    const SQUserFeedModel: any = await modelDef.connectDB('SQUserFeed');
     let dbUserFeedModel: UserFeedModel = await SQUserFeedModel['find']({ where: { feedSourceID, pageID } });
     if (!dbUserFeedModel) throw new Error("Cannot find UserFeed for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
     let userFeedModel = new UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
@@ -61,10 +61,12 @@ export async function getUserFeedAsync(feedSourceID: number, pageID: number): Pr
     return userFeedModel;
   } catch (err) {
     error("Error Calling getUserFeedAsync: " + err);
+
+    return undefined;
   }
 }
 
-export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: number): Promise<CachedNewsItemModel[]> {
+  export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: number): Promise<CachedNewsItemModel[] | undefined> {
   try {
     const newsItems: any = await FeedHandler.parse(url);
     let feedItems = newsItems.slice(0, VAR_MAX_NEWS_ITEMS);
@@ -78,7 +80,7 @@ export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: numbe
         .substr(0, 240)
           : 'Description was null'
 
-      let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, null, item.meta.title, item.meta.link);
+      let cachedNewsItem = new CachedNewsItemModel(item.title, item.link, shortCleanDesc, feedSourceID, undefined, item.meta.title, item.meta.link);
       cachedNewsItems.push(cachedNewsItem);
     });
 
@@ -86,10 +88,12 @@ export async function getNewsItemsFromFeedAsync(url: string, feedSourceID: numbe
 
   } catch (err) {
     error("Error Calling getNewsItemsFromFeedAsync: " + err);
+
+    return undefined;
   }
 }
 
-export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItemModel[]): Promise<string[]> {
+export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItemModel[]): Promise<string[] | undefined> {
   try {
     let insertPromises = cachedNewsItems.map(cni => {
       return cachedNewsItemModel.create(cni)
@@ -101,12 +105,14 @@ export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItem
     return Promise.all(insertPromises);
   } catch (err) {
     error("Error Calling updateCachedNewsItemsAsync: " + err);
+
+    return undefined;
   }
 }
 
 /** Determines whether a FeedSource's cache is up to date */
 export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: number): Promise<boolean> {
-    const SQFeedSourceModel = await modelDef.connectDB('SQFeedSource');
+    const SQFeedSourceModel = await modelDef.connectDB('SQFeedSource') as any;
     let feedSourceModel: FeedSourceModel = await SQFeedSourceModel['find']({ where: { feedSourceID } });
     if (!feedSourceModel) error("Cannot find FeedSource for supplied feedSourceID: " + feedSourceID);
 
@@ -118,11 +124,11 @@ export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: numb
 
     if (diffInMinutes > VAR_MINUTES_TO_CACHE_FEED) {
       log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CACHE_FEED: " + VAR_MINUTES_TO_CACHE_FEED + ". Cache is out of date, fetching updated newsfeed");
-      const newNewsItems: CachedNewsItemModel[] = await getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID);
+      const newNewsItems: CachedNewsItemModel[] = await getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID) ?? [];
       log('Got ' + newNewsItems.length + 'back from calling userfeeds-sequelize.getNewsItemsFromFeedAsync');
       const deleteOldCachedNewsItemsReturn: any = await cachedNewsItemModel.destroyByFeedSourceID(feedSourceID);
       log('Deleted ' + deleteOldCachedNewsItemsReturn.length + ' items from calling cachedNewsItemModel.destroyByFeedSourceID');
-      const updateCachedNewsItemsReturn: string[] = await updateCachedNewsItemsAsync(newNewsItems);
+      const updateCachedNewsItemsReturn: string[] = await updateCachedNewsItemsAsync(newNewsItems) ?? [];
       log('Updated ' + updateCachedNewsItemsReturn.length + ' items from calling userfeeds-sequelize.updateCachedNewsItemsAsync');
       // Put together a real feedSourceModel and update its lastCachedDate
       let realFeedSourceModel: FeedSourceModel = new FeedSourceModel(feedSourceModel.url, feedSourceModel.cachedTitle, feedSourceModel.cachedWebsiteURL, new Date(), feedSourceModel.feedSourceID);
@@ -134,7 +140,7 @@ export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: numb
     }
 }
 
-export async function readAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel> {
+export async function readAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel | undefined> {
   try {
     const cachedNewsItemsUpdated = await updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID);
     log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
@@ -143,14 +149,16 @@ export async function readAsync(feedSourceID: number, pageID: number): Promise<U
     return userFeedModel;
   } catch (err) {
     error("Error Calling readAsync: " + err);
+
+    return undefined;
   }
 }
 
-export function destroy(feedSourceID, pageID) {
+export function destroy(feedSourceID: number, pageID: number) {
   return modelDef.connectDB('SQUserFeed')
-    .then(SQUserFeed => {
+    .then((SQUserFeed: any) => {
       return SQUserFeed['find']({ where: { feedSourceID, pageID } })
-        .then(userFeed => {
+        .then((userFeed: any) => {
           if (!userFeed) return null;
           else return userFeed.destroy();
         });
@@ -160,19 +168,19 @@ export function destroy(feedSourceID, pageID) {
 /** Returns all feedSourceIDs for a given pageID */
 export function keylist(pageID: number) {
   return modelDef.connectDB('SQUserFeed')
-    .then(SQUserFeed => {
+    .then((SQUserFeed: any) => {
       return SQUserFeed['findAll']({ where: { pageID }, attributes: ['feedSourceID'] })
-        .then(userFeeds => {
-          return userFeeds.map(userFeed => userFeed.feedSourceID);
+        .then((userFeeds: any) => {
+          return userFeeds.map((userFeed: any) => userFeed.feedSourceID);
         });
     });
 };
 
 export function count() {
   return modelDef.connectDB('SQUserFeed')
-    .then(SQUserFeed => {
+    .then((SQUserFeed: any) => {
       return SQUserFeed['count']()
-        .then(count => {
+        .then((count: any) => {
           log('COUNT ' + count);
           return count;
         });
