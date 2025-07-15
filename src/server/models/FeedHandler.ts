@@ -3,14 +3,12 @@ import * as request from 'request';
 import * as FeedParser from 'feedparser';
 
 export default class FeedHandler {
-  // thing:string;
-  // test () { return ""; }
   static parse (url:string) {
     return new Promise((resolve, reject) => {
       var items:Array<any> = [];
       const feedparser = new FeedParser();
 
-      feedparser.on('error', (err) => {
+      feedparser.on('error', (err: any) => {
         reject(err);
       });
 

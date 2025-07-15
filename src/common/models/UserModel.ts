@@ -3,21 +3,15 @@ const log = logModule('nffyi-common:User');
 const error = logModule('nffyi-common:error');
 
 export class UserModel {
-  userID?: number;
-  username: string;
-  password: string;
-  email: string;
-  lastAccessDate?: Date;
-  roleID: number;
 
-  constructor(username: string, password: string, email: string, roleID: number, userID?: number, lastAccessDate?: Date) {
-    this.username = username;
-    this.password = password;
-    this.email = email;
-    this.roleID = roleID
-    this.userID = userID;
-    this.lastAccessDate = lastAccessDate;
-  }
+  constructor(
+    public username: string, 
+    public password: string, 
+    public email: string, 
+    public roleID: number, 
+    public userID?: number, 
+    public lastAccessDate?: Date
+  ) { }
 
   get JSON() {
     return JSON.stringify({
@@ -33,4 +27,4 @@ export class UserModel {
   }
 }; // /class User
 
-export default UserModel;
+// export default UserModel;

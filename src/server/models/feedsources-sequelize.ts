@@ -2,13 +2,14 @@ import logModule = require('debug');
   const log = logModule('nffyi-rest:feedSources-model');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
-
 import modelDef = require('./nffyi-sequelize');
-import FeedSourceModel from './FeedSourceModel';
+import { FeedSourceModel } from './FeedSourceModel';
+
+// TODO: See if the sequelize stuff can be typed instead of using 'any'
 
 export function create(feedSource:FeedSourceModel): Promise<FeedSourceModel> {
     return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSource => {
+    .then((SQFeedSource: any) => {
         return SQFeedSource['create']({
             // feedSourceID: feedSource.feedSourceID, // Auto-Generated
             url: feedSource.url,
@@ -21,9 +22,9 @@ export function create(feedSource:FeedSourceModel): Promise<FeedSourceModel> {
 
 export function update(pFeedSource: FeedSourceModel) {
     return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSource => {
+    .then((SQFeedSource: any) => {
         return SQFeedSource['find']({ where: { feedSourceID: pFeedSource.feedSourceID } })
-        .then(feedSource => {
+        .then((feedSource: any) => {
             if (!feedSource) {
                 // throw new Error("No feedSource found for feedSourceID " + feedSourceID);
                 return null;
@@ -40,11 +41,11 @@ export function update(pFeedSource: FeedSourceModel) {
 };
 
 /** Returns FeedSourceModel from the database for a given ID */
-export function read(feedSourceID): Promise<FeedSourceModel> {
+export function read(feedSourceID: any): Promise<FeedSourceModel> {
     return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSource => {
+    .then((SQFeedSource: any) => {
         return SQFeedSource['find']({ where: { feedSourceID } })
-        .then(feedSource => {
+        .then((feedSource: any) => {
             if (!feedSource) {
                 // throw new Error("No feedSource found for " + feedSourceID);
                 return null;
@@ -57,9 +58,9 @@ export function read(feedSourceID): Promise<FeedSourceModel> {
 
 export function getByURL(url: string):Promise<FeedSourceModel | null> {
   return modelDef.connectDB('SQFeedSource')
-  .then(SQFeedSource => {
+  .then((SQFeedSource: any) => {
       return SQFeedSource['find']({ where: { url } })
-      .then(feedSource => {
+      .then((feedSource: any) => {
           if (!feedSource) {
               // throw new Error("No feedSource found for " + feedSourceID);
               return null;
@@ -70,11 +71,11 @@ export function getByURL(url: string):Promise<FeedSourceModel | null> {
   });
 };
 
-export function destroy(feedSourceID) {
+export function destroy(feedSourceID: any) {
     return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSource => {
+    .then((SQFeedSource: any) => {
         return SQFeedSource['find']({ where: { feedSourceID } })
-        .then(feedSource => {
+        .then((feedSource: any) => {
             if (!feedSource) return null;
             else return feedSource.destroy();
         });
@@ -83,19 +84,19 @@ export function destroy(feedSourceID) {
 
 export function keylist() {
     return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSource => {
+    .then((SQFeedSource: any) => {
         return SQFeedSource['findAll']({ attributes: [ 'feedSourceID' ] })
-        .then(feedSources => {
-            return feedSources.map(feedSource => feedSource.feedSourceID);
+        .then((feedSources: any) => {
+            return feedSources.map((feedSource: any) => feedSource.feedSourceID);
         });
     });
 };
 
 export function count() {
     return modelDef.connectDB('SQFeedSource')
-    .then(SQFeedSource => {
+    .then((SQFeedSource: any) => {
         return SQFeedSource['count']()
-        .then(count => {
+        .then((count: any) => {
             log('COUNT ' + count);
             return count;
         });

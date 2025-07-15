@@ -4,15 +4,12 @@ const error = logModule('nffyi-rest:error');
 import FeedHandler from './FeedHandler';
 import feedSourcesModel = require('../models/feedsources-sequelize');
 import cachedNewsItemModel = require('../models/cached-newsitems-sequelize');
-import FeedSourceModel from '../models/FeedSourceModel';
+import { FeedSourceModel } from '../models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
-// import { UserFeedModel, CachedNewsItemModel } from '../../nffyi-common/models';
-// import { UserFeedModel, CachedNewsItemModel } from './common';
-import { UserFeedModel, CachedNewsItemModel, MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from 'nffyi-common';
-// import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../../nffyi-common/constants/newsfeeds';
-// import { MINUTES_TO_CAHCE_FEED, MAX_NEWS_ITEMS } from '../constants/common/newsfeeds';
+import { UserFeedModel, CachedNewsItemModel } from '../../common/models';
+import { MINUTES_TO_CACHE_FEED, MAX_NEWS_ITEMS } from '../../common/constants/newsfeeds';
 
-var VAR_MINUTES_TO_CAHCE_FEED: number = MINUTES_TO_CAHCE_FEED;
+var VAR_MINUTES_TO_CACHE_FEED: number = MINUTES_TO_CACHE_FEED;
 var VAR_MAX_NEWS_ITEMS: number = MAX_NEWS_ITEMS;
 
 export function create(userFeed: UserFeedModel): Promise<UserFeedModel> {
@@ -119,8 +116,8 @@ export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: numb
     const diffInMinutes = (Math.floor(diffInMilliseconds / (1000 * 60)));
     log('[Reading From FeedSourceID = ' + feedSourceID + '] The current time is: ' + now.toString() + '. The FeedSource was last cached at: ' + lastCachedDate.toString() + '. The difference in minutes is: ' + diffInMinutes);
 
-    if (diffInMinutes > VAR_MINUTES_TO_CAHCE_FEED) {
-      log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is out of date, fetching updated newsfeed");
+    if (diffInMinutes > VAR_MINUTES_TO_CACHE_FEED) {
+      log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CACHE_FEED: " + VAR_MINUTES_TO_CACHE_FEED + ". Cache is out of date, fetching updated newsfeed");
       const newNewsItems: CachedNewsItemModel[] = await getNewsItemsFromFeedAsync(feedSourceModel.url, feedSourceID);
       log('Got ' + newNewsItems.length + 'back from calling userfeeds-sequelize.getNewsItemsFromFeedAsync');
       const deleteOldCachedNewsItemsReturn: any = await cachedNewsItemModel.destroyByFeedSourceID(feedSourceID);
@@ -132,7 +129,7 @@ export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: numb
       const updateFeedSourceReturn: any = await feedSourcesModel.update(realFeedSourceModel);
       return true;
     } else {
-      log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CAHCE_FEED: " + VAR_MINUTES_TO_CAHCE_FEED + ". Cache is up to date, fetching from cache");
+      log("[CACHE] diffInMinutes: " + diffInMinutes + ". VAR_MINUTES_TO_CACHE_FEED: " + VAR_MINUTES_TO_CACHE_FEED + ". Cache is up to date, fetching from cache");
       return false;
     }
 }

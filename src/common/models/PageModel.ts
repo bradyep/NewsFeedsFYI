@@ -5,12 +5,10 @@ import { observable, action } from 'mobx';
 import { UserFeedModel } from './';
 
 export class PageModel {
-    // QUESTION: Why would pageID be nullable? When would we ever have a PageModel without a pageID?
     pageID: number; // PK
     userID: number; // FK
     @observable public name: string;
     @observable public displayOrder: number;
-
     @observable public userFeeds: UserFeedModel[];
 
     test() {
@@ -43,4 +41,4 @@ export class PageModel {
     }
 }; // /class Page
 
-export default PageModel;
+// export default PageModel;

@@ -46,4 +46,4 @@ export class UserFeedModel {
     }
 }; // /class UserFeed
 
-export default UserFeedModel;
+// export default UserFeedModel;

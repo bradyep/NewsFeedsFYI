@@ -4,21 +4,15 @@ import logModule = require('debug');
 import errorModule = require('debug');
     const error = errorModule('nffyi-rest:error');
 
-// module.exports = class Note {
 export class FeedSourceModel {
-    feedSourceID: number; // PK
-    url: string; 
-    cachedTitle: string; 
-    cachedWebsiteURL: string;
-    lastCachedDate: Date;
 
-    constructor(url:string, cachedTitle:string, cachedWebsiteURL:string, lastCachedDate:Date, feedSourceID?:number) {
-        this.url = url;
-        this.cachedTitle = cachedTitle;
-        this.cachedWebsiteURL = cachedWebsiteURL;
-        this.lastCachedDate = lastCachedDate;
-        this.feedSourceID = feedSourceID;
-    }
+    constructor(
+        public url: string, 
+        public cachedTitle: string, 
+        public cachedWebsiteURL: string, 
+        public lastCachedDate: Date, 
+        public feedSourceID?: number // PK
+    ) { }
     
     get JSON() {
         return JSON.stringify({
@@ -26,7 +20,7 @@ export class FeedSourceModel {
         });
     }
     
-    static fromJSON(json) {
+    static fromJSON(json: string) {
         var data = JSON.parse(json);
         var feedSource = new FeedSourceModel(data.url, data.cachedTitle, data.cachedWebsiteURL, data.lastCachedDate, data.feedSourceID);
         log(json +' => '+ util.inspect(feedSource));
@@ -34,4 +28,4 @@ export class FeedSourceModel {
     }
 }; // /class FeedSource
 
-export default FeedSourceModel;
+// export default FeedSourceModel;

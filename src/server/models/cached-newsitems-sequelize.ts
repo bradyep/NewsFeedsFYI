@@ -3,15 +3,13 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
-// import CachedNewsItemModel = require('./CachedNewsItemModel');
-// import { CachedNewsItemModel } from '../../nffyi-common/models';
-// import { CachedNewsItemModel } from './common';
-import { CachedNewsItemModel } from 'nffyi-common';
-// var CachedNewsItemModel = models.CachedNewsItemModel;
+import { CachedNewsItemModel } from '../../common/models';
+
+// TODO: Lots of 'any' types here. Find out if sequalize has types for these.
 
 export function create(cachedNewsItem:CachedNewsItemModel) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['create']({
             // cachedNewsItemID: cachedNewsItem.cachedNewsItemID, // Auto-Generated
             feedSourceID: cachedNewsItem.feedSourceID,
@@ -24,9 +22,9 @@ export function create(cachedNewsItem:CachedNewsItemModel) {
 
 export function update(cachedNewsItem:CachedNewsItemModel) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['find']({ where: { cachedNewsItemID: cachedNewsItem.cachedNewsItemID } })
-        .then(cachedNewsItem => {
+        .then((cachedNewsItem: any) => {
             if (!cachedNewsItem) {
                 // throw new Error("No cachedNewsItem found for cachedNewsItemID " + cachedNewsItemID);
                 return null;
@@ -43,11 +41,11 @@ export function update(cachedNewsItem:CachedNewsItemModel) {
 };
 
 /** Returns the CachedNewsItemModel for a given key */
-export function read(cachedNewsItemID): Promise<CachedNewsItemModel> {
+export function read(cachedNewsItemID: any): Promise<CachedNewsItemModel> {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['find']({ where: { cachedNewsItemID } })
-        .then(cachedNewsItem => {
+        .then((cachedNewsItem: any) => {
             if (!cachedNewsItem) {
                 // throw new Error("No cachedNewsItem found for " + cachedNewsItemID);
                 return null;
@@ -58,11 +56,11 @@ export function read(cachedNewsItemID): Promise<CachedNewsItemModel> {
     });
 };
 
-export function destroy(cachedNewsItemID) {
+export function destroy(cachedNewsItemID: any) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['find']({ where: { cachedNewsItemID } })
-        .then(cachedNewsItem => {
+        .then((cachedNewsItem: any) => {
             if (!cachedNewsItem) return null;
             else return cachedNewsItem.destroy();
         });
@@ -71,10 +69,10 @@ export function destroy(cachedNewsItemID) {
 
 export function destroyByFeedSourceID(feedSourceID: number) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
       return SQCachedNewsItem['findAll']({ where: { feedSourceID }  })
-      .then(cachedNewsItems => {
-          return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.destroy({ force: true }));
+      .then((cachedNewsItems: any) => {
+          return cachedNewsItems.map((cachedNewsItem: any) => cachedNewsItem.destroy({ force: true }));
       });
     });
 };
@@ -82,40 +80,40 @@ export function destroyByFeedSourceID(feedSourceID: number) {
 // Get Cached News Items By FeedSourceID
 export function keylist(feedSourceID:number) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['findAll']({ where: { feedSourceID }, attributes: [ 'cachedNewsItemID' ] })
-        .then(cachedNewsItems => {
-            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
+        .then((cachedNewsItems: any) => {
+            return cachedNewsItems.map((cachedNewsItem: any) => cachedNewsItem.cachedNewsItemID);
         });
     });
 };
 
 export function getForFeedSourceID(feedSourceID:number) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['findAll']({ where: { feedSourceID }  })
-        .then(cachedNewsItems => {
-            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem);
+        .then((cachedNewsItems: any) => {
+            return cachedNewsItems.map((cachedNewsItem: any) => cachedNewsItem);
         });
     });
 };
 
 export function getKeysForMultipleFeedSourceID(feedSourceIDs:Array<number>) {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['findAll']({ where: 
             { feedSourceID: feedSourceIDs }, attributes: [ 'cachedNewsItemID' ] })
-        .then(cachedNewsItems => {
-            return cachedNewsItems.map(cachedNewsItem => cachedNewsItem.cachedNewsItemID);
+        .then((cachedNewsItems: any) => {
+            return cachedNewsItems.map((cachedNewsItem: any) => cachedNewsItem.cachedNewsItemID);
         });
     });
 };
 
 export function count() {
     return modelDef.connectDB('SQCachedNewsItem')
-    .then(SQCachedNewsItem => {
+    .then((SQCachedNewsItem: any) => {
         return SQCachedNewsItem['count']()
-        .then(count => {
+        .then((count: any) => {
             log('COUNT ' + count);
             return count;
         });

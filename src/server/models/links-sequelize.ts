@@ -3,14 +3,11 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
-// import LinkModel = require('./link');
-// import { LinkModel } from '../../nffyi-common/models';
-// import { LinkModel } from './common';
-import { LinkModel } from 'nffyi-common';
+import { LinkModel } from '../../common/models';
 
 export function create(link:LinkModel) {
     return modelDef.connectDB('SQLink')
-    .then(SQLink => {
+    .then((SQLink: any) => {
         return SQLink['create']({
             // linkID: link.linkID, // Auto-Generated
             userID: link.userID,
@@ -23,9 +20,9 @@ export function create(link:LinkModel) {
 
 export function update(link:LinkModel) {
     return modelDef.connectDB('SQLink')
-    .then(SQLink => {
+    .then((SQLink: any) => {
         return SQLink['find']({ where: { linkID: link.linkID } })
-        .then(link => {
+        .then((link: any) => {
             if (!link) {
                 // throw new Error("No link found for linkID " + linkID);
                 return null;
@@ -40,11 +37,11 @@ export function update(link:LinkModel) {
     });
 };
 
-export function read(linkID) {
+export function read(linkID: any) {
     return modelDef.connectDB('SQLink')
-    .then(SQLink => {
+    .then((SQLink: any) => {
         return SQLink['find']({ where: { linkID } })
-        .then(link => {
+        .then((link: any) => {
             if (!link) {
                 // throw new Error("No link found for " + linkID);
                 return null;
@@ -55,11 +52,11 @@ export function read(linkID) {
     });
 };
 
-export function destroy(linkID) {
+export function destroy(linkID: any) {
     return modelDef.connectDB('SQLink')
-    .then(SQLink => {
+    .then((SQLink: any) => {
         return SQLink['find']({ where: { linkID } })
-        .then(link => {
+        .then((link: any) => {
             if (!link) return null;
             else return link.destroy();
         });
@@ -68,17 +65,17 @@ export function destroy(linkID) {
 
 export function keylist(userID:number) {
     return modelDef.connectDB('SQLink')
-    .then(SQLink => {
+    .then((SQLink: any) => {
         // Admin User gets ALL Links
         if (userID === 2) {
             return SQLink['findAll']({ attributes: [ 'linkID' ] })
-            .then(links => {
-                return links.map(link => link.linkID);
+            .then((links: any) => {
+                return links.map((link: any) => link.linkID);
             });
         } else {
             return SQLink['findAll']({ where: { userID }, attributes: [ 'linkID' ] })
-            .then(links => {
-                return links.map(link => link.linkID);
+            .then((links: any) => {
+                return links.map((link: any) => link.linkID);
             });
         }
     });
@@ -86,9 +83,9 @@ export function keylist(userID:number) {
 
 export function count() {
     return modelDef.connectDB('SQLink')
-    .then(SQLink => {
+    .then((SQLink: any) => {
         return SQLink['count']()
-        .then(count => {
+        .then((count: any) => {
             log('COUNT ' + count);
             return count;
         });

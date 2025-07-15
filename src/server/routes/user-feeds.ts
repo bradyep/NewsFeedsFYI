@@ -14,7 +14,7 @@ import { UserFeedModel, CachedNewsItemModel, NUMBER_OF_COLUMNS } from 'nffyi-com
 // import { NUMBER_OF_COLUMNS } from '../../nffyi-common/constants/newsfeeds';
 // import { NUMBER_OF_COLUMNS } from '../constants/common/newsfeeds';
 import pagesModel = require('../models/pages-sequelize');
-import FeedSourceModel from '../models/FeedSourceModel';
+import { FeedSourceModel } from '../models/FeedSourceModel';
 import * as mobx from 'mobx';
 
 interface ColumnDescriptor {
@@ -194,7 +194,7 @@ async function createFeedSource(url: string): Promise<number> {
     const { feedSourceWebURL } = newlyFetchedCachedNewsItems[0];
     log('feedSourceWebTitle: ' + feedSourceWebTitle + ', feedSourceWebURL: ' + feedSourceWebURL);
     newFeedSourceModel = await feedSourcesModel.create(new FeedSourceModel(url, feedSourceWebTitle, feedSourceWebURL, new Date()));
-    // Add the returned FeedSourceID to the cahcedNewsItems and commit them to the database
+    // Add the returned FeedSourceID to the cachedNewsItems and commit them to the database
     newlyFetchedCachedNewsItems.forEach(cni => cni.feedSourceID = newFeedSourceModel.feedSourceID);
     const updateCachedNewsItemsReturn: string[] = await userFeedsModel.updateCachedNewsItemsAsync(newlyFetchedCachedNewsItems);
     log('Got back ' + updateCachedNewsItemsReturn.length + ' items from calling userFeedsModel.updateCachedNewsItemsAsync()');

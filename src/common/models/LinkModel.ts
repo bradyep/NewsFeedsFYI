@@ -1,21 +1,19 @@
 import * as logModule from 'debug';
 const log = logModule('nffyi-common:Link');
-const error = logModule('nffyi-common:error');
+// const error = logModule('nffyi-common:error');
 import { observable } from 'mobx';
 
 export class LinkModel {
-    linkID?: number; // PK
-    userID?: number; // FK
-    url: string;
-    name: string;
     @observable public displayOrder: number;
 
-    constructor(url:string, name:string, displayOrder:number, linkID?:number, userID?:number) {
-        this.url = url;
-        this.name = name;
+    constructor(
+        public url: string, 
+        public name: string, 
+        displayOrder: number, 
+        public linkID?: number,  // PK
+        public userID?: number // FK
+    ) {
         this.displayOrder = displayOrder;
-        this.linkID = linkID;
-        this.userID = userID;
     }
     
     get JSON() {
@@ -32,4 +30,4 @@ export class LinkModel {
     }
 }; // /class Link
 
-export default LinkModel;
+// export default LinkModel;

@@ -1,17 +1,26 @@
 import util = require('util');
 import fs = require('fs-extra');
 import jsyaml = require('js-yaml');
-import Sequelize = require("sequelize");
-
+import { Sequelize, DataTypes } from "sequelize";
 import logModule = require('debug');
 const log = logModule('nffyi-rest:model-definition');
 import errorModule = require('debug');
 const error = errorModule('nffyi-rest:error');
 
 var sequelize;
-var models = { SQRole: null, SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
+type ModelKeys = 'SQRole' | 'SQUser' | 'SQLink' | 'SQPage' | 'SQUserFeed' | 'SQFeedSource' | 'SQCachedNewsItem';
+type ModelsType = {
+  SQRole: any,
+  SQUser: any,
+  SQLink: any,
+  SQPage: any,
+  SQUserFeed: any,
+  SQFeedSource: any,
+  SQCachedNewsItem: any
+};
+var models: ModelsType = { SQRole: null, SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
 
-export function connectDB(modelRequested: string) {
+export function connectDB(modelRequested: ModelKeys) {
   log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
   if (models[modelRequested]) {
     // If the requested model is there, return a contrived Promise
@@ -21,62 +30,67 @@ export function connectDB(modelRequested: string) {
   }
   log('--Setting Up Database Connection--');
   return new Promise((resolve, reject) => {
-    fs.readFile(process.env.SEQUELIZE_CONNECT, 'utf8', (err, data) => {
+    const sequelizeConnectPath = process.env.SEQUELIZE_CONNECT;
+    if (!sequelizeConnectPath) {
+      reject(new Error('Environment variable SEQUELIZE_CONNECT is not defined.'));
+      return;
+    }
+    fs.readFile(sequelizeConnectPath, 'utf8', (err, data) => {
       if (err) reject(err);
       else resolve(data);
     });
   })
-    .then(yamltext => {
-      return jsyaml.safeLoad(yamltext, 'utf8');
+    .then((yamltext: string) => {
+      return jsyaml.load(yamltext);
     })
-    .then(params => {
+    .then((params: any) => {
       sequelize = new Sequelize(params.dbname, params.username, params.password, params.params);
 
       models.SQRole = sequelize.define('Role', {
-        roleID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-        name: Sequelize.STRING,
+        roleID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        name: DataTypes.STRING,
       }); // /SQRole
 
       models.SQUser = sequelize.define('User', {
-        userID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-        username: Sequelize.STRING,
-        password: Sequelize.STRING,
-        email: Sequelize.STRING,
-        lastAccessDate: Sequelize.DATE
+        userID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        username: DataTypes.STRING,
+        password: DataTypes.STRING,
+        email: DataTypes.STRING,
+        lastAccessDate: DataTypes.DATE
       }); // /SQUser
       models.SQUser.belongsTo(models.SQRole, { foreignKey: 'roleID' });
       models.SQRole.hasMany(models.SQUser, { as: 'Users', foreignKey: 'roleID' });
 
       models.SQLink = sequelize.define('Link', {
-        linkID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-        url: Sequelize.STRING,
-        name: Sequelize.STRING,
-        displayOrder: Sequelize.INTEGER
+        linkID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        url: DataTypes.STRING,
+        name: DataTypes.STRING,
+        displayOrder: DataTypes.INTEGER
       }); // /SQLink
       models.SQLink.belongsTo(models.SQUser, { foreignKey: 'userID' });
       models.SQUser.hasMany(models.SQLink, { as: 'Links', foreignKey: 'userID' });
 
       models.SQPage = sequelize.define('Page', {
-        pageID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-        name: Sequelize.STRING,
-        displayOrder: Sequelize.INTEGER
+        pageID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        name: DataTypes.STRING,
+        displayOrder: DataTypes.INTEGER
       }); // /SQPage
       models.SQPage.belongsTo(models.SQUser, { foreignKey: 'userID' });
       models.SQUser.hasMany(models.SQPage, { as: 'Pages', foreignKey: 'userID' });
 
       models.SQFeedSource = sequelize.define('FeedSource', {
-        feedSourceID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-        url: Sequelize.STRING,
-        cachedTitle: Sequelize.STRING,
-        cachedWebsiteURL: Sequelize.STRING,
-        lastCachedDate: Sequelize.DATE
+        feedSourceID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        url: DataTypes.STRING,
+        cachedTitle: DataTypes.STRING,
+        cachedWebsiteURL: DataTypes.STRING,
+        lastCachedDate: DataTypes.DATE
       }); // /SQFeedSource
 
       models.SQUserFeed = sequelize.define('UserFeed', {
-        column: Sequelize.INTEGER,
-        displayOrder: Sequelize.INTEGER,
-        name: Sequelize.STRING,
-        itemDisplayCount: Sequelize.INTEGER
+        column: DataTypes.INTEGER,
+        displayOrder: DataTypes.INTEGER,
+        name: DataTypes.STRING,
+        itemDisplayCount: DataTypes.INTEGER
       }); // /SQUserFeed
       models.SQUserFeed.belongsTo(models.SQFeedSource, { foreignKey: 'feedSourceID' });
       models.SQUserFeed.belongsTo(models.SQPage, { foreignKey: 'pageID' });
@@ -84,10 +98,10 @@ export function connectDB(modelRequested: string) {
       models.SQFeedSource.hasMany(models.SQUserFeed, { as: 'UserFeeds', foreignKey: 'feedSourceID' });
 
       models.SQCachedNewsItem = sequelize.define('CachedNewsItem', {
-        cachedNewsItemID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-        title: Sequelize.STRING,
-        link: Sequelize.STRING,
-        description: Sequelize.STRING
+        cachedNewsItemID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        title: DataTypes.STRING,
+        link: DataTypes.STRING,
+        description: DataTypes.STRING
       }); // /SQCachedNewsItem
       models.SQCachedNewsItem.belongsTo(models.SQFeedSource, { foreignKey: 'feedSourceID' });
       models.SQFeedSource.hasMany(models.SQCachedNewsItem, { as: 'CachedNewsItems', foreignKey: 'feedSourceID' });
@@ -420,180 +434,6 @@ export function connectDB(modelRequested: string) {
         }
       })
     })
-    // Auto-Populate Database with Cached News Items 
-/*
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(BBC 1)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 1, feedSourceID: 1
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Donald Trump: N Korea's Kim Jong-un a 'smart cookie'", link: 'http://www.bbc.co.uk/news/world-asia-39764834', description: "The US president reflects on the young leader's rise and says 'we'll see' about US military options.", feedSourceID: 1
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(BBC 2)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 2, feedSourceID: 1
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Dozens of Yazidis enslaved by IS in Iraq now free", link: 'http://www.bbc.co.uk/news/world-middle-east-39762790', description: "The 36 men, women and children were held by IS in Iraq for nearly three years.", feedSourceID: 1
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(BBC 3)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 3, feedSourceID: 1
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Ueli Steck: Everest preparation claims 'Swiss Machine' climber", link: 'http://www.bbc.co.uk/news/world-asia-39761904', description: "'Swiss Machine' Ueli Steck dies in an accident while acclimatising for an attempt on a new route.", feedSourceID: 1
-        }
-      })
-    })
-
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(NYTimes 1)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 4, feedSourceID: 2
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Trump’s ‘Very Friendly’ Talk With Duterte Stuns Aides and Critics Alike", link: 'https://www.nytimes.com/2017/04/30/us/politics/trump-duterte.html?partner=rss&emc=rss', description: "The administration is bracing for an avalanche of criticism after the president embraced Rodrigo Duterte, who has led a deadly crackdown on drugs in the Philippines.", feedSourceID: 2
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(NYTimes 2)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 5, feedSourceID: 2
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Becoming Duterte: The Making of a Philippine Strongman", link: 'http://www.nytimes.com/2017/03/21/world/asia/rodrigo-duterte-philippines-president-strongman.html?partner=rss&emc=rss', description: "He is a child of privilege turned populist politician, an antidrug crusader who has struggled with drug abuse. Obsessed with death, he has turned his violent vision into national policy.", feedSourceID: 2
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(NYTimes 3)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 6, feedSourceID: 2
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "News Analysis: On Trade, a Politically Feisty Trump Risks Economic Damage", link: 'https://www.nytimes.com/2017/04/30/business/trump-nafta-trade-economy.html?partner=rss&emc=rss', description: "Trucks waiting to enter the United States at the border crossing in Tijuana, Mexico, in February.", feedSourceID: 2
-        }
-      })
-    })
-
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(ESPN 1)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 7, feedSourceID: 3
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Jazz hold off Clippers to win series", link: 'http://www.espn.com/nba/recap?gameId=400950426', description: "Jazz hold off Clippers to win series", feedSourceID: 3
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(ESPN 2)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 8, feedSourceID: 3
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Nats' Rendon goes 6-for-6, with 3 HRs, 10 RBIs", link: 'http://www.espn.com/mlb/story/_/id/19281935/anthony-rendon-washington-nationals-goes-6-6-3-hrs-10-rbis', description: "Nats' Rendon goes 6-for-6, with 3 HRs, 10 RBIs", feedSourceID: 3
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(ESPN 3)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 9, feedSourceID: 3
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Toothless Thomas: C's star eyes fast dental fix", link: 'http://www.espn.com/nba/story/_/id/19282028/isaiah-thomas-boston-celtics-loses-tooth-game-1-win-washington-wizards', description: "Toothless Thomas: C's star eyes fast dental fix", feedSourceID: 3
-        }
-      })
-    })
-
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(Hacker News 1)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 10, feedSourceID: 4
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Firefox Multi-Account Containers", link: 'https://blog.mozilla.org/firefox/introducing-firefox-multi-account-containers/', description: "Our new Multi-Account Containers extension for Firefox means you can finally wrangle multiple email/social accounts.", feedSourceID: 4
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(Hacker News 2)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 11, feedSourceID: 4
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "Zircon Kernel for Fuchsia OS", link: 'https://fuchsia.googlesource.com/zircon', description: "Zircon is the core platform that powers the Fuchsia OS. Zircon is composed of a microkernel (source in kernel/...) as well as a small set of userspace services, drivers, and libraries (source in system/...) necessary for the system to boot, talk to hardware, load userspace processes and run them, etc.", feedSourceID: 4
-        }
-      })
-    })
-    .then(function ([instance, created]) {
-      log(instance.get({ plain: true }));
-      log(created);
-
-      log('--Creating Initial Data: CachedNewsItem(Hacker News 3)--');
-      return models.SQCachedNewsItem.findOrCreate({
-        where: {
-          cachedNewsItemID: 12, feedSourceID: 4
-        },
-        defaults: { // set the default properties if it doesn't exist
-          title: "React issue #10719: Update React license FAQ/update license itself", link: 'https://github.com/facebook/react/issues/10719', description: "I've read the previous discussions regarding the React (and other Facebook OSS) license, in particular #10191, and I agree with most of the clarificatory remarks (esp. by @gaearon & @sebmarkbage) that Facebook doesn't intend to use this license offensively.", feedSourceID: 4
-        }
-      })
-    })
-*/
 
     // Auto-Populate Database with User Feeds
     .then(function ([instance, created]) {

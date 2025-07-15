@@ -3,10 +3,7 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
-// import PageModel = require('./page');
-// import { PageModel } from '../../nffyi-common/models';
-// import { PageModel } from './common';
-import { PageModel } from 'nffyi-common';
+import { PageModel } from '../../common/models';
 
 export function create(page:PageModel) {
     return modelDef.connectDB('SQPage')
