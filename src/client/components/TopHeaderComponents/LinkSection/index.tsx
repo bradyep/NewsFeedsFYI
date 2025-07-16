@@ -1,7 +1,5 @@
 import * as React from "react";
-// import { Roles } from "../../../../../../nffyi-common/constants/roles";
-// import { Roles } from "../../../constants/common/roles";
-import { Roles } from "nffyi-common";
+import { Roles } from "common/constants";
 import * as styles from "./styles.css";
 import { STORE_LINK } from "../../../constants/stores";
 import { LinkStore, UserStore } from "../../../stores";
@@ -20,18 +18,9 @@ export interface LinkSectionState {
 @observer
 export class LinkSection extends React.Component<LinkSectionProps, LinkSectionState> {
 
-  constructor(props?: LinkSectionProps, context?: any) {
+  constructor(props: LinkSectionProps, context?: any) {
     super(props, context);
-    // this.handleSave = this.handleSave.bind(this);
   }
-
-  /*   
-    handleSave(text: string) {
-      if (text.length) {
-        this.props.addTodo({ text });
-      }
-    }
-   */
 
   render() {
     const { linksStore, userStore } = this.props;

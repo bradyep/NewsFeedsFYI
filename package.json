@@ -12,7 +12,7 @@
     "winstart": "set SEQUELIZE_CONNECT='models/sequelize-sqlite.yaml'&& node ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker": "node ./bin/www",
-    "startclient": "webpack-dev-server -d --history-api-fallback --hot --inline --progress --colors --port 3030 --open",
+    "startclient": "webpack-dev-server -d --history-api-fallback --inline --progress --colors --port 3030 --open",
     "buildclient": "set NODE_ENV=production&& webpack -p --progress --colors"
   },
   "repository": {
@@ -53,10 +53,8 @@
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.3",
-    "mobx-react-devtools": "^6.1.1",
     "postcss": "^8.4.38",
     "postcss-loader": "^7.3.3",
-    "react-hot-loader": "^4.13.1",
     "style-loader": "^3.3.4",
     "typescript": "^5.4.5",
     "webpack": "^5.91.0",

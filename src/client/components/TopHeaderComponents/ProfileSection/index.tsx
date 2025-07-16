@@ -1,17 +1,14 @@
 import * as React from 'react';
 import * as styles from './styles.css';
-import { Modal, Button, FormGroup, ControlLabel, FormControl, OverlayTrigger, Popover } from "react-bootstrap";
-import { REST_DOMAIN } from '../../../constants/network';
-// import { UserModel } from '../../../../../../nffyi-common/models';
-// import { UserModel } from '../../../models/common';
-import { UserModel, Roles, ROLE_DB_NAMES } from 'nffyi-common';
-// import { Roles, ROLE_DB_NAMES } from '../../../../../../nffyi-common/constants/roles';
-// import { Roles, ROLE_DB_NAMES } from '../../../constants/common/roles';
-import * as logModule from 'debug';
-const log = logModule('webapp:ProfileSection');
-const error = logModule('webapp:error');
+import { Modal, Button, FormGroup, FormLabel, FormControl, OverlayTrigger, Popover } from "react-bootstrap";
+import { REST_DOMAIN } from 'client/constants/network';
+import { UserModel } from 'common/models';
+import { Roles, ROLE_DB_NAMES } from 'common/constants';
+import debug from 'debug';
+const log = debug('webapp:ProfileSection');
+const error = debug('webapp:error');
 import { observer } from 'mobx-react';
-import { UserStore } from '../../../stores';
+import { UserStore } from 'client/stores';
 
 export interface ProfileSectionProps {
   changeCurrentUser: () => void,
@@ -29,7 +26,7 @@ export interface ProfileSectionState {
 @observer
 export class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
 
-  constructor(props?: ProfileSectionProps, context?: any) {
+  constructor(props: ProfileSectionProps, context?: any) {
     super(props, context);
     this.state = {
       showModal: false, username: "", password: "", confirmPassword: "", errorAuthenticating: false
@@ -53,8 +50,9 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   }
 
   handleChange(e: any) {
-    // log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
-    this.setState({ [e.currentTarget.id]: e.currentTarget.value });
+    log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
+    const id = e.currentTarget.id as keyof ProfileSectionState;
+    this.setState({ [id]: e.currentTarget.value } as Pick<ProfileSectionState, keyof ProfileSectionState>);
   }
 
   async attemptSignIn() {
@@ -124,24 +122,38 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
 
           <Modal.Body>
             <form>
-              <FormGroup controlId="username" validationState={validationState}>
-                <ControlLabel>Username: </ControlLabel>
-                <FormControl onChange={this.handleChange} type="text" placeholder="Username" />
+              <FormGroup controlId="username">
+                <FormLabel>Username: </FormLabel>
+                <FormControl
+                  onChange={this.handleChange}
+                  type="text"
+                  placeholder="Username"
+                  isInvalid={errorAuthenticating === true}
+                />
               </FormGroup>
-              <FormGroup controlId="password" validationState={validationState}>
-                <ControlLabel>Password: </ControlLabel>
-                <FormControl onChange={this.handleChange} type="password" placeholder="Password" />
+              <FormGroup controlId="password">
+                <FormLabel>Password: </FormLabel>
+                <FormControl
+                  onChange={this.handleChange}
+                  type="password"
+                  placeholder="Password"
+                  isInvalid={errorAuthenticating === true}
+                />
               </FormGroup>
               <FormGroup controlId="confirmPassword">
-                <ControlLabel>Confirm Password: </ControlLabel>
-                <FormControl onChange={this.handleChange} type="password" placeholder="Confirm Password" />
+                <FormLabel>Confirm Password: </FormLabel>
+                <FormControl
+                  onChange={this.handleChange}
+                  type="password"
+                  placeholder="Confirm Password"
+                />
               </FormGroup>
             </form>
           </Modal.Body>
 
           <Modal.Footer>
             <Button onClick={this.close}>Cancel</Button>
-            <Button bsStyle="primary" onClick={this.attemptSignIn}>Sign In</Button>
+            <Button variant="primary" onClick={this.attemptSignIn}>Sign In</Button>
           </Modal.Footer>
 
         </Modal>

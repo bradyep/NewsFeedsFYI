@@ -1,6 +1,6 @@
-import * as logModule from 'debug';
-const log = logModule('nffyi-common:User');
-const error = logModule('nffyi-common:error');
+import debug from 'debug';
+const log = debug('nffyi-common:User');
+const error = debug('nffyi-common:error');
 
 export class UserModel {
 

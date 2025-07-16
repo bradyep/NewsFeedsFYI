@@ -1,6 +1,6 @@
-import * as logModule from 'debug';
-const log = logModule('nffyi-common:Page');
-const error = logModule('nffyi-common:error');
+import debug from 'debug';
+const log = debug('nffyi-common:Page');
+const error = debug('nffyi-common:error');
 import { observable, action } from 'mobx';
 import { UserFeedModel } from './';
 

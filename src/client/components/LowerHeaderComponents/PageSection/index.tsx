@@ -1,16 +1,11 @@
 import * as React from 'react';
-// import { TodoTextInput } from '../TodoTextInput';
-// import { TodoModel } from '../../models/TodoModel';
-import { DropdownButton, MenuItem } from 'react-bootstrap';
+import { DropdownButton, Dropdown } from 'react-bootstrap';
 import { observer } from 'mobx-react';
 import { UserStore, PageStore } from "../../../stores";
-// import { Roles } from "../../../../../../nffyi-common/constants/roles";
-// import { Roles } from "../../../constants/common//roles";
-import { Roles } from "nffyi-common";
+import { Roles } from "common/constants";
 import * as styles from './styles.css';
 
 export interface PageSectionProps {
-  // addTodo: (todo: Partial<TodoModel>) => any;
   userStore: UserStore,
   pageStore: PageStore
 }
@@ -22,18 +17,10 @@ export interface PageSectionState {
 @observer
 export class PageSection extends React.Component<PageSectionProps, PageSectionState> {
 
-  constructor(props?: PageSectionProps, context?: any) {
+  constructor(props: PageSectionProps, context?: any) {
     super(props, context);
     // this.handleSave = this.handleSave.bind(this);
   }
-
-  /* 
-    handleSave(text: string) {
-      if (text.length) {
-        this.props.addTodo({ text });
-      }
-    }
-   */
 
   render() {
     const { userStore, pageStore } = this.props;    
@@ -43,9 +30,9 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
     return (
       <div className="col-md-3">
         <p>Page: </p>
-        <DropdownButton title={pages[0].name} id={pages[0].pageID.toString()}>
+        <DropdownButton title={pages[0].name} id={pages[0].pageID?.toString()}>
           {pages.map((page, i) => 
-            <MenuItem key={i} eventKey={page.pageID} active={i === 0}>{page.name}</MenuItem>  
+            <Dropdown.Item key={i} eventKey={page.pageID} active={i === 0}>{page.name}</Dropdown.Item>  
           )}
         </DropdownButton>
         {currentUser.roleID != Roles.GUEST &&

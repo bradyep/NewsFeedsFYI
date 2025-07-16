@@ -42,7 +42,6 @@ module.exports = {
         use: isProduction
           ? 'awesome-typescript-loader?module=es6'
           : [
-            'react-hot-loader',
             'awesome-typescript-loader'
           ]
       },
@@ -111,7 +110,6 @@ module.exports = {
   ],
   devServer: {
     contentBase: sourcePath,
-    hot: true,
     stats: {
       warnings: false
     },

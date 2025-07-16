@@ -1,18 +1,13 @@
 import * as React from "react";
-// import { Roles, ROLE_DB_NAMES } from "../../../../../../nffyi-common/constants/roles";
-// import { Roles, ROLE_DB_NAMES } from "../../../constants/common/roles";
-import { Roles, ROLE_DB_NAMES, MAX_NEWS_ITEMS, UserFeedModel, PageModel } from "nffyi-common";
-import { UserStore, PageStore } from "../../../stores";
-import { FormGroup, InputGroup, Button, Modal, ControlLabel, FormControl, DropdownButton, MenuItem } from "react-bootstrap";
+import { UserFeedModel, PageModel } from "common/models";
+import { Roles, ROLE_DB_NAMES, MAX_NEWS_ITEMS } from "common/constants";
+import { UserStore, PageStore } from "client/stores";
+import { FormGroup, InputGroup, Button, Modal, FormLabel, FormControl, DropdownButton, Dropdown } from "react-bootstrap";
 import { observer } from 'mobx-react';
-// import { MAX_NEWS_ITEMS } from '../../../../../../nffyi-common/constants/newsfeeds';
-// import { MAX_NEWS_ITEMS } from '../../../constants/common/newsfeeds';
-import { REST_DOMAIN } from '../../../constants/network';
-import * as logModule from 'debug';
-const log = logModule('webapp:AddNewsFeedSection');
-const error = logModule('webapp:error');
-// import { UserFeedModel, PageModel } from '../../../../../../nffyi-common/models';
-// import { UserFeedModel, PageModel } from '../../../models/common';
+import { REST_DOMAIN } from 'client/constants/network';
+import debug from 'debug';
+const log = debug('webapp:AddNewsFeedSection');
+const error = debug('webapp:error');
 
 export interface AddNewsFeedSectionProps {
   userStore: UserStore,
@@ -54,14 +49,16 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   openModal() {
     // Set selectedPageID here
     const { pageStore } = this.props;
-    const initalPageID = pageStore.pages[0].pageID;
+    const initalPageID = pageStore.pages[0].pageID ?? 0;
     this.setState({ showModal: true, selectedPageID: initalPageID });
     // console.log("Hey! " + this.state.showModal.toString());
   }
 
   handleChange(e: any) {
-    // log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
-    this.setState({ [e.currentTarget.id]: e.currentTarget.value });
+    log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
+    // this.setState({ [e.currentTarget.id]: e.currentTarget.value });
+    const id = e.currentTarget.id as keyof AddNewsFeedSectionState;
+    this.setState({ [id]: e.currentTarget.value } as Pick<AddNewsFeedSectionState, keyof AddNewsFeedSectionState>);
   }
 
   handleItemCountChange(itemCount: any): any {
@@ -127,7 +124,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const validationState = false;
     let numberOfItemsOptions = [];
     for (let i = 1; i <= MAX_NEWS_ITEMS; i++) {
-      numberOfItemsOptions.push(<MenuItem key={i} eventKey={i}>{i}</MenuItem>)
+      numberOfItemsOptions.push(<Dropdown.Item key={i} eventKey={i}>{i}</Dropdown.Item>)
     }
     const { pageStore } = this.props;
     const { pages } = pageStore;
@@ -144,23 +141,23 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
           <Modal.Body>
             <form>
               <FormGroup controlId="page">
-                <ControlLabel>Add to Page: </ControlLabel>
+                <FormLabel>Add to Page: </FormLabel>
                 <DropdownButton title={selectedPageTitle} id={this.state.selectedPageID.toString()} onSelect={this.handlePageChange}>
                   {pages.map((page, i) =>
-                    <MenuItem key={i} eventKey={page.pageID}>{page.name}</MenuItem>
+                    <Dropdown.Item key={i} eventKey={page.pageID}>{page.name}</Dropdown.Item>
                   )}
                 </DropdownButton>
               </FormGroup>
               <FormGroup controlId="feedName">
-                <ControlLabel>Feed Name: </ControlLabel>
+                <FormLabel>Feed Name: </FormLabel>
                 <FormControl onChange={this.handleChange} type="text" placeholder="NYTimes US News" />
               </FormGroup>
               <FormGroup controlId="feedURL">
-                <ControlLabel>Feed RSS URL: </ControlLabel>
+                <FormLabel>Feed RSS URL: </FormLabel>
                 <FormControl onChange={this.handleChange} type="text" placeholder="http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" />
               </FormGroup>
               <FormGroup controlId="numberOfItemsToDisplay">
-                <ControlLabel>Number of Items to Display: </ControlLabel>
+                <FormLabel>Number of Items to Display: </FormLabel>
                 <DropdownButton title={this.state.itemsToDisplay.toString()} id="itemsToDisplay" onSelect={this.handleItemCountChange}>
                   {numberOfItemsOptions}
                 </DropdownButton>
@@ -170,7 +167,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
           <Modal.Footer>
             <Button onClick={this.closeModal}>Cancel</Button>
-            <Button bsStyle="primary" onClick={this.attemptToAddFeed}>Create Feed</Button>
+            <Button variant="primary" onClick={this.attemptToAddFeed}>Create Feed</Button>
           </Modal.Footer>
 
         </Modal>
@@ -186,7 +183,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     return (
       <div className="col-md-2">
         {this.renderAddNewsFeedModal()}
-        <Button bsStyle="primary" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
+        <Button variant="primary" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
       </div>
     );
   }

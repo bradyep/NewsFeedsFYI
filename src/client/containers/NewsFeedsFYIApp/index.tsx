@@ -2,20 +2,18 @@ import * as React from 'react';
 import * as styles from './styles.css';
 import { inject, observer } from 'mobx-react';
 import { LinkSection, ProfileSection } from '../../components/TopHeaderComponents';
-import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from '../../components/LowerHeaderComponents';
-import { NewsFeeds } from '../../components/BodyComponents';
-import { Copyright } from '../../components/FooterComponents';
-import { UserStore, LinkStore, PageStore } from '../../stores';
-import { STORE_USER, STORE_LINK, STORE_PAGE } from '../../constants/stores';
-import { REST_DOMAIN } from '../../constants/network';
-// import { UserModel, LinkModel, PageModel } from '../../../../../nffyi-common/models';
-// import { UserModel, LinkModel, PageModel } from '../../models/common';
-import { UserModel, LinkModel, PageModel } from 'nffyi-common';
+import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from 'client/components/LowerHeaderComponents';
+import { NewsFeeds } from 'client/components/BodyComponents';
+import { Copyright } from 'client/components/FooterComponents';
+import { UserStore, LinkStore, PageStore } from 'client/stores';
+import { STORE_USER, STORE_LINK, STORE_PAGE } from 'client/constants/stores';
+import { REST_DOMAIN } from 'client/constants/network';
+import { UserModel, LinkModel, PageModel } from 'common/models';
 import { Navbar } from 'react-bootstrap';
-import * as logModule from 'debug';
-const log = logModule('webapp:NewsFeedsFYIApp');
-const error = logModule('webapp:error');
-import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated } from "../../index";
+import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated } from 'client/services/api';
+import debug from 'debug';
+const log = debug('webapp:NewsFeedsFYIApp');
+const error = debug('webapp:error');
 
 export interface NewsFeedsFYIAppProps {
   /** MobX Stores will be injected via @inject() **/
@@ -88,21 +86,18 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
 
     return (
       <div>
-        <Navbar inverse staticTop className={styles.header}>
-          <Navbar.Header>
-            <div className="container">
-              <div className="row">
-                <div className="col-md-9">
-                  <h4>newsfeeds.fyi</h4>
-                  <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
-                </div>
-                <div className="col-md-3">
-                  <ProfileSection changeCurrentUser={this.changeCurrentUser} userStore={this.injected[STORE_USER]} />
-                </div>
+        <Navbar variant="dark" fixed="top" className={styles.header}>
+          <div className="container">
+            <div className="row">
+              <div className="col-md-9">
+                <h4>newsfeeds.fyi</h4>
+                <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
               </div>
-
+              <div className="col-md-3">
+                <ProfileSection changeCurrentUser={this.changeCurrentUser} userStore={this.injected[STORE_USER]} />
+              </div>
             </div>
-          </Navbar.Header>
+          </div>
         </Navbar>
 
         <section className="container">

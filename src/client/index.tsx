@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { useStrict } from 'mobx';
+// import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
 import { Root } from './containers/Root';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
@@ -8,6 +8,7 @@ import { UserModel, LinkModel, PageModel, UserFeedModel } from '../common/models
 import { UserStore, LinkStore, PageStore } from './stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from './constants/stores';
 import { REST_DOMAIN } from './constants/network';
+import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated } from './services/api';
 import * as logModule from 'debug';
 const log = logModule('webapp:app-index');
 const error = logModule('webapp:error');
@@ -16,61 +17,9 @@ const error = logModule('webapp:error');
 (window as any).NFYI = (window as any).NFYI || {};
 
 // enable MobX strict mode
-useStrict(true);
+// Which appareently no longer exists in MobX 6 -2025 07 15
+// useStrict(true);
 
-export async function getCurrentUser(url: string): Promise<UserModel | undefined> {
-  try {
-    log("Getting current User");
-    const userResponse = await fetch(url, { credentials: "include" });
-    const userData: UserModel = await userResponse.json();
-    log(userData);
-
-    return userData;
-  } catch (err) {
-    error("Problem Getting current User: " + err.toString());
-    return undefined;
-  }
-}
-
-export async function getLinks(url: string): Promise<LinkModel[] | undefined> {
-  try {
-    log("Getting User's Links");
-    const linkResponse = await fetch(url, { credentials: "include" });
-    const linksData: LinkModel[] = await linkResponse.json();
-    log(linksData);
-
-    return linksData;
-  } catch (err) {
-    error("Problem Getting Links: " + err.toString());
-    return undefined;
-  }
-}
-
-/** Gets all the page data for the user, but only populates UserFeeds on the initial page */
-export async function getUsersPagesWithFirstPopulated(pagesURL: string, pageURL: string): Promise<PageModel[] | undefined> {
-  try {
-    log("Getting User's Pages");
-    const pagesResponse = await fetch(pagesURL, { credentials: "include" });
-    const pagesData: PageModel[] = await pagesResponse.json();
-    log(pagesData);
-    let initialPage = pagesData[0];
-    if (!initialPage.pageID) throw new Error("First Page's ID is undefined");
-
-    log("Getting initial page UserFeeds for User");
-    const userFeedsResponse = await fetch(pageURL + initialPage.pageID.toString(), { credentials: "include" });
-    const userFeedsData: UserFeedModel[] = await userFeedsResponse.json();
-    log(userFeedsData);
-
-    // Assemble Initial Page
-    initialPage.userFeeds = userFeedsData;
-
-    // return initialPage;
-    return pagesData;
-  } catch (err) {
-    error("Problem Getting First Page: " + err.toString());
-    return undefined;
-  }
-}
 
 (async () => {
   const getUserURL = REST_DOMAIN + '/users';

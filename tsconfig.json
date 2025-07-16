@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "skipLibCheck": true,
         "module": "commonjs",
         "moduleResolution": "node",
         "sourceMap": true,
@@ -13,7 +14,9 @@
         "noImplicitReturns": true,
         "removeComments": true,
         "strictNullChecks": true,
+        "esModuleInterop": true,
         "jsx": "react",
+        "baseUrl": "src",
         "outDir": "build",
         "lib": [
           "es6",

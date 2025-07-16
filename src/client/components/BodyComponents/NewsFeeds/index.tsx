@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as styles from './styles.css';
-import { PageStore, UserStore } from '../../../stores';
-import { UserFeedModel, Roles } from "nffyi-common";
+import { PageStore, UserStore } from 'client/stores';
+import { UserFeedModel } from 'common/models';
+import { Roles } from 'common/constants';
 import { observer } from 'mobx-react';
 
 export interface NewsFeedsProps {
@@ -16,7 +17,7 @@ export interface NewsFeedsState {
 @observer
 export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
-  constructor(props?: NewsFeedsProps, context?: any) {
+  constructor(props: NewsFeedsProps, context?: any) {
     super(props, context);
     // this.handleSave = this.handleSave.bind(this);
   }
@@ -66,7 +67,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   renderNewsFeedColumn(column: number) {
     const { pageStore } = this.props;
     const { currentlyDisplayedPage } = pageStore;
-    const userFeeds = currentlyDisplayedPage.userFeeds.filter(uf => uf.column === column);
+    const userFeeds: UserFeedModel[] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
 
     return (
       <div className={`col-sm-4 ${styles.newsSectionContainer}`}>

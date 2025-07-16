@@ -1,7 +1,5 @@
 import { observable, computed, action } from 'mobx';
-// import { LinkModel } from '../../../../nffyi-common/models';
-// import { LinkModel } from '../models/common';
-import { LinkModel } from 'nffyi-common';
+import { LinkModel } from 'common/models';
 
 export class LinkStore {
 

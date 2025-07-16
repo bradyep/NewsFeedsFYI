@@ -1,5 +1,5 @@
-import * as logModule from 'debug';
-const log = logModule('nffyi-common:Link');
+import debug from 'debug';
+const log = debug('nffyi-common:Link');
 // const error = logModule('nffyi-common:error');
 import { observable } from 'mobx';
 

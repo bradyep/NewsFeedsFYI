@@ -1,5 +1,5 @@
-import * as logModule from 'debug';
-const log = logModule('nffyi-common:CachedNewsItem');
+import debug from 'debug';
+const log = debug('nffyi-common:CachedNewsItem');
 // const error = logModule('nffyi-common:error');
 
 export class CachedNewsItemModel {

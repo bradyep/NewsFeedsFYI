@@ -13,7 +13,7 @@ export interface CopyrightState {
 
 export class Copyright extends React.Component<CopyrightProps, CopyrightState> {
 
-  constructor(props?: CopyrightProps, context?: any) {
+  constructor(props: CopyrightProps, context?: any) {
     super(props, context);
     // this.handleSave = this.handleSave.bind(this);
   }

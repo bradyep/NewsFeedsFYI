@@ -1,5 +1,6 @@
 import { observable, computed, action } from 'mobx';
-import { PageModel, UserFeedModel } from 'nffyi-common';
+// import { PageModel, UserFeedModel } from 'nffyi-common';
+import { PageModel, UserFeedModel } from 'common/models';
 
 export class PageStore {
 

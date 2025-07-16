@@ -1,7 +1,5 @@
 import { observable, action } from 'mobx';
-// import { UserModel } from '../../../../nffyi-common/models';
-// import { UserModel } from '../models/common';
-import { UserModel } from 'nffyi-common';
+import { UserModel } from 'common/models';
 
 export class UserStore {
 
