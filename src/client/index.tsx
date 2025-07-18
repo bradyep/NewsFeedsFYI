@@ -9,9 +9,9 @@ import { UserStore, LinkStore, PageStore } from './stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from './constants/stores';
 import { REST_DOMAIN } from './constants/network';
 import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated } from './services/api';
-import * as logModule from 'debug';
-const log = logModule('webapp:app-index');
-const error = logModule('webapp:error');
+import debug from 'debug';
+const log = debug('webapp:app-index');
+const error = debug('webapp:error');
 
 // Window Object for Debugging
 (window as any).NFYI = (window as any).NFYI || {};

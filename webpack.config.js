@@ -8,13 +8,13 @@ var outPath = path.join(__dirname, './dist');
 
 // plugins
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   context: sourcePath,
   entry: {
-    main: './index.ts',
+    main: './client/index.tsx',
     vendor: [
       'react',
       'react-dom',
@@ -23,62 +23,78 @@ module.exports = {
     ]
   },
   output: {
-    path: outPath,
-    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'public'),
+    filename: '[name].bundle.js',
     publicPath: '/'
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          chunks: 'initial',
+          name: 'vendor',
+          test: 'vendor',
+          enforce: true
+        },
+      }
+    }
   },
   target: 'web',
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
     // Fix webpack's default behavior to not load packages with jsnext:main module
     // (jsnext:main directs not usually distributable es6 format, but es6 sources)
-    mainFields: ['module', 'browser', 'main']
+    mainFields: ['module', 'browser', 'main'],
+    fallback: {
+      "fs": false,
+      "net": false
+    },
+    alias: {
+      'client': path.resolve(__dirname, 'src/client'),
+      'common': path.resolve(__dirname, 'src/common')
+    }
   },
   module: {
-    loaders: [
+    rules: [
       // .ts, .tsx
       {
         test: /\.tsx?$/,
-        use: isProduction
-          ? 'awesome-typescript-loader?module=es6'
-          : [
-            'awesome-typescript-loader'
-          ]
+        use: 'ts-loader',
+        exclude: /node_modules/
       },
       // css 
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-              query: {
-                modules: true,
-                sourceMap: !isProduction,
-                importLoaders: 1,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              sourceMap: !isProduction,
+              importLoaders: 1,
+              modules: {
                 localIdentName: '[local]__[hash:base64:5]'
               }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                ident: 'postcss',
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
                 plugins: [
                   require('postcss-import')({ addDependencyTo: webpack }),
                   require('postcss-url')(),
-                  require('postcss-cssnext')(),
-                  require('postcss-reporter')(),
                   require('postcss-browser-reporter')({ disabled: isProduction }),
                 ]
               }
             }
-          ]
-        })
+          }
+        ]
       },
       // static assets 
       { test: /\.html$/, use: 'html-loader' },
-      { test: /\.png$/, use: 'url-loader?limit=10000' },
+      { test: /\.png$/, use: [{ loader: 'url-loader', options: { limit: 10000 } }] },
       { test: /\.jpg$/, use: 'file-loader' },
     ],
   },
@@ -88,15 +104,9 @@ module.exports = {
         context: sourcePath
       }
     }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: 'vendor.bundle.js',
-      minChunks: Infinity
-    }),
-    new webpack.optimize.AggressiveMergingPlugin(),
-    new ExtractTextPlugin({
+    new MiniCssExtractPlugin({
       filename: 'styles.css',
-      disable: !isProduction
+      chunkFilename: '[id].css'
     }),
     new HtmlWebpackPlugin({
       template: 'assets/index.html'
@@ -104,20 +114,19 @@ module.exports = {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development'
     }),
-    new CopyWebpackPlugin([
-      {from:'assets', to:'assets'}
-    ])
+    new CopyWebpackPlugin({
+      patterns: [
+        {from:'assets', to:'assets'}
+      ]
+    })
   ],
   devServer: {
-    contentBase: sourcePath,
-    stats: {
-      warnings: false
+    static: sourcePath,
+    client: {
+      overlay: {
+        warnings: false
+      }
     },
   },
-  node: {
-    // workaround for webpack-dev-server issue 
-    // https://github.com/webpack/webpack-dev-server/issues/60#issuecomment-103411179
-    fs: 'empty',
-    net: 'empty'
-  }
+
 };
