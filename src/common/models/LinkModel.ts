@@ -1,6 +1,5 @@
 import debug from 'debug';
-const log = debug('nffyi-common:Link');
-// const error = logModule('nffyi-common:error');
+const log = debug('common:Link');
 import { observable } from 'mobx';
 
 export class LinkModel {

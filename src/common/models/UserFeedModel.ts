@@ -1,6 +1,6 @@
 import debug from 'debug';
-const log = debug('nffyi-common:UserFeed');
-const error = debug('nffyi-common:error');
+const log = debug('common:UserFeed');
+const error = debug('common:error');
 import { observable } from 'mobx';
 import { CachedNewsItemModel } from './';
 

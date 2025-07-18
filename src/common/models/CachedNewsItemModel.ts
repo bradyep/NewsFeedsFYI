@@ -1,6 +1,5 @@
 import debug from 'debug';
-const log = debug('nffyi-common:CachedNewsItem');
-// const error = logModule('nffyi-common:error');
+const log = debug('common:CachedNewsItem');
 
 export class CachedNewsItemModel {
 
