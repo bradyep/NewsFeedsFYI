@@ -10,9 +10,9 @@ import passport = require('passport');
 import LocalStrategyModule = require('passport-local');
 const LocalStrategy = LocalStrategyModule.Strategy;
 
-// Define the User type to include 'id'
+// Define the User type to match Express.User interface
 type User = {
-  id: number;
+  userID: number;
   username: string;
   [key: string]: any;
 };
@@ -45,7 +45,8 @@ export function ensureAuthenticated(req: any, res: any, next: any) {
         .then(check => {
           if (check.check) {
             log('******Supplied Credentials are Valid*********');
-            done(null, { id: check.userid, username: check.username });
+            const user: User = { userID: check.userid, username: check.username };
+            done(null, user);
           } else {
             done(null, false, { message: check.message ?? "Authentication failed" });
           }
