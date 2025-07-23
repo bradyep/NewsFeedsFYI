@@ -1,11 +1,10 @@
 import util = require('util');
 import express = require("express");
 export var router = express.Router();
-import usersModel = require('../models/users-sequelize');
+import usersModel = require('server/models/users-sequelize');
 import logModule = require('debug');
-const log = logModule('nffyi-rest:router-authenticate');
-import errorModule = require('debug');
-const error = errorModule('nffyi-rest:error');
+const debug = logModule('nffyi-rest:router-authenticate');
+const error = debug('nffyi-rest:error');
 import passport = require('passport');
 import LocalStrategyModule = require('passport-local');
 const LocalStrategy = LocalStrategyModule.Strategy;
@@ -23,7 +22,7 @@ export function initPassport(app: any) {
 };
 
 export function ensureAuthenticated(req: any, res: any, next: any) {
-  log('*****Attempting Authentication with: ' + req.user);
+  debug('*****Attempting Authentication with: ' + req.user);
   // req.user is set by Passport in the deserialize function
   if (req.user) next();
   else {
@@ -40,11 +39,11 @@ export function ensureAuthenticated(req: any, res: any, next: any) {
 
   passport.use(new LocalStrategy(
     function (username, password, done) {
-      log('passport used: ' + username + '/' + password);
+      debug('passport used: ' + username + '/' + password);
       usersModel.userPasswordCheck(username, password)
         .then(check => {
           if (check.check) {
-            log('******Supplied Credentials are Valid*********');
+            debug('******Supplied Credentials are Valid*********');
             const user: User = { userID: check.userid, username: check.username };
             done(null, user);
           } else {
@@ -57,16 +56,16 @@ export function ensureAuthenticated(req: any, res: any, next: any) {
   ));
 
   passport.serializeUser(function (user, done) {
-    log('serializeUser: ' + util.inspect(user));
+    debug('serializeUser: ' + util.inspect(user));
     done(null, user);
   });
 
   // passport.deserializeUser(function(id, done) {
   passport.deserializeUser(function (user: any, done) {
-    log('deserializeUser: ' + util.inspect(user));
+    debug('deserializeUser: ' + util.inspect(user));
     usersModel.read(user.id)
       .then(user => {
-        log('... found user ' + util.inspect(user));
+        debug('... found user ' + util.inspect(user));
         done(null, user);
       })
       .catch(err => done(err, user));

@@ -3,7 +3,7 @@ import logModule = require('debug');
 import errorModule = require('debug');
   const error = errorModule('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
-import { CachedNewsItemModel } from '../../common/models';
+import { CachedNewsItemModel } from 'common/models';
 
 // TODO: Lots of 'any' types here. Find out if sequalize has types for these.
 

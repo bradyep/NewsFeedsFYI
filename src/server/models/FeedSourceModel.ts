@@ -1,8 +1,7 @@
 import util = require('util');
-import logModule = require('debug');
-    const log = logModule('nffyi-rest:FeedSource');
-import errorModule = require('debug');
-    const error = errorModule('nffyi-rest:error');
+import debug = require('debug');
+const log = debug('nffyi-rest:FeedSource');
+const error = debug('nffyi-rest:error');
 
 export class FeedSourceModel {
 

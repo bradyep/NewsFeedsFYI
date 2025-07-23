@@ -1,13 +1,12 @@
 import express = require("express");
 var router = express.Router();
 import util = require('util');
-import linksModel = require('../models/links-sequelize');
-import logModule = require('debug');
-  const log = logModule('nffyi-rest:router-links');
-import errorModule = require('debug');
-  const error = errorModule('nffyi-rest:error');
+import linksModel = require('server/models/links-sequelize');
+import debug = require('debug');
+const log = debug('nffyi-rest:router-links');
+const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import { LinkModel, UserModel } from '../../common/models';
+import { LinkModel, UserModel } from 'common/models';
 
 /* GET all Links for requesting User - Admin gets all Links */
 router.get('/', function(req, res, next) {

@@ -1,7 +1,6 @@
-import logModule = require('debug');
-  const log = logModule('nffyi-rest:feedSources-model');
-import errorModule = require('debug');
-  const error = errorModule('nffyi-rest:error');
+import debug = require('debug');
+const log = debug('nffyi-rest:feedSources-model');
+const error = debug('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
 import { FeedSourceModel } from './FeedSourceModel';
 
@@ -41,7 +40,7 @@ export function update(pFeedSource: FeedSourceModel) {
 };
 
 /** Returns FeedSourceModel from the database for a given ID */
-export function read(feedSourceID: any): Promise<FeedSourceModel> {
+export function read(feedSourceID: number): Promise<FeedSourceModel> {
     return modelDef.connectDB('SQFeedSource')
     .then((SQFeedSource: any) => {
         return SQFeedSource['find']({ where: { feedSourceID } })
@@ -71,7 +70,7 @@ export function getByURL(url: string):Promise<FeedSourceModel | undefined> {
   });
 };
 
-export function destroy(feedSourceID: any) {
+export function destroy(feedSourceID: number) {
     return modelDef.connectDB('SQFeedSource')
     .then((SQFeedSource: any) => {
         return SQFeedSource['find']({ where: { feedSourceID } })

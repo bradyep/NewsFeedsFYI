@@ -1,7 +1,6 @@
-import logModule = require('debug');
-  const log = logModule('nffyi-rest:links-model');
-import errorModule = require('debug');
-  const error = errorModule('nffyi-rest:error');
+import debug = require('debug');
+const log = debug('nffyi-rest:links-model');
+const error = debug('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
 import { LinkModel } from '../../common/models';
 

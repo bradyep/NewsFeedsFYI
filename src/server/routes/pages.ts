@@ -2,16 +2,15 @@ import express = require("express");
 var router = express.Router();
 import util = require('util');
 import pagesModel = require('../models/pages-sequelize');
-import logModule = require('debug');
-  const log = logModule('nffyi-rest:router-pages');
-import errorModule = require('debug');
-  const error = errorModule('nffyi-rest:error');
+import debug = require('debug');
+const log = debug('nffyi-rest:router-pages');
+const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
 import { PageModel, UserModel } from '../../common/models';
 
 /* GET all Pages for requesting User */
 router.get('/', function(req, res, next) {
-  let userID:number = req.user ? req.user.userID : 1;
+  let userID: number = req.user ? req.user.userID : 1;
   getKeyList(userID)
   .then(pageList => {
       res.json(pageList);

@@ -1,17 +1,17 @@
 import * as express from 'express';
 const router = express.Router();
 import * as util from 'util'
-import userFeedsModel = require('../models/userfeeds-sequelize');
-import cachedNewsItemsModel = require('../models/cached-newsitems-sequelize');
-import feedSourcesModel = require('../models/feedsources-sequelize');
-import logModule = require('debug');
-const log = logModule('nffyi-rest:router-userFeeds');
-const error = logModule('nffyi-rest:error');
+import userFeedsModel = require('server/models/userfeeds-sequelize');
+import cachedNewsItemsModel = require('server/models/cached-newsitems-sequelize');
+import feedSourcesModel = require('server/models/feedsources-sequelize');
+import debug = require('debug');
+const log = debug('nffyi-rest:router-userFeeds');
+const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import { UserFeedModel, CachedNewsItemModel } from '../../common/models';
-import { NUMBER_OF_COLUMNS } from '../../common/constants/newsfeeds';
-import pagesModel = require('../models/pages-sequelize');
-import { FeedSourceModel } from '../models/FeedSourceModel';
+import { UserFeedModel, CachedNewsItemModel } from 'common/models';
+import { NUMBER_OF_COLUMNS } from 'common/constants/newsfeeds';
+import pagesModel = require('server/models/pages-sequelize');
+import { FeedSourceModel } from 'server/models/FeedSourceModel';
 import * as mobx from 'mobx';
 
 interface ColumnDescriptor {

@@ -2,10 +2,9 @@ import util = require('util');
 import fs = require('fs-extra');
 import jsyaml = require('js-yaml');
 import { Sequelize, DataTypes } from "sequelize";
-import logModule = require('debug');
-const log = logModule('nffyi-rest:model-definition');
-import errorModule = require('debug');
-const error = errorModule('nffyi-rest:error');
+import debug = require('debug');
+const log = debug('nffyi-rest:model-definition');
+const error = debug('nffyi-rest:error');
 
 var sequelize;
 type ModelKeys = 'SQRole' | 'SQUser' | 'SQLink' | 'SQPage' | 'SQUserFeed' | 'SQFeedSource' | 'SQCachedNewsItem';

@@ -1,20 +1,18 @@
 import * as express from "express";
 var router = express.Router();
 import * as util from 'util';
-import * as usersModel from '../models/users-sequelize';
-import logModule = require('debug');
-  const log = logModule('nffyi-rest:router-users');
-import errorModule = require('debug');
-  const error = errorModule('nffyi-rest:error');
+import * as usersModel from 'server/models/users-sequelize';
+import debug = require('debug');
+const log = debug('nffyi-rest:router-users');
+const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
-import { UserModel } from '../../common/models';
-import { GUEST_ID, ADMIN_ID } from '../constants/users';
+import { UserModel } from 'common/models';
+import { GUEST_ID, ADMIN_ID } from 'server/constants/users';
 
 /* GET users listing. */
 // router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
   router.get('/', function(req, res, next) {
-    // Must be an admin for full User listing, otherwise display 
-    // User data for requesting User
+    // Must be an admin for full User listing, otherwise display User data for requesting User
 
     if (!req.user) {
       // Return guest user
@@ -38,7 +36,7 @@ import { GUEST_ID, ADMIN_ID } from '../constants/users';
     }
 });
 
-var getKeyList = function() {
+const getKeyList = function() {
     return usersModel.keylist()
     .then(keylist => {
         var keyPromises = keylist.map((key: any) => {
@@ -60,7 +58,6 @@ var getKeyList = function() {
 // GET single User
 router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to see another User's data
-
   usersModel.read(+req.params.userid)
   .then((user:UserModel) => {
     if (!user) next();
@@ -71,8 +68,7 @@ router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
 
 // Update existing User
 router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
-  // Must be admin to update any User than oneself
-
+  // Must be admin to update any User other than oneself
   usersModel.update(+req.params.userid, req.body.username, req.body.password, req.body.email)
   .then(user => {
     if (!user) next();
@@ -83,9 +79,7 @@ router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
 
 // POST new users
 router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
-  // We should authorize this action in order to prevent new
-  // User spam
-
+  // We should authorize this action in order to prevent new user spam
   // usersModel.create(req.body.username, req.body.password, req.body.email)
   usersModel.create(new UserModel(req.body.username, req.body.password, req.body.email, 3))
   .then(user => {
@@ -98,8 +92,6 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
 // DELETE existing User
 router.delete('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   // Must be Admin to delete Users other than oneself
-  
-
   usersModel.destroy(+req.params.userid)
   .then(user => {
     if (!user) next();

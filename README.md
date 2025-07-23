@@ -28,7 +28,7 @@ The newsfeeds.fyi backend consists of a RESTful express api.
 
 ## Installation
 
-* The `sqlite3` may have to be manually installed by itself.
+* `sqlite3` may have to be manually installed by itself.
 
 ## Usage
 
