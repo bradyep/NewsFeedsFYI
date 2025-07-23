@@ -4,18 +4,11 @@ import { UserModel } from 'common/models';
 export class UserStore {
 
   constructor(user: UserModel) {
-/*     this.todos = fixtures;
-    this.addTodo = this.addTodo.bind(this);
-    this.deleteTodo = this.deleteTodo.bind(this);
-    this.editTodo = this.editTodo.bind(this);
-    this.completeAll = this.completeAll.bind(this);
-    this.clearCompleted = this.clearCompleted.bind(this); */
     if (user) this.currentUser = user;
   }
 
   // The Primary User
-  @observable
-  public currentUser: UserModel;
+  @observable public currentUser: UserModel;
 
   // All Users, Not Implemented Yet
 /* 

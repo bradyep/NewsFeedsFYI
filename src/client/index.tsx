@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
 // import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
 import { Root } from './containers/Root';
@@ -19,7 +19,6 @@ const error = debug('webapp:error');
 // enable MobX strict mode
 // Which appareently no longer exists in MobX 6 -2025 07 15
 // useStrict(true);
-
 
 (async () => {
   const getUserURL = REST_DOMAIN + '/users';
@@ -61,12 +60,15 @@ const error = debug('webapp:error');
   }
   
   // render react DOM
-  ReactDOM.render(
+  const container = document.getElementById('root');
+  if (!container) throw new Error('Root container not found');
+  
+  const root = ReactDOM.createRoot(container);
+  root.render(
     <Provider {...rootStores} >
       <Root>
         <NewsFeedsFYIApp />
       </Root>
-    </Provider >,
-    document.getElementById('root')
+    </Provider>
   );
 })();

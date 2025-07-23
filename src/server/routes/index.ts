@@ -1,4 +1,3 @@
-// var express = require('express');
 import * as express from "express";
 var router = express.Router();
 import debug from "debug";
@@ -35,5 +34,4 @@ router.get('/logout', function (req, res, next) {
   });
 });
 
-// module.exports = router;
 export = router;

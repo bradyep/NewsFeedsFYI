@@ -12,8 +12,7 @@ export class LinkStore {
     this.clearOutLinks = this.clearOutLinks.bind(this);
   }
 
-  @observable
-  public links: Array<LinkModel>;
+  @observable public links: Array<LinkModel>;
 
   @action
   addLink(item: LinkModel): void {

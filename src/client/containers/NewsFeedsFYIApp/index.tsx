@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as styles from './styles.css';
 import { inject, observer } from 'mobx-react';
-import { LinkSection, ProfileSection } from '../../components/TopHeaderComponents';
+import { LinkSection, ProfileSection } from 'client/components/TopHeaderComponents';
 import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from 'client/components/LowerHeaderComponents';
 import { NewsFeeds } from 'client/components/BodyComponents';
 import { Copyright } from 'client/components/FooterComponents';
@@ -26,16 +26,14 @@ interface InjectedProps extends NewsFeedsFYIAppProps {
   page: PageStore
 }
 
-export interface NewsFeedsFYIAppState {
-  // empty
-}
+export interface NewsFeedsFYIAppState { }
 
 @inject(STORE_USER, STORE_LINK, STORE_PAGE)
 @observer
 export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYIAppState> {
 
-  constructor(props: NewsFeedsFYIAppProps, context: any) {
-    super(props, context);
+  constructor(props: NewsFeedsFYIAppProps) {
+    super(props);
     this.changeCurrentUser = this.changeCurrentUser.bind(this);    
   }
 

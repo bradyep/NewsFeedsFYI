@@ -26,8 +26,8 @@ export interface ProfileSectionState {
 @observer
 export class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
 
-  constructor(props: ProfileSectionProps, context?: any) {
-    super(props, context);
+  constructor(props: ProfileSectionProps) {
+    super(props);
     this.state = {
       showModal: false, username: "", password: "", confirmPassword: "", errorAuthenticating: false
     };

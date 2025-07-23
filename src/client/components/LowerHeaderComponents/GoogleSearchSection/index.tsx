@@ -1,20 +1,16 @@
 import * as React from 'react';
 import { FormGroup, InputGroup, FormControl } from 'react-bootstrap';
 
-export interface GoogleSearchSectionProps {
-  // addTodo: (todo: Partial<TodoModel>) => any;
-}
-
-export interface GoogleSearchSectionState {
-  /* empty */
-}
+export interface GoogleSearchSectionProps { }
+export interface GoogleSearchSectionState { }
 
 export class GoogleSearchSection extends React.Component<GoogleSearchSectionProps, GoogleSearchSectionState> {
-
-  constructor(props: GoogleSearchSectionProps, context?: any) {
-    super(props, context);
+  /*
+  constructor(props: GoogleSearchSectionProps) {
+    super(props);
     // this.handleSave = this.handleSave.bind(this);
   }
+  */
 
   /* 
     handleSave(text: string) {

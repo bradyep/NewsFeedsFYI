@@ -10,17 +10,16 @@ export interface PageSectionProps {
   pageStore: PageStore
 }
 
-export interface PageSectionState {
-  /* empty */
-}
+export interface PageSectionState { }
 
 @observer
 export class PageSection extends React.Component<PageSectionProps, PageSectionState> {
-
-  constructor(props: PageSectionProps, context?: any) {
-    super(props, context);
+  /*
+  constructor(props: PageSectionProps) {
+    super(props);
     // this.handleSave = this.handleSave.bind(this);
   }
+  */
 
   render() {
     const { userStore, pageStore } = this.props;    

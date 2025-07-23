@@ -1,25 +1,22 @@
 import * as React from "react";
 import { Roles } from "common/constants";
 import * as styles from "./styles.css";
-import { STORE_LINK } from "../../../constants/stores";
-import { LinkStore, UserStore } from "../../../stores";
+// import { STORE_LINK } from "../../../constants/stores";
+import { LinkStore, UserStore } from "client/stores";
 import { observer } from 'mobx-react';
 
 export interface LinkSectionProps {
-  // addTodo: (todo: Partial<TodoModel>) => any;
   linksStore: LinkStore,
   userStore: UserStore
 }
 
-export interface LinkSectionState {
-  /* empty */
-}
+export interface LinkSectionState { }
 
 @observer
 export class LinkSection extends React.Component<LinkSectionProps, LinkSectionState> {
 
-  constructor(props: LinkSectionProps, context?: any) {
-    super(props, context);
+  constructor(props: LinkSectionProps) {
+    super(props);
   }
 
   render() {

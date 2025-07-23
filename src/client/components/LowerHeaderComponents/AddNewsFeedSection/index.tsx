@@ -27,8 +27,8 @@ export interface AddNewsFeedSectionState {
 @observer
 export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNewsFeedSectionState> {
 
-  constructor(props: AddNewsFeedSectionProps, context?: any) {
-    super(props, context);
+  constructor(props: AddNewsFeedSectionProps) {
+    super(props);
     // const initialSelectedPageID = props.pageStore.pages[0].pageID;
     // Starting with a bad selectedPageID. This should be changed when the user opens a modal
     this.state = {

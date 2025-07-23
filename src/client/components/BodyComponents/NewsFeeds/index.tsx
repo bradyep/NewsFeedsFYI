@@ -17,10 +17,12 @@ export interface NewsFeedsState {
 @observer
 export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
-  constructor(props: NewsFeedsProps, context?: any) {
-    super(props, context);
+  /*
+  constructor(props: NewsFeedsProps) {
+    super(props);
     // this.handleSave = this.handleSave.bind(this);
   }
+  */
 
   /* 
     handleSave(text: string) {
