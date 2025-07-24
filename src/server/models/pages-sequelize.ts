@@ -19,13 +19,13 @@ export function create(page:PageModel) {
 export function update(page:PageModel) {
     return modelDef.connectDB('SQPage')
     .then((SQPage: any) => {
-        return SQPage['find']({ where: { pageID: page.pageID } })
-        .then((page: any) => {
-            if (!page) {
+        return SQPage['findOne']({ where: { pageID: page.pageID } })
+        .then((pageInstance: any) => {
+            if (!pageInstance) {
                 // throw new Error("No page found for pageID " + pageID);
                 return null;
             } else {
-                return page.updateAttributes({
+                return pageInstance.update({
                     name: page.name,
                     displayOrder: page.displayOrder,
                 });
@@ -37,7 +37,7 @@ export function update(page:PageModel) {
 export function read(pageID: any) {
     return modelDef.connectDB('SQPage')
     .then((SQPage: any) => {
-        return SQPage['find']({ where: { pageID } })
+        return SQPage['findOne']({ where: { pageID } })
         .then((page: any) => {
             if (!page) {
                 // throw new Error("No page found for " + pageID);
@@ -52,7 +52,7 @@ export function read(pageID: any) {
 export function destroy(pageID: any) {
     return modelDef.connectDB('SQPage')
     .then((SQPage: any) => {
-        return SQPage['find']({ where: { pageID } })
+        return SQPage['findOne']({ where: { pageID } })
         .then((page: any) => {
             if (!page) return null;
             else return page.destroy();

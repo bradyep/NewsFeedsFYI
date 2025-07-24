@@ -22,13 +22,13 @@ export function create(feedSource:FeedSourceModel): Promise<FeedSourceModel> {
 export function update(pFeedSource: FeedSourceModel) {
     return modelDef.connectDB('SQFeedSource')
     .then((SQFeedSource: any) => {
-        return SQFeedSource['find']({ where: { feedSourceID: pFeedSource.feedSourceID } })
+        return SQFeedSource['findOne']({ where: { feedSourceID: pFeedSource.feedSourceID } })
         .then((feedSource: any) => {
             if (!feedSource) {
                 // throw new Error("No feedSource found for feedSourceID " + feedSourceID);
                 return null;
             } else {
-                return feedSource.updateAttributes({
+                return feedSource.update({
                     url: pFeedSource.url,
                     cachedTitle: pFeedSource.cachedTitle,
                     cachedWebsiteURL: pFeedSource.cachedWebsiteURL,

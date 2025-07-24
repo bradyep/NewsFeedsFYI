@@ -20,13 +20,13 @@ export function create(link:LinkModel) {
 export function update(link:LinkModel) {
     return modelDef.connectDB('SQLink')
     .then((SQLink: any) => {
-        return SQLink['find']({ where: { linkID: link.linkID } })
-        .then((link: any) => {
-            if (!link) {
+        return SQLink['findOne']({ where: { linkID: link.linkID } })
+        .then((linkInstance: any) => {
+            if (!linkInstance) {
                 // throw new Error("No link found for linkID " + linkID);
                 return null;
             } else {
-                return link.updateAttributes({
+                return linkInstance.update({
                     url: link.url,
                     name: link.name,
                     displayOrder: link.displayOrder,
@@ -39,7 +39,7 @@ export function update(link:LinkModel) {
 export function read(linkID: any) {
     return modelDef.connectDB('SQLink')
     .then((SQLink: any) => {
-        return SQLink['find']({ where: { linkID } })
+        return SQLink['findOne']({ where: { linkID } })
         .then((link: any) => {
             if (!link) {
                 // throw new Error("No link found for " + linkID);
@@ -54,7 +54,7 @@ export function read(linkID: any) {
 export function destroy(linkID: any) {
     return modelDef.connectDB('SQLink')
     .then((SQLink: any) => {
-        return SQLink['find']({ where: { linkID } })
+        return SQLink['findOne']({ where: { linkID } })
         .then((link: any) => {
             if (!link) return null;
             else return link.destroy();

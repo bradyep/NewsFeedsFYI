@@ -23,13 +23,13 @@ export function create(cachedNewsItem:CachedNewsItemModel) {
 export function update(cachedNewsItem:CachedNewsItemModel) {
     return modelDef.connectDB('SQCachedNewsItem')
     .then((SQCachedNewsItem: any) => {
-        return SQCachedNewsItem['find']({ where: { cachedNewsItemID: cachedNewsItem.cachedNewsItemID } })
+        return SQCachedNewsItem['findOne']({ where: { cachedNewsItemID: cachedNewsItem.cachedNewsItemID } })
         .then((cachedNewsItem: any) => {
             if (!cachedNewsItem) {
                 // throw new Error("No cachedNewsItem found for cachedNewsItemID " + cachedNewsItemID);
                 return null;
             } else {
-                return cachedNewsItem.updateAttributes({
+                return cachedNewsItem.update({
                     feedSourceID: cachedNewsItem.feedSourceID,
                     title: cachedNewsItem.title,
                     link: cachedNewsItem.link,
@@ -44,7 +44,7 @@ export function update(cachedNewsItem:CachedNewsItemModel) {
 export function read(cachedNewsItemID: any): Promise<CachedNewsItemModel> {
     return modelDef.connectDB('SQCachedNewsItem')
     .then((SQCachedNewsItem: any) => {
-        return SQCachedNewsItem['find']({ where: { cachedNewsItemID } })
+        return SQCachedNewsItem['findOne']({ where: { cachedNewsItemID } })
         .then((cachedNewsItem: any) => {
             if (!cachedNewsItem) {
                 // throw new Error("No cachedNewsItem found for " + cachedNewsItemID);
@@ -59,7 +59,7 @@ export function read(cachedNewsItemID: any): Promise<CachedNewsItemModel> {
 export function destroy(cachedNewsItemID: any) {
     return modelDef.connectDB('SQCachedNewsItem')
     .then((SQCachedNewsItem: any) => {
-        return SQCachedNewsItem['find']({ where: { cachedNewsItemID } })
+        return SQCachedNewsItem['findOne']({ where: { cachedNewsItemID } })
         .then((cachedNewsItem: any) => {
             if (!cachedNewsItem) return null;
             else return cachedNewsItem.destroy();

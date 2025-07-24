@@ -40,7 +40,7 @@ export function update(userFeed: UserFeedModel) {
             // throw new Error("No userFeed found for userFeedID " + userFeedID);
             return null;
           } else {
-            return userFeed.updateAttributes({
+            return userFeed.update({
               column: userFeed.column,
               displayOrder: userFeed.displayOrder,
               name: userFeed.name,

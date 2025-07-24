@@ -10,8 +10,8 @@
   "scripts": {
     "build": "tsc",
     "build-server": "tsc -p tsconfig.server.json",
-    "startbackend": "npx ts-node --files src/server/server.ts",
-    "startbackendwindows": "set SEQUELIZE_CONNECT=src/server/models/sequelize-sqlite.yaml&& npx ts-node --files src/server/server.ts",
+    "startbackend": "node dist/server/server.js",
+    "startbackendwindows": "set SEQUELIZE_CONNECT=src/server/models/sequelize-sqlite.yaml&& node dist/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker": "node ./bin/www",
     "startclient": "webpack serve --mode development --history-api-fallback --progress --port 3030 --open",
@@ -86,6 +86,7 @@
     "js-yaml": "^4.1.0",
     "mobx": "^6.13.0",
     "mobx-react": "^7.6.0",
+    "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
@@ -97,5 +98,10 @@
     "serve-favicon": "^2.5.0",
     "session-file-store": "^1.5.0",
     "sqlite3": "^5.1.7"
+  },
+  "_moduleAliases": {
+    "server": "dist/server",
+    "common": "dist/common",
+    "client": "dist/client"
   }
 }

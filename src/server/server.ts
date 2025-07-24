@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * This is a server script to run the Express app for NewsFeedsFYI
+ * This is a server script to run the Express app for NewsFeedsFYI.
+ * It is the entry point for the backend of the application.
  */
+
+// Register module aliases BEFORE importing any modules
+import 'module-alias/register';
 
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
@@ -10,6 +14,13 @@ import path from 'path';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+
+// Import route modules
+import usersRouter = require('./routes/users');
+import linksRouter = require('./routes/links');
+import pagesRouter = require('./routes/pages');
+import userFeedsRouter = require('./routes/user-feeds');
+import indexRouter = require('./routes/index');
 
 // Create Express app
 const app = express();
@@ -28,26 +39,19 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+// Serve static files from the public directory
 app.use(express.static(path.join(__dirname, '../../public')));
+
+// Route handlers
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/links', linksRouter);
+app.use('/pages', pagesRouter);
+app.use('/userfeeds', userFeedsRouter);
 
 // Simple API route for testing
 app.get('/api', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to the NewsFeedsFYI API' });
-});
-
-// Simple route for users (placeholder)
-app.get('/users', (req: Request, res: Response) => {
-  res.json({ users: [{ id: 1, name: 'Test User' }] });
-});
-
-// Simple route for links (placeholder)
-app.get('/links', (req: Request, res: Response) => {
-  res.json({ links: [{ id: 1, url: 'https://example.com', title: 'Example' }] });
-});
-
-// Simple route for pages (placeholder)
-app.get('/pages', (req: Request, res: Response) => {
-  res.json({ pages: [{ id: 1, name: 'Home Page' }] });
 });
 
 // Error handler

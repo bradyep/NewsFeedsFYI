@@ -20,13 +20,13 @@ export function create(user:UserModel) {
 export function update(userID: number, username: string, password: string, email: string) {
     return modelDef.connectDB('SQUser')
     .then((SQUser: any) => {
-        return SQUser['find']({ where: { userID } })
+        return SQUser['findOne']({ where: { userID } })
         .then((user: any) => {
             if (!user) {
                 // throw new Error("No User found for userID " + userID);
                 return null;
             } else {
-                return user.updateAttributes({
+                return user.update({
                     username,
                     password,
                     email,
@@ -41,7 +41,7 @@ export function update(userID: number, username: string, password: string, email
 export function read(userID: number) {
     return modelDef.connectDB('SQUser')
     .then((SQUser: any) => {
-        return SQUser['find']({ where: { userID } })
+        return SQUser['findOne']({ where: { userID } })
         .then((user: any) => {
             if (!user) {
                 // throw new Error("No user found for " + userID);
@@ -67,7 +67,7 @@ export function read(userID: number) {
 export function destroy(userID: number) {
     return modelDef.connectDB('SQUser')
     .then((SQUser: any) => {
-        return SQUser['find']({ where: { userID } })
+        return SQUser['findOne']({ where: { userID } })
         .then((user: any) => {
             if (!user) return null;
             else return user.destroy();
@@ -99,7 +99,7 @@ export function count() {
 /** Check if supplied credentials are valid */
 export function userPasswordCheck(username: string, password: string) {
     return modelDef.connectDB('SQUser').then((SQUser: any) => {
-        return SQUser['find']({ where: { username } })
+        return SQUser['findOne']({ where: { username } })
     })
     .then(user => {
         // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
