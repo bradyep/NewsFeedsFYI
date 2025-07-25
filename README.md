@@ -1,6 +1,6 @@
-# NewsFeeds.fyi
+# General
 
-These two projects make up the newsfeeds.fyi website. 
+newsfeeds.fyi - All Your News, at a Glance!
 
 ## Deployment
 
@@ -20,4 +20,47 @@ These two projects make up the newsfeeds.fyi website.
 
 ## Misc
 
-* The data directory is /var/lib/nffyi-data
+* The data directory in the docker image is /var/lib/nffyi-data
+
+# Server
+
+The newsfeeds.fyi backend consists of a RESTful express api. 
+
+## Installation
+
+* `sqlite3` may have to be manually installed by itself.
+
+## Usage
+
+The build task is defined in tasks.json and can be invoked with `shift + ctrl + B`. This runs tsc on 'watch' mode.
+
+Currently it must be run from VS Code so that the required environmental variable are set.
+
+## Environmental Variables
+
+* `SEQUELIZE_CONNECT`: Points to the yaml file needed to initialize the sqlite3 database
+* `DEBUG`: Declares which debugging statements should show up in the log
+* `PORT`: This is the port that the REST services will run on
+
+
+# Client
+
+The front-end web application for newsfeeds.fyi consists of a React app that uses MobX for state management.
+
+## Usage
+
+To run in local development mode: `npm run start`
+
+To build the files needed to deploy to production: `npm run build`
+
+* This will transpile, bundle and minify the JavaScript into bundle.js (our code) and vendor.bundle.js (vendor code) and place them in the `dist` directory. 
+* It also puts together our `styles.css` file and place it in `dist`.
+* It will also copy every thing from `src/assets` to `dist/assets`.
+
+## Logging
+
+You can enable all of this application's logs by typing this in the browser's console: `localStorage.debug = 'webapp:*'`
+
+### Logging Categories
+
+

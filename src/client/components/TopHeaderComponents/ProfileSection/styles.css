@@ -1,0 +1,20 @@
+i, p {
+  display: inline-block;
+}
+
+i {
+  margin-top: 4px;
+  margin-right: 4px;
+}
+
+.profileSection {
+  cursor: pointer;
+}
+
+/* .popover { */
+  /* width: 400px; */
+/* } */
+
+.popoverButton {
+  margin: 5px;
+}

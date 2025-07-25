@@ -1,0 +1,115 @@
+import debug = require('debug');
+const log = debug('nffyi-rest:users-model');
+const error = debug('nffyi-rest:error');
+import modelDef = require('./nffyi-sequelize');
+import { UserModel } from 'common/models';
+
+export function create(user:UserModel) {
+    return modelDef.connectDB('SQUser')
+    .then((SQUser: any) => {
+        return SQUser['create']({
+            username: user.username,
+            password: user.password,
+            email: user.email,
+            lastAccessDate: Date(),
+            roleID: user.roleID
+        });
+    });
+};
+
+export function update(userID: number, username: string, password: string, email: string) {
+    return modelDef.connectDB('SQUser')
+    .then((SQUser: any) => {
+        return SQUser['findOne']({ where: { userID } })
+        .then((user: any) => {
+            if (!user) {
+                // throw new Error("No User found for userID " + userID);
+                return null;
+            } else {
+                return user.update({
+                    username,
+                    password,
+                    email,
+                    lastAccessDate: Date()
+                });
+            }
+        });
+    });
+};
+
+/** Get one User from the Database */
+export function read(userID: number) {
+    return modelDef.connectDB('SQUser')
+    .then((SQUser: any) => {
+        return SQUser['findOne']({ where: { userID } })
+        .then((user: any) => {
+            if (!user) {
+                // throw new Error("No user found for " + userID);
+                return null;
+            } else {
+                return new UserModel(user.username, user.password, user.email, user.roleID, user.userID, user.lastAccessDate);
+                // return new User(7, 'steve', 'go4it', 'steve@steve.com', Date());
+                // var test = new User();
+/*
+            return {
+                userID: user.userID, 
+                userName: user.userName, 
+                password: user.password, 
+                email: user.email, 
+                lastAccessDate: user.lastAccessDate
+            };
+            */
+            }
+        });
+    });
+};
+
+export function destroy(userID: number) {
+    return modelDef.connectDB('SQUser')
+    .then((SQUser: any) => {
+        return SQUser['findOne']({ where: { userID } })
+        .then((user: any) => {
+            if (!user) return null;
+            else return user.destroy();
+        });
+    });
+};
+
+export function keylist() {
+    return modelDef.connectDB('SQUser')
+    .then((SQUser: any) => {
+        return SQUser['findAll']({ attributes: [ 'userID' ] })
+        .then((users: any) => {
+            return users.map((user: any) => user.userID);
+        });
+    });
+};
+
+export function count() {
+    return modelDef.connectDB('SQUser')
+    .then((SQUser: any) => {
+        return SQUser['count']()
+        .then((count: any) => {
+            log('COUNT ' + count);
+            return count;
+        });
+    });
+};
+
+/** Check if supplied credentials are valid */
+export function userPasswordCheck(username: string, password: string) {
+    return modelDef.connectDB('SQUser').then((SQUser: any) => {
+        return SQUser['findOne']({ where: { username } })
+    })
+    .then(user => {
+        // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
+        log('userPasswordCheck query: ' + username + '/' + password);
+        if (!user) {
+            return { check: false, userid: 0, username, message: "Could not find user" };
+        } else if (user.username === username && user.password === password) {
+            return { check: true, userid: user.userID, username: user.username };
+        } else {
+            return { check: false, userid: 0, username: username, message: "Incorrect password" };
+        }
+    });
+};
