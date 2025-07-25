@@ -9,5 +9,6 @@ build
 dist
 *.sqlite3
 *.map
+public
 public/main.bundle.js
 cookies.txt
