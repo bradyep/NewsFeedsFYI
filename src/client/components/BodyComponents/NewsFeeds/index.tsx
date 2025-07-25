@@ -69,7 +69,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   renderNewsFeedColumn(column: number) {
     const { pageStore } = this.props;
     const { currentlyDisplayedPage } = pageStore;
-    const userFeeds: UserFeedModel[] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
+    const userFeeds: UserFeedModel [] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
 
     return (
       <div className={`col-sm-4 ${styles.newsSectionContainer}`}>

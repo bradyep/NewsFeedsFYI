@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
   .catch(err => { error('router-pages ' + err); next(err); });
 });
 
-var getKeyList = function(userID:number) {
+var getKeyList = function(userID: number) {
     return pagesModel.keylist(userID)
     .then(keylist => {
         var keyPromises = keylist.map((key: any) => {
@@ -37,7 +37,7 @@ var getKeyList = function(userID:number) {
 
 // GET single Page
 router.get('/:pageid', (req, res, next) => {
-  let userID:number = req.user ? req.user.userID : 1;
+  let userID: number = req.user ? req.user.userID : 1;
   pagesModel.read(req.params.pageid)
   .then(page => {
     if (!page) next();
@@ -57,7 +57,7 @@ router.get('/:pageid', (req, res, next) => {
 
 // Update existing Page
 router.put('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
-  let userID:number = req.user ? req.user.userID : 1;
+  let userID: number = req.user ? req.user.userID : 1;
   // Authorize
   if (userID === req.body.userID || req.user && req.user.userID === 2) {
     let updatePage = new PageModel(req.body.name, req.body.displayOrder, req.body.userID, +req.params.pageid);
@@ -76,7 +76,7 @@ router.put('/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
 
 // POST new Page
 router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
-  let userID:number = req.user ? req.user.userID : 1;
+  let userID: number = req.user ? req.user.userID : 1;
   // Authorize
   if (userID === req.body.userID || req.user && req.user.userID === 2) {
     pagesModel.create(new PageModel(req.body.name, req.body.displayOrder, userID))
