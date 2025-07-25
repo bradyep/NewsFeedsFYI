@@ -75,6 +75,9 @@ const getUserFeeds = (pageID: number): Promise<any> => {
         // return userFeedsModel.read(key, pageID)
         return userFeedsModel.readAsync(key, pageID)
           .then((userFeed: UserFeedModel) => {
+            if (!userFeed) {
+              log('No UserFeedModel found for key: ' + key + ' and pageID: ' + pageID);
+            }
             var usfm: UserFeedModel = new UserFeedModel(
               userFeed.column,
               userFeed.displayOrder,

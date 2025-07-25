@@ -10,3 +10,4 @@ dist
 *.sqlite3
 *.map
 public/main.bundle.js
+cookies.txt

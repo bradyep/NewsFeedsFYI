@@ -66,7 +66,7 @@ passport.serializeUser(function (user, done) {
 // passport.deserializeUser(function(id, done) {
 passport.deserializeUser(function (user: any, done) {
   debug('deserializeUser: ' + util.inspect(user));
-  usersModel.read(user.id)
+  usersModel.read(user.userID)
     .then(user => {
       debug('... found user ' + util.inspect(user));
       done(null, user);

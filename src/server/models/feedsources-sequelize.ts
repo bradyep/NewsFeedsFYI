@@ -43,7 +43,7 @@ export function update(pFeedSource: FeedSourceModel) {
 export function read(feedSourceID: number): Promise<FeedSourceModel> {
     return modelDef.connectDB('SQFeedSource')
     .then((SQFeedSource: any) => {
-        return SQFeedSource['find']({ where: { feedSourceID } })
+        return SQFeedSource['findOne']({ where: { feedSourceID } })
         .then((feedSource: any) => {
             if (!feedSource) {
                 // throw new Error("No feedSource found for " + feedSourceID);
@@ -58,7 +58,7 @@ export function read(feedSourceID: number): Promise<FeedSourceModel> {
 export function getByURL(url: string):Promise<FeedSourceModel | undefined> {
   return modelDef.connectDB('SQFeedSource')
   .then((SQFeedSource: any) => {
-      return SQFeedSource['find']({ where: { url } })
+      return SQFeedSource['findOne']({ where: { url } })
       .then((feedSource: any) => {
           if (!feedSource) {
               // throw new Error("No feedSource found for " + feedSourceID);
@@ -73,7 +73,7 @@ export function getByURL(url: string):Promise<FeedSourceModel | undefined> {
 export function destroy(feedSourceID: number) {
     return modelDef.connectDB('SQFeedSource')
     .then((SQFeedSource: any) => {
-        return SQFeedSource['find']({ where: { feedSourceID } })
+        return SQFeedSource['findOne']({ where: { feedSourceID } })
         .then((feedSource: any) => {
             if (!feedSource) return null;
             else return feedSource.destroy();
