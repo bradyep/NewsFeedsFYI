@@ -114,14 +114,18 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const validationState = errorAuthenticating === true ? "error" : null;
 
     return (
-      <div className="static-modal" >
-        <Modal show={this.state.showModal} onHide={this.close}>
-          <Modal.Header>
-            <Modal.Title>Sign In to newsfeeds.fyi</Modal.Title>
-          </Modal.Header>
+      <Modal 
+        show={this.state.showModal} 
+        onHide={this.close}
+        backdrop={true}
+        keyboard={true}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Sign In to newsfeeds.fyi</Modal.Title>
+        </Modal.Header>
 
           <Modal.Body>
-            <form>
+            <form onSubmit={(e) => { e.preventDefault(); this.attemptSignIn(); }}>
               <FormGroup controlId="username">
                 <FormLabel>Username: </FormLabel>
                 <FormControl
@@ -152,19 +156,17 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
           </Modal.Body>
 
           <Modal.Footer>
-            <Button onClick={this.close}>Cancel</Button>
-            <Button variant="primary" onClick={this.attemptSignIn}>Sign In</Button>
+            <Button type="button" onClick={this.close}>Cancel</Button>
+            <Button type="button" variant="primary" onClick={this.attemptSignIn}>Sign In</Button>
           </Modal.Footer>
 
         </Modal>
-      </div>
     )
   }
 
   renderForGuest() {
     return (
       <div className={styles.profileSection} onClick={this.open}>
-        {this.renderSignInModal()}
         <i className="fa fa-user fa-2x" aria-hidden="true"></i>
         <p>
           Sign In To Customize
@@ -187,7 +189,6 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     return (
       <OverlayTrigger trigger="click" placement="bottom" overlay={popoverBottom}>
         <div className={styles.profileSection}>
-          {this.renderSignInModal()}
           <i className="fa fa-user fa-2x" aria-hidden="true"></i>
           <p>
             {profileText}
@@ -206,6 +207,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     return (
       <div className={styles.popover}>
         {renderMethod()}
+        {this.renderSignInModal()}
       </div>
     );
   }
