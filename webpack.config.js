@@ -63,18 +63,46 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/
       },
-      // css 
+      // Library CSS (Bootstrap, etc.) - no CSS modules
       {
         test: /\.css$/,
+        include: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
-              modules: true,
+              sourceMap: !isProduction,
+              importLoaders: 1
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('postcss-import')({ addDependencyTo: webpack }),
+                  require('postcss-url')(),
+                  require('postcss-browser-reporter')({ disabled: isProduction }),
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Component CSS - with CSS modules
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
               sourceMap: !isProduction,
               importLoaders: 1,
               modules: {
+                auto: true,
                 localIdentName: '[local]__[hash:base64:5]'
               }
             }

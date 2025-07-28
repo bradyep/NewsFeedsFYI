@@ -1,6 +1,6 @@
 // import request from 'request';
 import * as request from 'request';
-import * as FeedParser from 'feedparser';
+import FeedParser = require('feedparser');
 
 export default class FeedHandler {
   static parse (url:string) {

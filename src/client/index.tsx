@@ -1,5 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
+// Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 // import { useStrict } from 'mobx';
 import { Provider } from 'mobx-react';
 import { Root } from './containers/Root';
