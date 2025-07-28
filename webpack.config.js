@@ -103,7 +103,9 @@ module.exports = {
               importLoaders: 1,
               modules: {
                 auto: true,
-                localIdentName: '[local]__[hash:base64:5]'
+                localIdentName: isProduction ? '[hash:base64:8]' : '[local]__[hash:base64:5]',
+                namedExport: false,
+                exportLocalsConvention: 'camelCase'
               }
             }
           },

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './styles.css';
+import styles from './styles.css';
 import { inject, observer } from 'mobx-react';
 import { LinkSection, ProfileSection } from 'client/components/TopHeaderComponents';
 import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from 'client/components/LowerHeaderComponents';

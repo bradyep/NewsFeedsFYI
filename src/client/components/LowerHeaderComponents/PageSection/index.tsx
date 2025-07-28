@@ -3,7 +3,7 @@ import { DropdownButton, Dropdown } from 'react-bootstrap';
 import { observer } from 'mobx-react';
 import { UserStore, PageStore } from "../../../stores";
 import { Roles } from "common/constants";
-import * as styles from './styles.css';
+import styles from './styles.css';
 
 export interface PageSectionProps {
   userStore: UserStore,
@@ -26,8 +26,10 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
     const { currentUser } = userStore;
     const { pages } = pageStore;
 
+    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#fff9c4', padding: '8px' } : {};
+
     return (
-      <div className="col-md-3 mb-2">
+      <div className="col-md-3 mb-2" style={debugStyle}>
         <div className="d-flex align-items-center">
           <span className="me-2">Page:</span>
           <DropdownButton title={pages[0].name} id={pages[0].pageID?.toString()} size="sm">

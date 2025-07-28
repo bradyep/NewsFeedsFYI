@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './styles.css';
+import styles from './styles.css';
 import { PageStore, UserStore } from 'client/stores';
 import { UserFeedModel } from 'common/models';
 import { Roles } from 'common/constants';
@@ -81,8 +81,10 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   }
 
   render() {
+    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#fce4ec', padding: '8px' } : {};
+    
     return (
-      <div className="allNews">
+      <div className="allNews" style={debugStyle}>
         <div className="row g-3">
           {this.renderNewsFeedColumn(1)}
           {this.renderNewsFeedColumn(2)}

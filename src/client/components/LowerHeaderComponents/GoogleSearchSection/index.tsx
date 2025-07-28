@@ -21,8 +21,10 @@ export class GoogleSearchSection extends React.Component<GoogleSearchSectionProp
    */
 
   render() {
+    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#f3e5f5', padding: '8px' } : {};
+    
     return (
-      <div className="col-md-6 mb-2">
+      <div className="col-md-6 mb-2" style={debugStyle}>
         <form>
           <InputGroup size="sm">
             <FormControl type="text" placeholder="Search..." />

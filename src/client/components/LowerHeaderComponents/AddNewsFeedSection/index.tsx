@@ -180,8 +180,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const { currentUser } = userStore;
     const disabled = currentUser.roleID === Roles.GUEST;
 
+    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#fff3e0', padding: '8px' } : {};
+
     return (
-      <div className="col-md-3 mb-2">
+      <div className="col-md-3 mb-2" style={debugStyle}>
         {this.renderAddNewsFeedModal()}
         <Button variant="primary" size="sm" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
       </div>

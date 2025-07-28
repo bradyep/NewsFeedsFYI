@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './styles.css';
+import styles from './styles.css';
 import { Modal, Button, FormGroup, FormLabel, FormControl, OverlayTrigger, Popover } from "react-bootstrap";
 import { REST_DOMAIN } from 'client/constants/network';
 import { UserModel } from 'common/models';
@@ -165,8 +165,10 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   }
 
   renderForGuest() {
+    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
+    
     return (
-      <div className={styles.profileSection} onClick={this.open}>
+      <div className={styles.profileSection} onClick={this.open} style={debugStyle}>
         <i className="fa fa-user fa-2x" aria-hidden="true"></i>
         <p>
           Sign In To Customize
@@ -179,6 +181,8 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const { userStore } = this.props;
     const { currentUser } = userStore;
     const profileText: string = "Signed In As " + currentUser.username;
+    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
+    
     const popoverBottom: JSX.Element = (
       <Popover id="popover-positioned-bottom" title="Account Options">
         <Button className={styles.popoverButton}>Edit Account</Button>
@@ -188,7 +192,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
 
     return (
       <OverlayTrigger trigger="click" placement="bottom" overlay={popoverBottom}>
-        <div className={styles.profileSection}>
+        <div className={styles.profileSection} style={debugStyle}>
           <i className="fa fa-user fa-2x" aria-hidden="true"></i>
           <p>
             {profileText}
