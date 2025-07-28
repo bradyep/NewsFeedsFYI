@@ -181,9 +181,9 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const disabled = currentUser.roleID === Roles.GUEST;
 
     return (
-      <div className="col-md-2">
+      <div className="col-md-3 mb-2">
         {this.renderAddNewsFeedModal()}
-        <Button variant="primary" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
+        <Button variant="primary" size="sm" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
       </div>
     );
   }

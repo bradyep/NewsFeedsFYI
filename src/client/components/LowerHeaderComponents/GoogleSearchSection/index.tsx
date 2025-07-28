@@ -22,16 +22,14 @@ export class GoogleSearchSection extends React.Component<GoogleSearchSectionProp
 
   render() {
     return (
-      <div className="col-md-7">
+      <div className="col-md-6 mb-2">
         <form>
-          <FormGroup>
-            <InputGroup>
-              <FormControl type="text" />
-              <InputGroup.Text>
-                <i className="fa fa-search" aria-hidden="true"></i>
-              </InputGroup.Text>
-            </InputGroup>
-          </FormGroup>
+          <InputGroup size="sm">
+            <FormControl type="text" placeholder="Search..." />
+            <InputGroup.Text>
+              <i className="fa fa-search" aria-hidden="true"></i>
+            </InputGroup.Text>
+          </InputGroup>
         </form>
       </div>
     );

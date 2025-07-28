@@ -83,12 +83,12 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     const pageStore = this.injected[STORE_PAGE] as PageStore;
 
     return (
-      <div>
+      <div style={{ paddingTop: '80px' }}>
         <Navbar variant="dark" fixed="top" className={styles.header}>
-          <div className="container">
-            <div className="row">
-              <div className="col-md-9">
-                <h4>newsfeeds.fyi</h4>
+          <div className="container-fluid">
+            <div className="row w-100">
+              <div className="col-md-9 d-flex align-items-center">
+                <h4 className="me-3 mb-0">newsfeeds.fyi</h4>
                 <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
               </div>
               <div className="col-md-3">
@@ -98,7 +98,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           </div>
         </Navbar>
 
-        <section className="container">
+        <section className="container-fluid py-3">
           <div className="row">
             <PageSection userStore={this.injected[STORE_USER]} pageStore={this.injected[STORE_PAGE]} />
             <GoogleSearchSection />
@@ -106,11 +106,11 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           </div>
         </section>
 
-        <main className="container">
+        <main className="container-fluid">
           <NewsFeeds pageStore={this.injected[STORE_PAGE]} userStore={this.injected[STORE_USER]} />
         </main>
 
-        <footer className="container">
+        <footer className="container-fluid mt-4">
           <Copyright />
         </footer>
       </div>

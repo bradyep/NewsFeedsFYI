@@ -72,7 +72,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
     const userFeeds: UserFeedModel [] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
 
     return (
-      <div className={`col-sm-4 ${styles.newsSectionContainer}`}>
+      <div className={`col-md-4 mb-3 ${styles.newsSectionContainer}`}>
         {userFeeds.map((newsFeed, i) =>
           this.renderNewsFeed(newsFeed, i)
         )}
@@ -83,7 +83,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   render() {
     return (
       <div className="allNews">
-        <div className="row">
+        <div className="row g-3">
           {this.renderNewsFeedColumn(1)}
           {this.renderNewsFeedColumn(2)}
           {this.renderNewsFeedColumn(3)}

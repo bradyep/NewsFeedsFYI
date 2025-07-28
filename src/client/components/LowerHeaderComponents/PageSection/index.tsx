@@ -27,16 +27,18 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
     const { pages } = pageStore;
 
     return (
-      <div className="col-md-3">
-        <p>Page: </p>
-        <DropdownButton title={pages[0].name} id={pages[0].pageID?.toString()}>
-          {pages.map((page, i) => 
-            <Dropdown.Item key={i} eventKey={page.pageID} active={i === 0}>{page.name}</Dropdown.Item>  
-          )}
-        </DropdownButton>
-        {currentUser.roleID != Roles.GUEST &&
-          <i className={`fa fa-cog ${styles.biggerCog}`} aria-hidden="true"></i>
-        }
+      <div className="col-md-3 mb-2">
+        <div className="d-flex align-items-center">
+          <span className="me-2">Page:</span>
+          <DropdownButton title={pages[0].name} id={pages[0].pageID?.toString()} size="sm">
+            {pages.map((page, i) => 
+              <Dropdown.Item key={i} eventKey={page.pageID} active={i === 0}>{page.name}</Dropdown.Item>  
+            )}
+          </DropdownButton>
+          {currentUser.roleID != Roles.GUEST &&
+            <i className={`fa fa-cog ${styles.biggerCog} ms-2`} aria-hidden="true"></i>
+          }
+        </div>
       </div>
     );
   }
