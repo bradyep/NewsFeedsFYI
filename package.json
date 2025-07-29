@@ -15,6 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker": "node ./bin/www",
     "startclient": "webpack serve --mode development --history-api-fallback --progress --port 3030 --open",
+    "startclient:debug-layout": "set DEBUG_LAYOUT=true&& webpack serve --mode development --history-api-fallback --progress --port 3030 --open",
     "buildclient": "set NODE_ENV=production&& webpack --mode=production --progress"
   },
   "repository": {

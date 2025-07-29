@@ -26,7 +26,7 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
     const { currentUser } = userStore;
     const { pages } = pageStore;
 
-    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#fff9c4', padding: '8px' } : {};
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#fff9c4', padding: '8px' } : {};
 
     return (
       <div className="col-md-3 mb-2" style={debugStyle}>

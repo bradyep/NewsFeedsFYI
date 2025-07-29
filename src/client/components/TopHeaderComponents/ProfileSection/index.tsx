@@ -165,7 +165,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   }
 
   renderForGuest() {
-    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
     
     return (
       <div className={styles.profileSection} onClick={this.open} style={debugStyle}>
@@ -181,7 +181,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const { userStore } = this.props;
     const { currentUser } = userStore;
     const profileText: string = "Signed In As " + currentUser.username;
-    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
     
     const popoverBottom: JSX.Element = (
       <Popover id="popover-positioned-bottom" title="Account Options">

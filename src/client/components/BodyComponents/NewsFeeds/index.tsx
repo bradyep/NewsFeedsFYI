@@ -81,7 +81,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   }
 
   render() {
-    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#fce4ec', padding: '8px' } : {};
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#fce4ec', padding: '8px' } : {};
     
     return (
       <div className="allNews" style={debugStyle}>

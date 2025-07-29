@@ -102,7 +102,10 @@ module.exports = {
               sourceMap: !isProduction,
               importLoaders: 1,
               modules: {
-                auto: true,
+                auto: (resourcePath) => {
+                  // Enable CSS modules for all component CSS files (not in node_modules)
+                  return !resourcePath.includes('node_modules');
+                },
                 localIdentName: isProduction ? '[hash:base64:8]' : '[local]__[hash:base64:5]',
                 namedExport: false,
                 exportLocalsConvention: 'camelCase'
@@ -143,7 +146,8 @@ module.exports = {
       template: 'assets/index.html'
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
+      DEBUG_LAYOUT: false
     }),
     new CopyWebpackPlugin({
       patterns: [

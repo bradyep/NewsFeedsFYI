@@ -82,9 +82,18 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     // const { children } = this.props;
     const pageStore = this.injected[STORE_PAGE] as PageStore;
 
+    // Debug: Check if styles are loading correctly
+    if (process.env.NODE_ENV === 'development') {
+      console.log('NewsFeedsFYIApp styles object:', styles);
+      console.log('header class:', styles?.header);
+    }
+
+    // Defensive class name access - handle undefined styles object
+    const headerClass = styles?.header || '';
+
     return (
       <div style={{ paddingTop: '80px' }}>
-        <Navbar variant="dark" fixed="top" className={styles.header}>
+        <Navbar variant="dark" fixed="top" className={headerClass}>
           <div className="container-fluid">
             <div className="row w-100">
               <div className="col-md-9 d-flex align-items-center">

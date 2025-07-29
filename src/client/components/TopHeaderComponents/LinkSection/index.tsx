@@ -24,7 +24,7 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
     const { links } = linksStore;
     const { currentUser } = userStore;
 
-    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#e3f2fd', padding: '8px' } : {};
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#e3f2fd', padding: '8px' } : {};
 
     return (
       <div className={styles.linkList} style={debugStyle}>

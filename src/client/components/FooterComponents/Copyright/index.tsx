@@ -14,7 +14,7 @@ export class Copyright extends React.Component<CopyrightProps, CopyrightState> {
 
   render() {
     const copyrightYear:string = new Date().getFullYear().toString();
-    const debugStyle = process.env.NODE_ENV === 'development' ? { backgroundColor: '#f5f5f5', padding: '8px' } : {};
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#f5f5f5', padding: '8px' } : {};
 
     return (
       <div className={styles.footer} style={debugStyle}>
