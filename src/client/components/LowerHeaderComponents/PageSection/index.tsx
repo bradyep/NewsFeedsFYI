@@ -12,6 +12,8 @@ export interface PageSectionProps {
 
 export interface PageSectionState { }
 
+// TODO: Since this component only consists of a dropdown for selecting the current page, it should probably be renamed PageSelector
+
 @observer
 export class PageSection extends React.Component<PageSectionProps, PageSectionState> {
   /*

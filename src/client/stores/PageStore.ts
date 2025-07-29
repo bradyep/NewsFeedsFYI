@@ -1,9 +1,28 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import { PageModel, UserFeedModel } from 'common/models';
 
 export class PageStore {
 
+  // Pages
+  public pages: Array<PageModel>;
+  public currentlyDisplayedPageID: number;
+
   constructor(fixtures: PageModel[]) {
+    // Make properties observable using makeObservable for MobX v6+
+    makeObservable(this, {
+      pages: observable,
+      currentlyDisplayedPageID: observable,
+      currentlyDisplayedPage: computed,
+      setCurrentlyDisplayedPage: action,
+      setPages: action,
+      addPage: action,
+      editPage: action,
+      deletePage: action,
+      addUserFeed: action,
+      editUserFeed: action,
+      deleteUserFeed: action
+    });
+
     this.pages = fixtures;
     // Set active page
     const sortedPages = this.pages.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -17,37 +36,28 @@ export class PageStore {
     this.deleteUserFeed = this.deleteUserFeed.bind(this);
   }
 
-  // Pages
-  @observable public pages: Array<PageModel>;
-  @observable public currentlyDisplayedPageID: number;
-
-  @computed
   get currentlyDisplayedPage(): PageModel {
     const activePage = this.pages.find(p => p.pageID === this.currentlyDisplayedPageID);
     if (!activePage) throw new Error("No Active Page Set");
     return activePage;
   }
 
-  @action
   setCurrentlyDisplayedPage(id: number) {
     const page = this.pages.find(p => p.pageID === id);
     if (page) this.currentlyDisplayedPageID = page.pageID || -1;
     else throw new Error("Tried to set active page to a page that doesn't exist");
   }
 
-  @action
   setPages(pages: PageModel[]): void {
     this.pages = pages;
     const sortedPages = this.pages.sort((a, b) => a.displayOrder - b.displayOrder);
     this.currentlyDisplayedPageID = sortedPages[0].pageID || -1;
   }
 
-  @action
   addPage(item: PageModel): void {
     this.pages.push(item);
   }
 
-  @action
   editPage(id: number, data: Partial<PageModel>): void {
     this.pages = this.pages.map((page) => {
       if (page.pageID === id) {
@@ -62,13 +72,11 @@ export class PageStore {
     })
   }
 
-  @action
   deletePage(id: number): void {
     this.pages = this.pages.filter((page) => page.pageID !== id);
   }
 
   // UserFeeds
-  @action
   addUserFeed(pageID: number, userFeed: UserFeedModel): void {
     try {
       const page: PageModel | undefined = this.pages.find(p => p.pageID === pageID);
@@ -80,7 +88,6 @@ export class PageStore {
     }
   }
 
-  @action
   editUserFeed(feedSourceID: number, pageID: number, data: Partial<UserFeedModel>): void {
     this.pages.map((page) => {
       if (page.pageID === pageID) {
@@ -106,7 +113,6 @@ export class PageStore {
     })
   }
 
-  @action
   deleteUserFeed(feedSourceID: number, pageID: number): void {
     const page: PageModel | undefined = this.pages.find((page) => page.pageID === pageID);
     if (page)

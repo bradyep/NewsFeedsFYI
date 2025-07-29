@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 // Import Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import { useStrict } from 'mobx';
+// Configure MobX for v6+ compatibility
+import { configure } from 'mobx';
 import { Provider } from 'mobx-react';
 import { Root } from './containers/Root';
 import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
@@ -15,12 +16,17 @@ import debug from 'debug';
 const log = debug('webapp:app-index');
 const error = debug('webapp:error');
 
+// Configure MobX for modern compatibility
+configure({
+  enforceActions: "never",
+  computedRequiresReaction: false,
+  reactionRequiresObservable: false,
+  observableRequiresReaction: false,
+  disableErrorBoundaries: true
+});
+
 // Window Object for Debugging
 (window as any).NFYI = (window as any).NFYI || {};
-
-// enable MobX strict mode
-// Which appareently no longer exists in MobX 6 -2025 07 15
-// useStrict(true);
 
 (async () => {
   const getUserURL = REST_DOMAIN + '/users';
