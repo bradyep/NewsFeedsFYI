@@ -11,10 +11,6 @@ export class PageModel {
     @observable public displayOrder: number;
     @observable public userFeeds: UserFeedModel[];
 
-    test() {
-      console.log('hey!');
-    }
-
     constructor(name: string, displayOrder: number, userID: number, pageID?: number) {
         this.name = name;
         this.displayOrder = displayOrder;

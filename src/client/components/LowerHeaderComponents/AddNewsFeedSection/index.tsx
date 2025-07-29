@@ -51,12 +51,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const { pageStore } = this.props;
     const initalPageID = pageStore.pages[0].pageID ?? 0;
     this.setState({ showModal: true, selectedPageID: initalPageID });
-    // console.log("Hey! " + this.state.showModal.toString());
   }
 
   handleChange(e: any) {
     log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
-    // this.setState({ [e.currentTarget.id]: e.currentTarget.value });
     const id = e.currentTarget.id as keyof AddNewsFeedSectionState;
     this.setState({ [id]: e.currentTarget.value } as Pick<AddNewsFeedSectionState, keyof AddNewsFeedSectionState>);
   }

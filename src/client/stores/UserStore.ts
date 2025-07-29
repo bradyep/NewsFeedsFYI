@@ -1,5 +1,7 @@
 import { observable, action, makeObservable } from 'mobx';
 import { UserModel } from 'common/models';
+import debug from 'debug';
+const log = debug('webapp:UserStore');
 
 export class UserStore {
 
@@ -24,10 +26,10 @@ export class UserStore {
 
   /** Change Primary User in User Store. Used when a User creates an account. */
   changeCurrentUser(user:UserModel): void {
-    console.log('UserStore.changeCurrentUser called with:', user);
-    console.log('Previous user:', this.currentUser);
+    log('UserStore.changeCurrentUser called with:', user);
+    log('Previous user:', this.currentUser);
     this.currentUser = user;
-    console.log('New user set:', this.currentUser);
+    log('New user set:', this.currentUser);
   }
 
   public nodeenv() {

@@ -79,14 +79,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
   }
 
   render() {
-    // const { children } = this.props;
     const pageStore = this.injected[STORE_PAGE] as PageStore;
-
-    // Debug: Check if styles are loading correctly
-    if (process.env.NODE_ENV === 'development') {
-      console.log('NewsFeedsFYIApp styles object:', styles);
-      console.log('header class:', styles?.header);
-    }
 
     // Defensive class name access - handle undefined styles object
     const headerClass = styles?.header || '';

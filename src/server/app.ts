@@ -16,8 +16,6 @@ import userFeeds = require('./routes/user-feeds');
 import authenticate = require('./routes/authenticate');
 
 var app = express();
-// var thing = 'whee - this is a thino! here is some more text. I feel I am being watched!';
-// console.log(thing);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

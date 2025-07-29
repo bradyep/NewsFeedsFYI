@@ -46,7 +46,6 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
 
   open() {
     this.setState({ showModal: true });
-    // console.log("Hey! " + this.state.showModal.toString());
   }
 
   handleChange(e: any) {
@@ -207,13 +206,6 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const { currentUser } = userStore;
     const isGuest: boolean = currentUser.roleID === Roles.GUEST;
     const renderMethod: Function = isGuest ? this.renderForGuest : this.renderForUser;
-
-    // Debug: Log when component re-renders
-    if (process.env.NODE_ENV === 'development') {
-      console.log('ProfileSection render - currentUser:', currentUser);
-      console.log('ProfileSection render - isGuest:', isGuest);
-      console.log('ProfileSection render - roleID:', currentUser.roleID);
-    }
 
     return (
       <div className={styles.popover}>
