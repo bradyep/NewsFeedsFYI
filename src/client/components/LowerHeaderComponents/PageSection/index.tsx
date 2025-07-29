@@ -3,7 +3,12 @@ import { DropdownButton, Dropdown } from 'react-bootstrap';
 import { observer } from 'mobx-react';
 import { UserStore, PageStore } from "../../../stores";
 import { Roles } from "common/constants";
+import { PageModel } from 'common/models';
+import { REST_DOMAIN } from 'client/constants/network';
+import { getUserPageFeeds } from 'client/services/api';
 import styles from './styles.css';
+import debug from 'debug';
+const log = debug('webapp:PageSection');
 
 export interface PageSectionProps {
   userStore: UserStore,
@@ -12,16 +17,28 @@ export interface PageSectionProps {
 
 export interface PageSectionState { }
 
-// TODO: Since this component only consists of a dropdown for selecting the current page, it should probably be renamed PageSelector
-
 @observer
 export class PageSection extends React.Component<PageSectionProps, PageSectionState> {
-  /*
   constructor(props: PageSectionProps) {
     super(props);
-    // this.handleSave = this.handleSave.bind(this);
+    this.handleSelectPage = this.handleSelectPage.bind(this);
   }
-  */
+
+  handleSelectPage = async (eventKey: string | null) => {
+    log('Selecting page with eventKey:', eventKey);
+    const { pageStore } = this.props;
+    if (eventKey) {
+      const selectedPage: PageModel | undefined = pageStore.pages.find(page => page.pageID === +eventKey);
+      if (selectedPage && selectedPage.pageID) {
+        // Check if the selected page has user feeds
+        if (!selectedPage.userFeeds) {
+          selectedPage.userFeeds = await getUserPageFeeds(REST_DOMAIN + '/userfeeds/page/', selectedPage.pageID);
+          log(`We have selectedPage and ID but no userFeeds, so we got ${selectedPage.userFeeds.length} feeds`);
+        }
+        pageStore.setCurrentlyDisplayedPage(+eventKey);
+      }
+    }
+  }
 
   render() {
     const { userStore, pageStore } = this.props;    
@@ -34,9 +51,9 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
       <div className="col-md-3 mb-2" style={debugStyle}>
         <div className="d-flex align-items-center">
           <span className="me-2">Page:</span>
-          <DropdownButton title={pages[0].name} id={pages[0].pageID?.toString()} size="sm">
+          <DropdownButton title={pageStore.currentlyDisplayedPage.name} id={pages[0].pageID?.toString()} size="sm" onSelect={this.handleSelectPage}>
             {pages.map((page, i) => 
-              <Dropdown.Item key={i} eventKey={page.pageID} active={i === 0}>{page.name}</Dropdown.Item>  
+              <Dropdown.Item key={i} eventKey={page.pageID} active={i === pageStore.currentlyDisplayedPage.pageID}>{page.name}</Dropdown.Item>  
             )}
           </DropdownButton>
           {currentUser.roleID != Roles.GUEST &&

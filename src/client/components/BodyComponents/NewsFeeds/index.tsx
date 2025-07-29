@@ -4,6 +4,8 @@ import { PageStore, UserStore } from 'client/stores';
 import { UserFeedModel } from 'common/models';
 import { Roles } from 'common/constants';
 import { observer } from 'mobx-react';
+import debug from 'debug';
+const log = debug('webapp:NewsFeeds');
 
 export interface NewsFeedsProps {
   pageStore: PageStore,
@@ -69,6 +71,8 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   renderNewsFeedColumn(column: number) {
     const { pageStore } = this.props;
     const { currentlyDisplayedPage } = pageStore;
+    if ( !currentlyDisplayedPage.userFeeds ) { throw new Error('No user feeds available for the currently displayed page'); }
+    log(`Rendering news feed column: ${column} for page: ${currentlyDisplayedPage.pageID} | Number of feeds: ${currentlyDisplayedPage.userFeeds.length}`);
     const userFeeds: UserFeedModel [] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
 
     return (
