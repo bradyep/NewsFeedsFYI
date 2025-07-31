@@ -2,8 +2,8 @@
 
 // for style loader
 declare module '*.css' {
-  const styles: any;
-  export = styles;
+  const styles: { [className: string]: string };
+  export default styles;
 }
 
 declare namespace Express {

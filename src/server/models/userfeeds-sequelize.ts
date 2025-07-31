@@ -29,7 +29,7 @@ export function create(userFeed: UserFeedModel): Promise<UserFeedModel> {
 export function update(userFeed: UserFeedModel) {
   return modelDef.connectDB('SQUserFeed')
     .then((SQUserFeed: any) => {
-      return SQUserFeed['find']({
+      return SQUserFeed['findOne']({
         where: {
           feedSourceID: userFeed.feedSourceID,
           pageID: userFeed.pageID
@@ -54,7 +54,7 @@ export function update(userFeed: UserFeedModel) {
 export async function getUserFeedAsync(feedSourceID: number, pageID: number): Promise<UserFeedModel | undefined> {
   try {
     const SQUserFeedModel: any = await modelDef.connectDB('SQUserFeed');
-    let dbUserFeedModel: UserFeedModel = await SQUserFeedModel['find']({ where: { feedSourceID, pageID } });
+    let dbUserFeedModel: UserFeedModel = await SQUserFeedModel['findOne']({ where: { feedSourceID, pageID } });
     if (!dbUserFeedModel) throw new Error("Cannot find UserFeed for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
     let userFeedModel = new UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
 
@@ -113,7 +113,7 @@ export async function updateCachedNewsItemsAsync(cachedNewsItems: CachedNewsItem
 /** Determines whether a FeedSource's cache is up to date */
 export async function updateFeedSourceCachedNewsItemsIfNeeded(feedSourceID: number): Promise<boolean> {
   const SQFeedSourceModel = await modelDef.connectDB('SQFeedSource') as any;
-  let feedSourceModel: FeedSourceModel = await SQFeedSourceModel['find']({ where: { feedSourceID } });
+  let feedSourceModel: FeedSourceModel = await SQFeedSourceModel['findOne']({ where: { feedSourceID } });
   if (!feedSourceModel) error("Cannot find FeedSource for supplied feedSourceID: " + feedSourceID);
 
   const now = new Date();
@@ -157,7 +157,7 @@ export async function readAsync(feedSourceID: number, pageID: number): Promise<U
 export function destroy(feedSourceID: number, pageID: number) {
   return modelDef.connectDB('SQUserFeed')
     .then((SQUserFeed: any) => {
-      return SQUserFeed['find']({ where: { feedSourceID, pageID } })
+      return SQUserFeed['findOne']({ where: { feedSourceID, pageID } })
         .then((userFeed: any) => {
           if (!userFeed) return null;
           else return userFeed.destroy();

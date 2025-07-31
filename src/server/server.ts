@@ -14,6 +14,7 @@ import path from 'path';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import session = require('express-session');
 
 // Import route modules
 import usersRouter = require('./routes/users');
@@ -21,6 +22,7 @@ import linksRouter = require('./routes/links');
 import pagesRouter = require('./routes/pages');
 import userFeedsRouter = require('./routes/user-feeds');
 import indexRouter = require('./routes/index');
+import authenticateRouter = require('./routes/authenticate');
 
 // Create Express app
 const app = express();
@@ -42,12 +44,21 @@ app.use(cookieParser());
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, '../../public')));
 
+app.use(session({ 
+  secret: 'this is a picture', 
+  resave: true,
+  saveUninitialized: true
+ }));
+
+authenticateRouter.initPassport(app);
+
 // Route handlers
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/links', linksRouter);
 app.use('/pages', pagesRouter);
 app.use('/userfeeds', userFeedsRouter);
+app.use('/authenticate', authenticateRouter.router);
 
 // Simple API route for testing
 app.get('/api', (req: Request, res: Response) => {

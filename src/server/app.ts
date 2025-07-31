@@ -5,8 +5,6 @@ import logger = require("morgan");
 import cookieParser = require("cookie-parser");
 import bodyParser = require("body-parser");
 import session = require('express-session')
-// import FileStoreModule = require('session-file-store');
-  // const FileStore = FileStoreModule(session);
 
 // Define Routes
 import index = require('./routes/index');
@@ -18,8 +16,6 @@ import userFeeds = require('./routes/user-feeds');
 import authenticate = require('./routes/authenticate');
 
 var app = express();
-// var thing = 'whee - this is a thino! here is some more text. I feel I am being watched!';
-// console.log(thing);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

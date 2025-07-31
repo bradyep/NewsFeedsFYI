@@ -29,47 +29,48 @@ export function ensureAuthenticated(req: any, res: any, next: any) {
     // If not authenticated, redirect to login
     res.redirect('/users/login');
   }
+};
 
-  /*
-  router.get('/logout', function(req, res, next) {
-    req.logout();
-    res.redirect('/');
-  });
-  */
-
-  passport.use(new LocalStrategy(
-    function (username, password, done) {
-      debug('passport used: ' + username + '/' + password);
-      usersModel.userPasswordCheck(username, password)
-        .then(check => {
-          if (check.check) {
-            debug('******Supplied Credentials are Valid*********');
-            const user: User = { userID: check.userid, username: check.username };
-            done(null, user);
-          } else {
-            done(null, false, { message: check.message ?? "Authentication failed" });
-          }
-          return check;
-        })
-        .catch(err => done(err));
-    }
-  ));
-
-  passport.serializeUser(function (user, done) {
-    debug('serializeUser: ' + util.inspect(user));
-    done(null, user);
+router.post('/',
+  passport.authenticate('local'),
+  function (req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    // res.redirect('/users/' + req.user.id);
+    res.redirect('/users/' + req.user?.userID);
   });
 
-  // passport.deserializeUser(function(id, done) {
-  passport.deserializeUser(function (user: any, done) {
-    debug('deserializeUser: ' + util.inspect(user));
-    usersModel.read(user.id)
-      .then(user => {
-        debug('... found user ' + util.inspect(user));
-        done(null, user);
+passport.use(new LocalStrategy(
+  function (username, password, done) {
+    debug('passport used: ' + username + '/' + password);
+    usersModel.userPasswordCheck(username, password)
+      .then(check => {
+        if (check.check) {
+          debug('******Supplied Credentials are Valid*********');
+          const user: User = { userID: check.userid, username: check.username };
+          done(null, user);
+        } else {
+          done(null, false, { message: check.message ?? "Authentication failed" });
+        }
+        return check;
       })
-      .catch(err => done(err, user));
-  });
+      .catch(err => done(err));
+  }
+));
 
-}
+passport.serializeUser(function (user, done) {
+  debug('serializeUser: ' + util.inspect(user));
+  done(null, user);
+});
+
+// passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function (user: any, done) {
+  debug('deserializeUser: ' + util.inspect(user));
+  usersModel.read(user.userID)
+    .then(user => {
+      debug('... found user ' + util.inspect(user));
+      done(null, user);
+    })
+    .catch(err => done(err, user));
+});
 // export var router = express.Router();

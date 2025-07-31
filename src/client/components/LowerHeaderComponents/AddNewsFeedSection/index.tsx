@@ -51,12 +51,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const { pageStore } = this.props;
     const initalPageID = pageStore.pages[0].pageID ?? 0;
     this.setState({ showModal: true, selectedPageID: initalPageID });
-    // console.log("Hey! " + this.state.showModal.toString());
   }
 
   handleChange(e: any) {
     log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
-    // this.setState({ [e.currentTarget.id]: e.currentTarget.value });
     const id = e.currentTarget.id as keyof AddNewsFeedSectionState;
     this.setState({ [id]: e.currentTarget.value } as Pick<AddNewsFeedSectionState, keyof AddNewsFeedSectionState>);
   }
@@ -180,10 +178,12 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     const { currentUser } = userStore;
     const disabled = currentUser.roleID === Roles.GUEST;
 
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#fff3e0', padding: '8px' } : {};
+
     return (
-      <div className="col-md-2">
+      <div className="col-md-3 mb-2" style={debugStyle}>
         {this.renderAddNewsFeedModal()}
-        <Button variant="primary" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
+        <Button variant="primary" size="sm" disabled={disabled} onClick={this.openModal}>Add News Feed</Button>
       </div>
     );
   }

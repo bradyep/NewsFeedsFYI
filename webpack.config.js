@@ -23,7 +23,8 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve(__dirname, 'public'),
+    // path: path.resolve(__dirname, 'public'),
+    path: outPath,
     filename: '[name].bundle.js',
     publicPath: '/'
   },
@@ -62,19 +63,55 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/
       },
-      // css 
+      // Library CSS (Bootstrap, etc.) - no CSS modules
       {
         test: /\.css$/,
+        include: /node_modules/,
         use: [
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
-              modules: true,
+              sourceMap: !isProduction,
+              importLoaders: 1
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('postcss-import')({ addDependencyTo: webpack }),
+                  require('postcss-url')({
+                    // Exclude font files from being processed by postcss-url
+                    filter: (asset) => !asset.url.match(/\.(woff|woff2|eot|ttf|otf)$/),
+                  }),
+                  require('postcss-browser-reporter')({ disabled: isProduction }),
+                ]
+              }
+            }
+          }
+        ]
+      },
+      // Component CSS - with CSS modules
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
               sourceMap: !isProduction,
               importLoaders: 1,
               modules: {
-                localIdentName: '[local]__[hash:base64:5]'
+                auto: (resourcePath) => {
+                  // Enable CSS modules for all component CSS files (not in node_modules)
+                  return !resourcePath.includes('node_modules');
+                },
+                localIdentName: isProduction ? '[hash:base64:8]' : '[local]__[hash:base64:5]',
+                namedExport: false,
+                exportLocalsConvention: 'camelCase'
               }
             }
           },
@@ -84,7 +121,10 @@ module.exports = {
               postcssOptions: {
                 plugins: [
                   require('postcss-import')({ addDependencyTo: webpack }),
-                  require('postcss-url')(),
+                  require('postcss-url')({
+                    // Exclude font files from being processed by postcss-url
+                    filter: (asset) => !asset.url.match(/\.(woff|woff2|eot|ttf|otf)$/),
+                  }),
                   require('postcss-browser-reporter')({ disabled: isProduction }),
                 ]
               }
@@ -96,6 +136,19 @@ module.exports = {
       { test: /\.html$/, use: 'html-loader' },
       { test: /\.png$/, use: [{ loader: 'url-loader', options: { limit: 10000 } }] },
       { test: /\.jpg$/, use: 'file-loader' },
+      {
+        test: /\.svg$/,
+        use: 'file-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        include: /node_modules/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext][query]'
+        }
+      }
     ],
   },
   plugins: [
@@ -112,7 +165,8 @@ module.exports = {
       template: 'assets/index.html'
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development'
+      NODE_ENV: 'development',
+      DEBUG_LAYOUT: false
     }),
     new CopyWebpackPlugin({
       patterns: [

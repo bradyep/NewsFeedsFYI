@@ -1,9 +1,20 @@
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import { LinkModel } from 'common/models';
 
 export class LinkStore {
 
+  public links: Array<LinkModel>;
+
   constructor(fixtures?: LinkModel[]) {
+    // Make properties observable using makeObservable for MobX v6+
+    makeObservable(this, {
+      links: observable,
+      addLink: action,
+      editLink: action,
+      deleteLink: action,
+      clearOutLinks: action
+    });
+
     if (fixtures) this.links = fixtures;
     else this.links = [];
     this.addLink = this.addLink.bind(this);
@@ -12,14 +23,10 @@ export class LinkStore {
     this.clearOutLinks = this.clearOutLinks.bind(this);
   }
 
-  @observable public links: Array<LinkModel>;
-
-  @action
   addLink(item: LinkModel): void {
     this.links.push(item);
   }
 
-  @action
   editLink(id: number, data: Partial<LinkModel>): void {
     this.links = this.links.map((link) => {
       if (link.linkID === id) {
@@ -37,12 +44,10 @@ export class LinkStore {
     })
   }
 
-  @action
   deleteLink(id: number): void {
     this.links = this.links.filter((link) => link.linkID !== id);
   }
 
-  @action
   clearOutLinks(): void {
     this.links = [];
   }

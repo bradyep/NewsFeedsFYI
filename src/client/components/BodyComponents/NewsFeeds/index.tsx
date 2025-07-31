@@ -1,9 +1,11 @@
 import * as React from 'react';
-import * as styles from './styles.css';
+import styles from './styles.css';
 import { PageStore, UserStore } from 'client/stores';
 import { UserFeedModel } from 'common/models';
 import { Roles } from 'common/constants';
 import { observer } from 'mobx-react';
+import debug from 'debug';
+const log = debug('webapp:NewsFeeds');
 
 export interface NewsFeedsProps {
   pageStore: PageStore,
@@ -69,10 +71,12 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   renderNewsFeedColumn(column: number) {
     const { pageStore } = this.props;
     const { currentlyDisplayedPage } = pageStore;
-    const userFeeds: UserFeedModel[] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
+    if ( !currentlyDisplayedPage.userFeeds ) { throw new Error('No user feeds available for the currently displayed page'); }
+    log(`Rendering news feed column: ${column} for page: ${currentlyDisplayedPage.pageID} | Number of feeds: ${currentlyDisplayedPage.userFeeds.length}`);
+    const userFeeds: UserFeedModel [] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
 
     return (
-      <div className={`col-sm-4 ${styles.newsSectionContainer}`}>
+      <div className={`col-md-4 mb-3 ${styles.newsSectionContainer}`}>
         {userFeeds.map((newsFeed, i) =>
           this.renderNewsFeed(newsFeed, i)
         )}
@@ -81,9 +85,11 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   }
 
   render() {
+    const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#fce4ec', padding: '8px' } : {};
+    
     return (
-      <div className="allNews">
-        <div className="row">
+      <div className="allNews" style={debugStyle}>
+        <div className="row g-3">
           {this.renderNewsFeedColumn(1)}
           {this.renderNewsFeedColumn(2)}
           {this.renderNewsFeedColumn(3)}

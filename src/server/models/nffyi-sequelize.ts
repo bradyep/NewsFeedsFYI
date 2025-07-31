@@ -19,7 +19,7 @@ type ModelsType = {
 };
 var models: ModelsType = { SQRole: null, SQUser: null, SQLink: null, SQPage: null, SQUserFeed: null, SQFeedSource: null, SQCachedNewsItem: null };
 
-export function connectDB(modelRequested: ModelKeys) {
+export function connectDB(modelRequested: ModelKeys): Promise<any> {
   log('Requesting: ' + modelRequested + ' which is: ' + models[modelRequested]);
   if (models[modelRequested]) {
     // If the requested model is there, return a contrived Promise

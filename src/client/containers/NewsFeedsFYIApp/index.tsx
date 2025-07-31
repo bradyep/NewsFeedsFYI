@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as styles from './styles.css';
+import styles from './styles.css';
 import { inject, observer } from 'mobx-react';
 import { LinkSection, ProfileSection } from 'client/components/TopHeaderComponents';
 import { PageSection, GoogleSearchSection, AddNewsFeedSection  } from 'client/components/LowerHeaderComponents';
@@ -79,16 +79,18 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
   }
 
   render() {
-    // const { children } = this.props;
     const pageStore = this.injected[STORE_PAGE] as PageStore;
 
+    // Defensive class name access - handle undefined styles object
+    const headerClass = styles?.header || '';
+
     return (
-      <div>
-        <Navbar variant="dark" fixed="top" className={styles.header}>
-          <div className="container">
-            <div className="row">
-              <div className="col-md-9">
-                <h4>newsfeeds.fyi</h4>
+      <div style={{ paddingTop: '80px' }}>
+        <Navbar variant="dark" fixed="top" className={headerClass}>
+          <div className="container-fluid">
+            <div className="row w-100">
+              <div className="col-md-9 d-flex align-items-center">
+                <img src="/assets/images/nffyi-logo.png" alt="newsfeeds.fyi logo" className="me-3" style={{ height: '4.5rem' }} />
                 <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
               </div>
               <div className="col-md-3">
@@ -98,7 +100,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           </div>
         </Navbar>
 
-        <section className="container">
+        <section className="container-fluid py-3">
           <div className="row">
             <PageSection userStore={this.injected[STORE_USER]} pageStore={this.injected[STORE_PAGE]} />
             <GoogleSearchSection />
@@ -106,11 +108,11 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           </div>
         </section>
 
-        <main className="container">
+        <main className="container-fluid">
           <NewsFeeds pageStore={this.injected[STORE_PAGE]} userStore={this.injected[STORE_USER]} />
         </main>
 
-        <footer className="container">
+        <footer className="container-fluid mt-4">
           <Copyright />
         </footer>
       </div>

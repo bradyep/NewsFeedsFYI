@@ -42,18 +42,29 @@ export async function getUsersPagesWithFirstPopulated(pagesURL: string, pageURL:
     let initialPage = pagesData[0];
     if (!initialPage.pageID) throw new Error("First Page's ID is undefined");
 
-    log("Getting initial page UserFeeds for User");
-    const userFeedsResponse = await fetch(pageURL + initialPage.pageID.toString(), { credentials: "include" });
-    const userFeedsData: UserFeedModel[] = await userFeedsResponse.json();
-    log(userFeedsData);
+    // Get UserFeeds for the initial page
+    const userFeedsResponse: UserFeedModel[] = await getUserPageFeeds(pageURL, initialPage.pageID);
 
     // Assemble Initial Page
-    initialPage.userFeeds = userFeedsData;
+    initialPage.userFeeds = userFeedsResponse;
 
-    // return initialPage;
     return pagesData;
   } catch (err) {
     error("Problem Getting First Page: " + err.toString());
     return undefined;
+  }
+}
+
+export async function getUserPageFeeds(pageURL: string, pageId: number): Promise<UserFeedModel[]> {
+  try {
+    log("Getting page UserFeeds for User");
+    const userFeedsResponse = await fetch(pageURL + pageId.toString(), { credentials: "include" });
+    const userFeedsData: UserFeedModel[] = await userFeedsResponse.json();
+    log(userFeedsData);
+
+    return userFeedsData;
+  } catch (err) {
+    error(`Problem Getting UserFeeds for PageId : ${pageId} | ` + err.toString());
+    return [];
   }
 }
