@@ -16,7 +16,8 @@
     "docker": "node ./bin/www",
     "startclient": "webpack serve --mode development --history-api-fallback --progress --port 3030 --open",
     "startclient:debug-layout": "set DEBUG_LAYOUT=true&& webpack serve --mode development --history-api-fallback --progress --port 3030 --open",
-    "buildclient": "set NODE_ENV=production&& webpack --mode=production --progress"
+    "buildclient": "set NODE_ENV=production&& webpack --mode=production --progress",
+    "build:prod": "npm run build-server && webpack --mode=production --progress"
   },
   "repository": {
     "type": "git",
