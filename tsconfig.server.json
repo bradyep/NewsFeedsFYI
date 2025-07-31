@@ -31,13 +31,6 @@
           "es7"
         ]
     },
-    "ts-node": {
-        "transpileOnly": true,
-        "files": true,
-        "compilerOptions": {
-            "resolveJsonModule": true
-        }
-    },
     "include": [
         "src/server/**/*.ts",
         "src/common/**/*.ts",
