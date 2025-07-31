@@ -82,6 +82,7 @@
     "express": "^4.19.2",
     "express-session": "^1.17.3",
     "feedparser": "^2.2.10",
+    "font-awesome": "^4.7.0",
     "fs-extra": "^11.2.0",
     "js-yaml": "^4.1.0",
     "mobx": "^6.13.0",

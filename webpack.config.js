@@ -82,7 +82,10 @@ module.exports = {
               postcssOptions: {
                 plugins: [
                   require('postcss-import')({ addDependencyTo: webpack }),
-                  require('postcss-url')(),
+                  require('postcss-url')({
+                    // Exclude font files from being processed by postcss-url
+                    filter: (asset) => !asset.url.match(/\.(woff|woff2|eot|ttf|otf)$/),
+                  }),
                   require('postcss-browser-reporter')({ disabled: isProduction }),
                 ]
               }
@@ -118,7 +121,10 @@ module.exports = {
               postcssOptions: {
                 plugins: [
                   require('postcss-import')({ addDependencyTo: webpack }),
-                  require('postcss-url')(),
+                  require('postcss-url')({
+                    // Exclude font files from being processed by postcss-url
+                    filter: (asset) => !asset.url.match(/\.(woff|woff2|eot|ttf|otf)$/),
+                  }),
                   require('postcss-browser-reporter')({ disabled: isProduction }),
                 ]
               }
@@ -130,6 +136,19 @@ module.exports = {
       { test: /\.html$/, use: 'html-loader' },
       { test: /\.png$/, use: [{ loader: 'url-loader', options: { limit: 10000 } }] },
       { test: /\.jpg$/, use: 'file-loader' },
+      {
+        test: /\.svg$/,
+        use: 'file-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        include: /node_modules/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext][query]'
+        }
+      }
     ],
   },
   plugins: [
