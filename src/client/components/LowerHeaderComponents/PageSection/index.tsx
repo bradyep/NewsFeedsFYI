@@ -52,8 +52,8 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
         <div className="d-flex align-items-center">
           <span className="me-2">Page:</span>
           <DropdownButton title={pageStore.currentlyDisplayedPage.name} id={pages[0].pageID?.toString()} size="sm" onSelect={this.handleSelectPage}>
-            {pages.map((page, i) => 
-              <Dropdown.Item key={i} eventKey={page.pageID} active={i === pageStore.currentlyDisplayedPage.pageID}>{page.name}</Dropdown.Item>  
+            {pages.map((page) => 
+              <Dropdown.Item key={page.pageID} eventKey={page.pageID} active={page.pageID === pageStore.currentlyDisplayedPage.pageID}>{page.name}</Dropdown.Item>  
             )}
           </DropdownButton>
           {currentUser.roleID != Roles.GUEST &&
