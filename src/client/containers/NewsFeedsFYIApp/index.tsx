@@ -90,7 +90,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
           <div className="container-fluid">
             <div className="row w-100">
               <div className="col-md-9 d-flex align-items-center">
-                <h4 className="me-3 mb-0">newsfeeds.fyi</h4>
+                <img src="/assets/images/nffyi-logo.png" alt="newsfeeds.fyi logo" className="me-3" style={{ height: '4.5rem' }} />
                 <LinkSection linksStore={this.injected[STORE_LINK]} userStore={this.injected[STORE_USER]} />
               </div>
               <div className="col-md-3">
