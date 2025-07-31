@@ -64,7 +64,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
         method: "post",
         headers: headers,
         // headers: {
-          // "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+        // "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
         // },
         body: "username=" + this.state.username + "&password=" + this.state.password
       });
@@ -87,14 +87,14 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     try {
       const url = REST_DOMAIN + '/logout';
       let headers = new Headers();
-      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");      
+      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
       const logOutResponse = await fetch(url, {
         credentials: "include",
         method: "get",
         headers: headers
-/*         headers: {
-          "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        } */
+        /*         headers: {
+                  "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+                } */
       });
 
       // const userData: UserModel = await logOutResponse.json();
@@ -113,8 +113,8 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const validationState = errorAuthenticating === true ? "error" : null;
 
     return (
-      <Modal 
-        show={this.state.showModal} 
+      <Modal
+        show={this.state.showModal}
         onHide={this.close}
         backdrop={true}
         keyboard={true}
@@ -123,55 +123,57 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
           <Modal.Title>Sign In to newsfeeds.fyi</Modal.Title>
         </Modal.Header>
 
-          <Modal.Body>
-            <form onSubmit={(e) => { e.preventDefault(); this.attemptSignIn(); }}>
-              <FormGroup controlId="username">
-                <FormLabel>Username: </FormLabel>
-                <FormControl
-                  onChange={this.handleChange}
-                  type="text"
-                  placeholder="Username"
-                  isInvalid={errorAuthenticating === true}
-                />
-              </FormGroup>
-              <FormGroup controlId="password">
-                <FormLabel>Password: </FormLabel>
-                <FormControl
-                  onChange={this.handleChange}
-                  type="password"
-                  placeholder="Password"
-                  isInvalid={errorAuthenticating === true}
-                />
-              </FormGroup>
-              <FormGroup controlId="confirmPassword">
-                <FormLabel>Confirm Password: </FormLabel>
-                <FormControl
-                  onChange={this.handleChange}
-                  type="password"
-                  placeholder="Confirm Password"
-                />
-              </FormGroup>
-            </form>
-          </Modal.Body>
+        <Modal.Body>
+          <form onSubmit={(e) => { e.preventDefault(); this.attemptSignIn(); }}>
+            <FormGroup controlId="username">
+              <FormLabel>Username: </FormLabel>
+              <FormControl
+                onChange={this.handleChange}
+                type="text"
+                placeholder="Username"
+                isInvalid={errorAuthenticating === true}
+              />
+            </FormGroup>
+            <FormGroup controlId="password">
+              <FormLabel>Password: </FormLabel>
+              <FormControl
+                onChange={this.handleChange}
+                type="password"
+                placeholder="Password"
+                isInvalid={errorAuthenticating === true}
+              />
+            </FormGroup>
+            <FormGroup controlId="confirmPassword">
+              <FormLabel>Confirm Password: </FormLabel>
+              <FormControl
+                onChange={this.handleChange}
+                type="password"
+                placeholder="Confirm Password"
+              />
+            </FormGroup>
+          </form>
+        </Modal.Body>
 
-          <Modal.Footer>
-            <Button type="button" onClick={this.close}>Cancel</Button>
-            <Button type="button" variant="primary" onClick={this.attemptSignIn}>Sign In</Button>
-          </Modal.Footer>
+        <Modal.Footer>
+          <Button type="button" onClick={this.close}>Cancel</Button>
+          <Button type="button" variant="primary" onClick={this.attemptSignIn}>Sign In</Button>
+        </Modal.Footer>
 
-        </Modal>
+      </Modal>
     )
   }
 
   renderForGuest() {
     const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
-    
+
     return (
       <div className={styles.profileSection} onClick={this.open} style={debugStyle}>
-        <i className="fa fa-user fa-2x" aria-hidden="true"></i>
-        <p>
-          Sign In To Customize
-        </p>
+        <Button variant="outline-primary">
+          <i className="fa fa-user fa-2x" aria-hidden="true"></i>
+          <p className={styles['sign-in-text']}>
+            Sign In To Customize
+          </p>
+        </Button>
       </div>
     );
   }
@@ -181,7 +183,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const { currentUser } = userStore;
     const profileText: string = "Signed In As " + currentUser.username;
     const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
-    
+
     const popoverBottom: JSX.Element = (
       <Popover id="popover-positioned-bottom" title="Account Options">
         <Button className={styles.popoverButton}>Edit Account</Button>
@@ -192,10 +194,12 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     return (
       <OverlayTrigger trigger="click" placement="bottom" overlay={popoverBottom}>
         <div className={styles.profileSection} style={debugStyle}>
-          <i className="fa fa-user fa-2x" aria-hidden="true"></i>
-          <p>
-            {profileText}
-          </p>
+          <Button variant="outline-primary">
+            <i className="fa fa-user fa-2x" aria-hidden="true"></i>
+            <p className={styles['sign-in-text']}>
+              {profileText}
+            </p>
+          </Button>
         </div>
       </OverlayTrigger>
     );

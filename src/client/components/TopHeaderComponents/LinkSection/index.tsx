@@ -29,6 +29,7 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
     return (
       <div className={styles.linkList} style={debugStyle}>
         <ol>
+          <li className={styles.label}>Links: </li>
           {links.map(link =>
             <li key={link.linkID}>
               <a href={link.url} target="_blank">{link.name}</a>
