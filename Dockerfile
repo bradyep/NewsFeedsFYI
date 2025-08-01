@@ -11,14 +11,14 @@ RUN npm install
 # Copy the rest of the application source code
 COPY . .
 
-# Build server and client
-RUN npm run build:prod
+# Build server and client with NODE_ENV set only for this command
+RUN NODE_ENV=production npm run build:prod
 
 # Stage 2: Create the production image
 FROM node:18-slim
 
 # Set environment values
-ENV SEQUELIZE_CONNECT="models/sequelize-sqlite-docker.yaml"
+ENV SEQUELIZE_CONNECT="src/server/models/sequelize-sqlite-docker.yaml"
 ENV DEBUG="nffyi-rest:*"
 ENV PORT="3000"
 ENV NODE_ENV="production"

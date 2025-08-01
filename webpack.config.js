@@ -165,8 +165,11 @@ module.exports = {
       template: 'assets/index.html'
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+      NODE_ENV: 'development', // default value
       DEBUG_LAYOUT: false
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
     }),
     new CopyWebpackPlugin({
       patterns: [
