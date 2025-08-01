@@ -1,0 +1,28 @@
+.linkList {
+  display: inline-block;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+  color: #2f2e2e;
+}
+
+.linkList li {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.linkList a {
+  color: #0a58ca;
+  text-decoration: underline;
+}
+
+.linkList a:hover {
+  color: #aaa;
+}
+
+.linkList i {
+  cursor: pointer;
+}
