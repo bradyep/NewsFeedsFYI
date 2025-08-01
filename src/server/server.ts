@@ -41,8 +41,11 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-// Serve static files from the public directory
+// Serve static files from the public directory (legacy assets)
 app.use(express.static(path.join(__dirname, '../../public')));
+
+// Serve built client files from dist directory (for production)
+app.use(express.static(path.join(__dirname, '../')));
 
 app.use(session({ 
   secret: 'this is a picture', 
@@ -63,6 +66,11 @@ app.use('/authenticate', authenticateRouter.router);
 // Simple API route for testing
 app.get('/api', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to the NewsFeedsFYI API' });
+});
+
+// Catch-all handler: send back React's index.html file for any non-API routes
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 // Error handler

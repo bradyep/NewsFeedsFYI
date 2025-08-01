@@ -4,10 +4,10 @@ import debug from "debug";
 const log = debug('nffyi-rest:router-index');
 const error = debug('nffyi-rest:error');
 
-/* GET home page. */
-router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+/* GET home page - let the catch-all handle serving the React app */
+// router.get('/', function (req, res, next) {
+//   res.render('index', { title: 'Express' });
+// });
 
 router.get('/logout', function (req, res, next) {
 
