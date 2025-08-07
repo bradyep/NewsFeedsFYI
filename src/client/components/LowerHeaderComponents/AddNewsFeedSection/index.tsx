@@ -47,9 +47,9 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   openModal() {
-    // Set selectedPageID here
+    // Set selectedPageID
     const { pageStore } = this.props;
-    const initalPageID = pageStore.pages[0].pageID ?? 0;
+    const initalPageID = pageStore.currentlyDisplayedPage.pageID || 1;
     this.setState({ showModal: true, selectedPageID: initalPageID });
   }
 
@@ -132,7 +132,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     return (
       <div className="static-modal" >
         <Modal show={this.state.showModal} onHide={this.closeModal}>
-          <Modal.Header>
+          <Modal.Header closeButton>
             <Modal.Title>Add News Feed</Modal.Title>
           </Modal.Header>
 
