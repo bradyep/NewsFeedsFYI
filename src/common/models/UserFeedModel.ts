@@ -17,9 +17,6 @@ export class UserFeedModel {
     @observable
     public newsItems: Array<CachedNewsItemModel>;
 
-    // Cannot use the syntax below
-    // @observable public newsItems: CachedNewsItemModel[];
-
     constructor(column: number, displayOrder: number, name: string, itemDisplayCount: number, pageID?: number, feedSourceID?: number, titleURL?: string, newsItems?: CachedNewsItemModel[]) {
         this.column = column;
         this.displayOrder = displayOrder;

@@ -39,14 +39,12 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   closeModal() {
-    const { pageStore } = this.props;
-    pageStore.setUserFeedBeingEdited(undefined);
+    this.props.pageStore.setUserFeedBeingEdited(undefined);
   }
 
   openModalToAddUserFeed() {
-    const { pageStore } = this.props;
-    const initalPageID = pageStore.currentlyDisplayedPage.pageID || 1;
-    pageStore.setUserFeedBeingEdited({
+    const initalPageID = this.props.pageStore.currentlyDisplayedPage.pageID || 1;
+    this.props.pageStore.setUserFeedBeingEdited({
       pageID: initalPageID,
       name: "",
       itemDisplayCount: INITIAL_ITEMS_TO_DISPLAY,
@@ -58,7 +56,6 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   handleChange(e: any) {
     log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
     const id = e.currentTarget.id as keyof EditableUserFeedModel;
-    // this.setState({ [id]: e.currentTarget.value } as Pick<AddNewsFeedSectionState, keyof AddNewsFeedSectionState>);
     this.props.pageStore.updateUserFeedBeingEdited({
       [id]: e.currentTarget.value
     });
@@ -117,6 +114,14 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     return;
   }
 
+  async attemptToSaveFeed(): Promise<void> {
+    return;
+  }
+
+  async attemptToDeleteFeed(): Promise<void> {
+    return;
+  }
+
   renderAddNewsFeedModal() {
     const { addFeedError } = this.state;
     const validationState = false;
@@ -133,7 +138,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
       <div className="static-modal" >
         <Modal show={pageStore.userFeedBeingEdited !== undefined} onHide={this.closeModal}>
           <Modal.Header closeButton>
-            <Modal.Title>Add News Feed</Modal.Title>
+            <Modal.Title>{pageStore.userFeedBeingEdited?.isEditing ? 'Edit News Feed' : 'Add News Feed'}</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -148,12 +153,14 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
               </FormGroup>
               <FormGroup controlId="name">
                 <FormLabel>Feed Name: </FormLabel>
-                <FormControl onChange={this.handleChange} type="text" placeholder="NYTimes US News" />
+                <FormControl onChange={this.handleChange} type="text" placeholder="NYTimes US News" value={pageStore.userFeedBeingEdited?.name || ""} />
               </FormGroup>
-              <FormGroup controlId="feedSourceUrl">
-                <FormLabel>Feed RSS URL: </FormLabel>
-                <FormControl onChange={this.handleChange} type="text" placeholder="http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" />
-              </FormGroup>
+              {!pageStore.userFeedBeingEdited?.isEditing && (
+                <FormGroup controlId="feedSourceUrl">
+                  <FormLabel>Feed RSS URL: </FormLabel>
+                  <FormControl onChange={this.handleChange} type="text" placeholder="http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" />
+                </FormGroup>
+              )}
               <FormGroup controlId="itemDisplayCount">
                 <FormLabel>Number of Items to Display: </FormLabel>
                 <DropdownButton title={pageStore.userFeedBeingEdited?.itemDisplayCount.toString() || "unknown"} id="itemsToDisplay" onSelect={this.handleItemCountChange}>
@@ -165,7 +172,15 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
           <Modal.Footer>
             <Button onClick={this.closeModal}>Cancel</Button>
-            <Button variant="primary" onClick={this.attemptToAddFeed}>Create Feed</Button>
+            {!pageStore.userFeedBeingEdited?.isEditing && (
+              <Button variant="primary" onClick={this.attemptToAddFeed}>Create Feed</Button>
+            )}
+            {pageStore.userFeedBeingEdited?.isEditing && (
+              <>
+                <Button variant="danger" onClick={this.attemptToDeleteFeed}>Delete Feed</Button>
+                <Button variant="primary" onClick={this.attemptToSaveFeed}>Save Feed</Button>
+              </>
+            )}
           </Modal.Footer>
 
         </Modal>
