@@ -46,4 +46,11 @@ export class UserFeedModel {
     }
 }; // /class UserFeed
 
-// export default UserFeedModel;
+/*** Used by the AddNewsFeedSection modal for both creating and editing user feeds */
+export type EditableUserFeedModel = {
+  pageID?: number;
+  name: string;
+  itemDisplayCount: number;
+  feedSourceUrl?: string;
+  isEditing: boolean;
+};

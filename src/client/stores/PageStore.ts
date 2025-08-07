@@ -1,17 +1,25 @@
 import { observable, computed, action, makeObservable } from 'mobx';
 import { PageModel, UserFeedModel } from 'common/models';
+import { EditableUserFeedModel } from 'common/models/UserFeedModel';
+import debug from 'debug';
+const log = debug('webapp:PageStore');
+const error = debug('webapp:PageStore:error');
 
 export class PageStore {
 
   // Pages
   public pages: Array<PageModel>;
   public currentlyDisplayedPageID: number;
+  public userFeedBeingEdited?: EditableUserFeedModel;
 
   constructor(fixtures: PageModel[]) {
     // Make properties observable using makeObservable for MobX v6+
     makeObservable(this, {
       pages: observable,
       currentlyDisplayedPageID: observable,
+      userFeedBeingEdited: observable,
+      setUserFeedBeingEdited: action,
+      updateUserFeedBeingEdited: action,
       currentlyDisplayedPage: computed,
       setCurrentlyDisplayedPage: action,
       setPages: action,
@@ -70,6 +78,18 @@ export class PageStore {
       }
       return page;
     })
+  }
+
+  setUserFeedBeingEdited(userFeed: EditableUserFeedModel | undefined): void {
+    this.userFeedBeingEdited = userFeed;
+  }
+
+  updateUserFeedBeingEdited(partialUpdate: Partial<EditableUserFeedModel>): void {
+    if (this.userFeedBeingEdited) {
+      this.userFeedBeingEdited = { ...this.userFeedBeingEdited, ...partialUpdate };
+    } else {
+      error('Tried to update userFeedBeingEdited but it is undefined');
+    }
   }
 
   deletePage(id: number): void {
