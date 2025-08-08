@@ -37,6 +37,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     this.handlePageChange = this.handlePageChange.bind(this);
     this.attemptToAddFeed = this.attemptToAddFeed.bind(this);
     this.attemptToUpdateFeed = this.attemptToUpdateFeed.bind(this);
+    this.attemptToDeleteFeed = this.attemptToDeleteFeed.bind(this);
   }
 
   closeModal() {
@@ -154,6 +155,40 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 
   async attemptToDeleteFeed(): Promise<void> {
+    const { pageStore } = this.props;
+    const { userFeedBeingEdited } = pageStore;
+    let returnedUserFeedModel: UserFeedModel;
+
+    if (!userFeedBeingEdited) {
+      error("No feed is currently being edited.");
+      return;
+    }
+
+    try {
+      const feedSourceID: number = userFeedBeingEdited?.feedSourceID ?? (() => { throw new Error("feedSourceID cannot be null or undefined."); })();
+      const pageID: number = userFeedBeingEdited?.pageID ?? (() => { throw new Error("pageID cannot be null or undefined."); })();
+      const url = REST_DOMAIN + `/userfeeds/${feedSourceID}/${pageID}`;
+      const deleteFeedResponse = await fetch(url, {
+        credentials: "include",
+        method: "delete"
+      });
+
+      if (!deleteFeedResponse.ok) {
+        throw new Error("Failed to delete feed.");
+      }
+
+      returnedUserFeedModel = await deleteFeedResponse.json();
+      log("Delete UserFeed Attempt Returned: " + JSON.stringify(returnedUserFeedModel));
+      pageStore.deleteUserFeed(feedSourceID, pageID);
+      this.closeModal();
+    } catch (err) {
+      error("Error while trying delete feed: " + err.toString());
+      this.setState({ errorCreatingNewFeed: true });
+      throw new Error('--Error while trying delete feed--');
+    }
+
+    this.setState({ errorCreatingNewFeed: false });
+
     return;
   }
 

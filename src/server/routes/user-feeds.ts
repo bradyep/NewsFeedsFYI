@@ -279,6 +279,8 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
 // DELETE existing UserFeed
 router.delete('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
   authorizeRequest(req, res, next, false);
+  log('Attempting to delete existing UserFeed');
+  log('Request params:', req.params);
 
   userFeedsModel.destroy(+req.params.feedsourceid, +req.params.pageid)
     .then(userFeed => {
