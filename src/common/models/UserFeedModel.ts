@@ -43,11 +43,15 @@ export class UserFeedModel {
     }
 }; // /class UserFeed
 
+// TODO: It was a mistake to create this type, I should have just added feedSourceUrl and isEditing to UserFeedModel and use that directly. You could also make the argument that this should be a singleton as well.
 /*** Used by the AddNewsFeedSection modal for both creating and editing user feeds */
 export type EditableUserFeedModel = {
   pageID?: number;
   name: string;
   itemDisplayCount: number;
   feedSourceUrl?: string;
+  feedSourceID?: number;
+  column?: number;
+  displayOrder?: number;
   isEditing: boolean;
 };

@@ -171,6 +171,9 @@ router.get('/:feedsourceid/:pageid', (req, res, next) => {
 
 // Update existing UserFeed
 router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
+  log('Attempting to update existing UserFeed');
+  log('Request params:', req.params);
+  log('Request body:', req.body);
   authorizeRequest(req, res, next, false);
 
   let updateUserFeed = new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, +req.params.pageid, +req.params.feedsourceid);

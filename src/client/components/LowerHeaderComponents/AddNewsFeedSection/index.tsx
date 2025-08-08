@@ -36,6 +36,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     this.handleItemCountChange = this.handleItemCountChange.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
     this.attemptToAddFeed = this.attemptToAddFeed.bind(this);
+    this.attemptToUpdateFeed = this.attemptToUpdateFeed.bind(this);
   }
 
   closeModal() {
@@ -114,7 +115,41 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     return;
   }
 
-  async attemptToSaveFeed(): Promise<void> {
+  async attemptToUpdateFeed(): Promise<void> {
+    const { pageStore } = this.props;
+    const { userFeedBeingEdited } = pageStore;
+    let userFeedModel: UserFeedModel;
+
+    try {
+      const feedSourceID: number = userFeedBeingEdited?.feedSourceID ?? (() => { throw new Error("feedSourceID cannot be null or undefined."); })();
+      const pageID: number = userFeedBeingEdited?.pageID ?? (() => { throw new Error("pageID cannot be null or undefined."); })();
+      const requestBody = "name=" + userFeedBeingEdited?.name + "&itemDisplayCount=" + userFeedBeingEdited?.itemDisplayCount + "&pageid=" + pageID + "&feedsourceid=" + feedSourceID + "&column=" + userFeedBeingEdited?.column + "&displayOrder=" + userFeedBeingEdited?.displayOrder;
+      log('Attempting to Update UserFeed: ' + requestBody);
+      const url = REST_DOMAIN + `/userfeeds/${feedSourceID}/${pageID}`;
+      let headers = new Headers();
+      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+      const addFeedResponse = await fetch(url, {
+        credentials: "include",
+        method: "put",
+        headers: headers,
+        body: requestBody
+      });
+
+      userFeedModel = await addFeedResponse.json();
+      log("Update UserFeed Attempt Returned: " + JSON.stringify(userFeedModel));
+
+      // Use the returned UserFeed to the update PageStore
+      pageStore.editUserFeed(feedSourceID, pageID, userFeedModel);
+
+      this.closeModal();
+    } catch (err) {
+      error("Error while trying update feed: " + err.toString());
+      this.setState({ errorCreatingNewFeed: true });
+      throw new Error('--Error while trying update feed--');
+    }
+
+    this.setState({ errorCreatingNewFeed: false });
+
     return;
   }
 
@@ -178,7 +213,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
             {pageStore.userFeedBeingEdited?.isEditing && (
               <>
                 <Button variant="danger" onClick={this.attemptToDeleteFeed}>Delete Feed</Button>
-                <Button variant="primary" onClick={this.attemptToSaveFeed}>Save Feed</Button>
+                <Button variant="primary" onClick={this.attemptToUpdateFeed}>Save Feed</Button>
               </>
             )}
           </Modal.Footer>

@@ -35,12 +35,12 @@ export function update(userFeed: UserFeedModel) {
           pageID: userFeed.pageID
         }
       })
-        .then((userFeed: any) => {
-          if (!userFeed) {
+        .then((existingUserFeed: any) => {
+          if (!existingUserFeed) {
             // throw new Error("No userFeed found for userFeedID " + userFeedID);
             return null;
           } else {
-            return userFeed.update({
+            return existingUserFeed.update({
               column: userFeed.column,
               displayOrder: userFeed.displayOrder,
               name: userFeed.name,
