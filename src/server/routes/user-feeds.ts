@@ -69,29 +69,26 @@ router.get('/page/:pageid', function (req, res, next) {
 
 /** Returns all UserFeedModels for a given page id */
 const getUserFeeds = (pageID: number): Promise<any> => {
-  return userFeedsModel.keylist(pageID)
-    .then(keylist => {
-      const keyPromises = keylist.map((key: any) => {
-        // return userFeedsModel.read(key, pageID)
-        return userFeedsModel.readAsync(key, pageID)
-          .then((userFeed: UserFeedModel) => {
-            if (!userFeed) {
-              log('No UserFeedModel found for key: ' + key + ' and pageID: ' + pageID);
-            }
-            var usfm: UserFeedModel = new UserFeedModel(
+  return userFeedsModel.getUserFeedsByPageID(pageID)
+    .then(userFeeds => {
+      const userFeedPromises = userFeeds.map((userFeed: any) => {
+        // Update cached news items if needed
+        return userFeedsModel.updateFeedSourceCachedNewsItemsIfNeeded(userFeed.feedSourceID)
+          .then(() => {
+            return new UserFeedModel(
               userFeed.column,
               userFeed.displayOrder,
               userFeed.name,
               userFeed.itemDisplayCount,
               userFeed.pageID,
               userFeed.feedSourceID,
-              userFeed.titleURL
+              userFeed.titleURL || "",
+              [], // newsItems - to be populated later
+              userFeed.userFeedID
             );
-
-            return usfm;
           });
       });
-      return Promise.all(keyPromises);
+      return Promise.all(userFeedPromises);
     });
 };
 
@@ -155,11 +152,10 @@ var authorizeRequest = function (req: any, res: any, next: any, isPost: boolean)
 };
 
 // GET single UserFeed
-router.get('/:feedsourceid/:pageid', (req, res, next) => {
-  authorizeRequest(req, res, next, false);
-
-  // userFeedsModel.read(req.params.feedsourceid, req.params.pageid)
-  userFeedsModel.readAsync(+req.params.feedsourceid, +req.params.pageid)
+router.get('/:userfeedid', (req, res, next) => {
+  // TODO: Add authorization check
+  
+  userFeedsModel.readByUserFeedIDAsync(+req.params.userfeedid)
     .then(userFeed => {
       if (!userFeed) next();
       else {
@@ -170,13 +166,13 @@ router.get('/:feedsourceid/:pageid', (req, res, next) => {
 });
 
 // Update existing UserFeed
-router.put('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
+router.put('/:userfeedid', authRouter.ensureAuthenticated, (req, res, next) => {
   log('Attempting to update existing UserFeed');
   log('Request params:', req.params);
   log('Request body:', req.body);
-  authorizeRequest(req, res, next, false);
+  // TODO: Add authorization check
 
-  let updateUserFeed = new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, +req.params.pageid, +req.params.feedsourceid);
+  let updateUserFeed = new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID, undefined, undefined, +req.params.userfeedid);
   userFeedsModel.update(updateUserFeed)
     .then(userFeed => {
       if (!userFeed) next();
@@ -277,12 +273,12 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
 }); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
 
 // DELETE existing UserFeed
-router.delete('/:feedsourceid/:pageid', authRouter.ensureAuthenticated, (req, res, next) => {
-  authorizeRequest(req, res, next, false);
+router.delete('/:userfeedid', authRouter.ensureAuthenticated, (req, res, next) => {
+  // TODO: Add authorization check
   log('Attempting to delete existing UserFeed');
   log('Request params:', req.params);
 
-  userFeedsModel.destroy(+req.params.feedsourceid, +req.params.pageid)
+  userFeedsModel.destroyByUserFeedID(+req.params.userfeedid)
     .then(userFeed => {
       if (!userFeed) next();
       else res.json(userFeed);

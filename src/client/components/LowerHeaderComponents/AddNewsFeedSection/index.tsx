@@ -122,11 +122,10 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     let userFeedModel: UserFeedModel;
 
     try {
-      const feedSourceID: number = userFeedBeingEdited?.feedSourceID ?? (() => { throw new Error("feedSourceID cannot be null or undefined."); })();
-      const pageID: number = userFeedBeingEdited?.pageID ?? (() => { throw new Error("pageID cannot be null or undefined."); })();
-      const requestBody = "name=" + userFeedBeingEdited?.name + "&itemDisplayCount=" + userFeedBeingEdited?.itemDisplayCount + "&pageid=" + pageID + "&feedsourceid=" + feedSourceID + "&column=" + userFeedBeingEdited?.column + "&displayOrder=" + userFeedBeingEdited?.displayOrder;
+      const userFeedID: number = userFeedBeingEdited?.userFeedID ?? (() => { throw new Error("userFeedID cannot be null or undefined."); })();
+      const requestBody = "name=" + userFeedBeingEdited?.name + "&itemDisplayCount=" + userFeedBeingEdited?.itemDisplayCount + "&pageID=" + userFeedBeingEdited?.pageID + "&feedSourceID=" + userFeedBeingEdited?.feedSourceID + "&column=" + userFeedBeingEdited?.column + "&displayOrder=" + userFeedBeingEdited?.displayOrder;
       log('Attempting to Update UserFeed: ' + requestBody);
-      const url = REST_DOMAIN + `/userfeeds/${feedSourceID}/${pageID}`;
+      const url = REST_DOMAIN + `/userfeeds/${userFeedID}`;
       let headers = new Headers();
       headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
       const addFeedResponse = await fetch(url, {
@@ -140,7 +139,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
       log("Update UserFeed Attempt Returned: " + JSON.stringify(userFeedModel));
 
       // Use the returned UserFeed to the update PageStore
-      pageStore.editUserFeed(feedSourceID, pageID, userFeedModel);
+      pageStore.editUserFeed(userFeedID, userFeedModel);
 
       this.closeModal();
     } catch (err) {
@@ -165,9 +164,8 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
     }
 
     try {
-      const feedSourceID: number = userFeedBeingEdited?.feedSourceID ?? (() => { throw new Error("feedSourceID cannot be null or undefined."); })();
-      const pageID: number = userFeedBeingEdited?.pageID ?? (() => { throw new Error("pageID cannot be null or undefined."); })();
-      const url = REST_DOMAIN + `/userfeeds/${feedSourceID}/${pageID}`;
+      const userFeedID: number = userFeedBeingEdited?.userFeedID ?? (() => { throw new Error("userFeedID cannot be null or undefined."); })();
+      const url = REST_DOMAIN + `/userfeeds/${userFeedID}`;
       const deleteFeedResponse = await fetch(url, {
         credentials: "include",
         method: "delete"
@@ -179,7 +177,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
       returnedUserFeedModel = await deleteFeedResponse.json();
       log("Delete UserFeed Attempt Returned: " + JSON.stringify(returnedUserFeedModel));
-      pageStore.deleteUserFeed(feedSourceID, pageID);
+      pageStore.deleteUserFeed(userFeedID);
       this.closeModal();
     } catch (err) {
       error("Error while trying delete feed: " + err.toString());

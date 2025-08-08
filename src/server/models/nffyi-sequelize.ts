@@ -86,6 +86,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
       }); // /SQFeedSource
 
       models.SQUserFeed = sequelize.define('UserFeed', {
+        userFeedID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         column: DataTypes.INTEGER,
         displayOrder: DataTypes.INTEGER,
         name: DataTypes.STRING,
@@ -109,54 +110,6 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
       log('Calling sequelize.sync()');
       return sequelize.sync();
     }) // /params Promise
-    .then(() => {
-      // Clean up any duplicate UserFeed records before adding constraints
-      log('--Cleaning up duplicate UserFeed records--');
-      return models.SQUserFeed.findAll({
-        attributes: ['feedSourceID', 'pageID', 'id'],
-        order: [['id', 'ASC']]
-      })
-        .then((userFeeds: any[]) => {
-          const seen = new Set<string>();
-          const duplicateIds: number[] = [];
-          
-          userFeeds.forEach(userFeed => {
-            const key = `${userFeed.feedSourceID}-${userFeed.pageID}`;
-            if (seen.has(key)) {
-              duplicateIds.push(userFeed.id);
-            } else {
-              seen.add(key);
-            }
-          });
-          
-          if (duplicateIds.length > 0) {
-            log(`Found ${duplicateIds.length} duplicate UserFeed records, removing them...`);
-            return models.SQUserFeed.destroy({
-              where: {
-                id: duplicateIds
-              }
-            });
-          }
-          return Promise.resolve();
-        })
-        .then(() => {
-          // Now add the unique index
-          log('--Adding unique index for UserFeed--');
-          return sequelize.getQueryInterface().addIndex('UserFeeds', {
-            fields: ['feedSourceID', 'pageID'],
-            unique: true,
-            name: 'unique_userfeed_feedsource_page'
-          });
-        })
-        .catch((err: any) => {
-          // If index already exists, that's okay
-          if (err.message && err.message.includes('already exists')) {
-            log('Unique index already exists, continuing...');
-            return Promise.resolve();
-          }
-          throw err;
-        });
-    })
     .then(() => {
       // Auto-Populate Database with Roles
       log('--Creating Initial Data: Admin Role--');

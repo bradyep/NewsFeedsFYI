@@ -31,8 +31,7 @@ export function update(userFeed: UserFeedModel) {
     .then((SQUserFeed: any) => {
       return SQUserFeed['findOne']({
         where: {
-          feedSourceID: userFeed.feedSourceID,
-          pageID: userFeed.pageID
+          userFeedID: userFeed.userFeedID
         }
       })
         .then((existingUserFeed: any) => {
@@ -44,7 +43,8 @@ export function update(userFeed: UserFeedModel) {
               column: userFeed.column,
               displayOrder: userFeed.displayOrder,
               name: userFeed.name,
-              itemDisplayCount: userFeed.itemDisplayCount
+              itemDisplayCount: userFeed.itemDisplayCount,
+              pageID: userFeed.pageID
             });
           }
         });
@@ -154,6 +154,37 @@ export async function readAsync(feedSourceID: number, pageID: number): Promise<U
   }
 }
 
+export async function readByUserFeedIDAsync(userFeedID: number): Promise<UserFeedModel | undefined> {
+  try {
+    const SQUserFeedModel: any = await modelDef.connectDB('SQUserFeed');
+    let dbUserFeedModel: any = await SQUserFeedModel['findOne']({ where: { userFeedID } });
+    
+    if (!dbUserFeedModel) {
+      log('No UserFeedModel found for userFeedID: ' + userFeedID);
+      return undefined;
+    }
+
+    // Update cached news items if needed
+    const cachedNewsItemsUpdated = await updateFeedSourceCachedNewsItemsIfNeeded(dbUserFeedModel.feedSourceID);
+    log('Cached News Items Updated: ' + cachedNewsItemsUpdated.toString());
+
+    return new UserFeedModel(
+      dbUserFeedModel.column,
+      dbUserFeedModel.displayOrder,
+      dbUserFeedModel.name,
+      dbUserFeedModel.itemDisplayCount,
+      dbUserFeedModel.pageID,
+      dbUserFeedModel.feedSourceID,
+      undefined, // titleURL
+      undefined, // newsItems - to be populated later
+      dbUserFeedModel.userFeedID
+    );
+  } catch (err) {
+    error("Error Calling readByUserFeedIDAsync: " + err);
+    return undefined;
+  }
+}
+
 export function destroy(feedSourceID: number, pageID: number) {
   return modelDef.connectDB('SQUserFeed')
     .then((SQUserFeed: any) => {
@@ -162,6 +193,24 @@ export function destroy(feedSourceID: number, pageID: number) {
           if (!userFeed) return null;
           else return userFeed.destroy();
         });
+    });
+};
+
+export function destroyByUserFeedID(userFeedID: number) {
+  return modelDef.connectDB('SQUserFeed')
+    .then((SQUserFeed: any) => {
+      return SQUserFeed['findOne']({ where: { userFeedID } })
+        .then((userFeed: any) => {
+          if (!userFeed) return null;
+          else return userFeed.destroy();
+        });
+    });
+};
+
+export function getUserFeedsByPageID(pageID: number): Promise<any[]> {
+  return modelDef.connectDB('SQUserFeed')
+    .then((SQUserFeed: any) => {
+      return SQUserFeed['findAll']({ where: { pageID } });
     });
 };
 

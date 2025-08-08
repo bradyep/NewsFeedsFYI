@@ -108,35 +108,37 @@ export class PageStore {
     }
   }
 
-  editUserFeed(feedSourceID: number, pageID: number, data: Partial<UserFeedModel>): void {
+  editUserFeed(userFeedID: number, data: Partial<UserFeedModel>): void {
     this.pages.map((page) => {
-      if (page.pageID === pageID) {
-        page.userFeeds.map(userFeed => {
-          if (userFeed.feedSourceID === feedSourceID) {
-            if (typeof data.column == 'number') {
-              userFeed.column = data.column;
-            }
-            if (typeof data.displayOrder == 'number') {
-              userFeed.displayOrder = data.displayOrder;
-            }
-            if (typeof data.name == 'string') {
-              userFeed.name = data.name;
-            }
-            if (typeof data.itemDisplayCount == 'number') {
-              userFeed.itemDisplayCount = data.itemDisplayCount;
-            }
-          } // /if (userFeed.feedSourceID === feedSourceID) {
-        })
-      } // /if (page.pageID === pageID) {
-
+      page.userFeeds.map(userFeed => {
+        if (userFeed.userFeedID === userFeedID) {
+          if (typeof data.column == 'number') {
+            userFeed.column = data.column;
+          }
+          if (typeof data.displayOrder == 'number') {
+            userFeed.displayOrder = data.displayOrder;
+          }
+          if (typeof data.name == 'string') {
+            userFeed.name = data.name;
+          }
+          if (typeof data.itemDisplayCount == 'number') {
+            userFeed.itemDisplayCount = data.itemDisplayCount;
+          }
+          if (typeof data.pageID == 'number') {
+            userFeed.pageID = data.pageID;
+          }
+        } // /if (userFeed.userFeedID === userFeedID) {
+        return userFeed;
+      })
       return page;
     })
   }
 
-  deleteUserFeed(feedSourceID: number, pageID: number): void {
-    const page: PageModel | undefined = this.pages.find((page) => page.pageID === pageID);
-    if (page)
-      page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.feedSourceID !== feedSourceID);
+  deleteUserFeed(userFeedID: number): void {
+    this.pages.map((page) => {
+      page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.userFeedID !== userFeedID);
+      return page;
+    })
   }
 
 }
