@@ -44,7 +44,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
             {currentUser.roleID != Roles.GUEST &&
               <i className={`fa fa-cog ${styles.settings}`}
                 onClick={
-                  () => this.props.pageStore.setUserFeedBeingEdited({ userFeedID: userFeedModel.userFeedID, pageID: userFeedModel.pageID, name: userFeedModel.name, itemDisplayCount: userFeedModel.itemDisplayCount, feedSourceUrl: undefined, feedSourceID: userFeedModel.feedSourceID, column: userFeedModel.column, displayOrder: userFeedModel.displayOrder, isEditing: true })
+                  () => this.props.pageStore.setUserFeedBeingEdited({ userFeedID: userFeedModel.userFeedID, pageID: userFeedModel.pageID, name: userFeedModel.name, itemDisplayCount: userFeedModel.itemDisplayCount, feedSourceUrl: undefined, feedSourceID: userFeedModel.feedSourceID, column: userFeedModel.column, row: userFeedModel.row, isEditing: true })
                 } aria-hidden="true"></i>
             }
           </h4>

@@ -17,7 +17,7 @@ export function create(userFeed: UserFeedModel): Promise<UserFeedModel> {
     .then((SQUserFeed: any) => {
       return SQUserFeed['create']({
         column: userFeed.column,
-        displayOrder: userFeed.displayOrder,
+        row: userFeed.row,
         name: userFeed.name,
         itemDisplayCount: userFeed.itemDisplayCount,
         pageID: userFeed.pageID,
@@ -41,7 +41,7 @@ export function update(userFeed: UserFeedModel) {
           } else {
             return existingUserFeed.update({
               column: userFeed.column,
-              displayOrder: userFeed.displayOrder,
+              row: userFeed.row,
               name: userFeed.name,
               itemDisplayCount: userFeed.itemDisplayCount,
               pageID: userFeed.pageID
@@ -56,7 +56,7 @@ export async function getUserFeedAsync(feedSourceID: number, pageID: number): Pr
     const SQUserFeedModel: any = await modelDef.connectDB('SQUserFeed');
     let dbUserFeedModel: UserFeedModel = await SQUserFeedModel['findOne']({ where: { feedSourceID, pageID } });
     if (!dbUserFeedModel) throw new Error("Cannot find UserFeed for supplied feedSourceID and pageID: " + feedSourceID + ", " + pageID);
-    let userFeedModel = new UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.displayOrder, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
+    let userFeedModel = new UserFeedModel(dbUserFeedModel.column, dbUserFeedModel.row, dbUserFeedModel.name, dbUserFeedModel.itemDisplayCount, dbUserFeedModel.pageID, dbUserFeedModel.feedSourceID, "#");
 
     return userFeedModel;
   } catch (err) {
@@ -170,7 +170,7 @@ export async function readByUserFeedIDAsync(userFeedID: number): Promise<UserFee
 
     return new UserFeedModel(
       dbUserFeedModel.column,
-      dbUserFeedModel.displayOrder,
+      dbUserFeedModel.row,
       dbUserFeedModel.name,
       dbUserFeedModel.itemDisplayCount,
       dbUserFeedModel.pageID,

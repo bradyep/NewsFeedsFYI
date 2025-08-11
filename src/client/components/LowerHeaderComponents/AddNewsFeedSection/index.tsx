@@ -123,7 +123,7 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
 
     try {
       const userFeedID: number = userFeedBeingEdited?.userFeedID ?? (() => { throw new Error("userFeedID cannot be null or undefined."); })();
-      const requestBody = "name=" + userFeedBeingEdited?.name + "&itemDisplayCount=" + userFeedBeingEdited?.itemDisplayCount + "&pageID=" + userFeedBeingEdited?.pageID + "&feedSourceID=" + userFeedBeingEdited?.feedSourceID + "&column=" + userFeedBeingEdited?.column + "&displayOrder=" + userFeedBeingEdited?.displayOrder;
+      const requestBody = "name=" + userFeedBeingEdited?.name + "&itemDisplayCount=" + userFeedBeingEdited?.itemDisplayCount + "&pageID=" + userFeedBeingEdited?.pageID + "&feedSourceID=" + userFeedBeingEdited?.feedSourceID + "&column=" + userFeedBeingEdited?.column + "&row=" + userFeedBeingEdited?.row;
       log('Attempting to Update UserFeed: ' + requestBody);
       const url = REST_DOMAIN + `/userfeeds/${userFeedID}`;
       let headers = new Headers();

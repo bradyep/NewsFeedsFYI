@@ -115,8 +115,8 @@ export class PageStore {
           if (typeof data.column == 'number') {
             userFeed.column = data.column;
           }
-          if (typeof data.displayOrder == 'number') {
-            userFeed.displayOrder = data.displayOrder;
+          if (typeof data.row == 'number') {
+            userFeed.row = data.row;
           }
           if (typeof data.name == 'string') {
             userFeed.name = data.name;

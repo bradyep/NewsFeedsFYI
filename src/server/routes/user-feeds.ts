@@ -77,7 +77,7 @@ const getUserFeeds = (pageID: number): Promise<any> => {
           .then(() => {
             return new UserFeedModel(
               userFeed.column,
-              userFeed.displayOrder,
+              userFeed.row,
               userFeed.name,
               userFeed.itemDisplayCount,
               userFeed.pageID,
@@ -172,7 +172,7 @@ router.put('/:userfeedid', authRouter.ensureAuthenticated, (req, res, next) => {
   log('Request body:', req.body);
   // TODO: Add authorization check
 
-  let updateUserFeed = new UserFeedModel(req.body.column, req.body.displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID, undefined, undefined, +req.params.userfeedid);
+  let updateUserFeed = new UserFeedModel(req.body.column, req.body.row, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID, undefined, undefined, +req.params.userfeedid);
   userFeedsModel.update(updateUserFeed)
     .then(userFeed => {
       if (!userFeed) next();
@@ -235,7 +235,7 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
   authorizeRequest(req, res, next, true);
   // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
 
-  // Figure out what the column and displayOrder are going to be
+  // Figure out what the column and row are going to be
   const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
   let columnDescriptors = new Array<ColumnDescriptor>();
   for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
@@ -249,7 +249,7 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
   }
   columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
   const columnID = columnDescriptors[0].columnNumber;
-  const displayOrder = columnDescriptors[0].userFeedCount + 1;
+  const row = columnDescriptors[0].userFeedCount + 1;
 
   // Figure out what the feedSourceID is going to be
   const feedSourceID = await findFeedSourceID(req.body.feedURL);
@@ -260,7 +260,7 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
   const cachedNewsItems: CachedNewsItemModel[] = await getCachedNewsItems([feedSourceID]);
 
   // It's confusing as hell, but we need to stick the newsItems in the userFeed.dataValues property
-  userFeedsModel.create(new UserFeedModel(columnID, displayOrder, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
+  userFeedsModel.create(new UserFeedModel(columnID, row, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
     .then((userFeed: any) => {
       // userFeed.newsItems = cachedNewsItems;
       userFeed.dataValues.newsItems = new Array<CachedNewsItemModel>();
