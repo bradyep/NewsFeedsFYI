@@ -12,9 +12,7 @@ export interface NewsFeedsProps {
   userStore: UserStore
 }
 
-export interface NewsFeedsState {
-  /* empty */
-}
+export interface NewsFeedsState { }
 
 @observer
 export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
@@ -26,16 +24,9 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   }
   */
 
-  /* 
-    handleSave(text: string) {
-      if (text.length) {
-        this.props.addTodo({ text });
-      }
-    }
-   */
-
   renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
     const { userStore } = this.props;
+    const { pageStore } = this.props;
     const { currentUser } = userStore;
     const displayedNewsItems = userFeedModel.newsItems ? userFeedModel.newsItems.slice(0, userFeedModel.itemDisplayCount) : [];
 
@@ -51,7 +42,10 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
             }
             <a href={userFeedModel.titleURL} target="_blank" className={styles.titleURL}>{userFeedModel.name}</a>
             {currentUser.roleID != Roles.GUEST &&
-              <i className={`fa fa-cog ${styles.settings}`} aria-hidden="true"></i>
+              <i className={`fa fa-cog ${styles.settings}`}
+                onClick={
+                  () => this.props.pageStore.setUserFeedBeingEdited({ userFeedID: userFeedModel.userFeedID, pageID: userFeedModel.pageID, name: userFeedModel.name, itemDisplayCount: userFeedModel.itemDisplayCount, feedSourceUrl: undefined, feedSourceID: userFeedModel.feedSourceID, column: userFeedModel.column, row: userFeedModel.row, isEditing: true })
+                } aria-hidden="true"></i>
             }
           </h4>
         </div>
@@ -71,9 +65,9 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   renderNewsFeedColumn(column: number) {
     const { pageStore } = this.props;
     const { currentlyDisplayedPage } = pageStore;
-    if ( !currentlyDisplayedPage.userFeeds ) { throw new Error('No user feeds available for the currently displayed page'); }
+    if (!currentlyDisplayedPage.userFeeds) { throw new Error('No user feeds available for the currently displayed page'); }
     log(`Rendering news feed column: ${column} for page: ${currentlyDisplayedPage.pageID} | Number of feeds: ${currentlyDisplayedPage.userFeeds.length}`);
-    const userFeeds: UserFeedModel [] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
+    const userFeeds: UserFeedModel[] = currentlyDisplayedPage.userFeeds.filter((uf: UserFeedModel) => uf.column === column);
 
     return (
       <div className={`col-md-4 mb-3 ${styles.newsSectionContainer}`}>
@@ -86,7 +80,7 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
   render() {
     const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#fce4ec', padding: '8px' } : {};
-    
+
     return (
       <div className="allNews" style={debugStyle}>
         <div className="row g-3">

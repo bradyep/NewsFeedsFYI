@@ -1,17 +1,25 @@
 import { observable, computed, action, makeObservable } from 'mobx';
 import { PageModel, UserFeedModel } from 'common/models';
+import { EditableUserFeedModel } from 'common/models/UserFeedModel';
+import debug from 'debug';
+const log = debug('webapp:PageStore');
+const error = debug('webapp:PageStore:error');
 
 export class PageStore {
 
   // Pages
   public pages: Array<PageModel>;
   public currentlyDisplayedPageID: number;
+  public userFeedBeingEdited?: EditableUserFeedModel;
 
   constructor(fixtures: PageModel[]) {
     // Make properties observable using makeObservable for MobX v6+
     makeObservable(this, {
       pages: observable,
       currentlyDisplayedPageID: observable,
+      userFeedBeingEdited: observable,
+      setUserFeedBeingEdited: action,
+      updateUserFeedBeingEdited: action,
       currentlyDisplayedPage: computed,
       setCurrentlyDisplayedPage: action,
       setPages: action,
@@ -72,6 +80,18 @@ export class PageStore {
     })
   }
 
+  setUserFeedBeingEdited(userFeed: EditableUserFeedModel | undefined): void {
+    this.userFeedBeingEdited = userFeed;
+  }
+
+  updateUserFeedBeingEdited(partialUpdate: Partial<EditableUserFeedModel>): void {
+    if (this.userFeedBeingEdited) {
+      this.userFeedBeingEdited = { ...this.userFeedBeingEdited, ...partialUpdate };
+    } else {
+      error('Tried to update userFeedBeingEdited but it is undefined');
+    }
+  }
+
   deletePage(id: number): void {
     this.pages = this.pages.filter((page) => page.pageID !== id);
   }
@@ -88,35 +108,51 @@ export class PageStore {
     }
   }
 
-  editUserFeed(feedSourceID: number, pageID: number, data: Partial<UserFeedModel>): void {
-    this.pages.map((page) => {
-      if (page.pageID === pageID) {
-        page.userFeeds.map(userFeed => {
-          if (userFeed.feedSourceID === feedSourceID) {
-            if (typeof data.column == 'number') {
-              userFeed.column = data.column;
-            }
-            if (typeof data.displayOrder == 'number') {
-              userFeed.displayOrder = data.displayOrder;
-            }
-            if (typeof data.name == 'string') {
-              userFeed.name = data.name;
-            }
-            if (typeof data.itemDisplayCount == 'number') {
-              userFeed.itemDisplayCount = data.itemDisplayCount;
-            }
-          } // /if (userFeed.feedSourceID === feedSourceID) {
-        })
-      } // /if (page.pageID === pageID) {
+  editUserFeed(userFeedID: number, data: Partial<UserFeedModel>): void {
+    const existingUserFeed = this.pages.flatMap(page => page.userFeeds).find(uf => uf.userFeedID === userFeedID);
+    if (!existingUserFeed) {
+      log('Failed to update UserFeed - userFeed not found');
+      return;
+    }
 
-      return page;
-    })
+    // Store the original pageID before making any changes
+    const originalPageID = existingUserFeed.pageID;
+
+    if (typeof data.column == 'number') {
+      existingUserFeed.column = data.column;
+    }
+    if (typeof data.row == 'number') {
+      existingUserFeed.row = data.row;
+    }
+    if (typeof data.name == 'string') {
+      existingUserFeed.name = data.name;
+    }
+    if (typeof data.itemDisplayCount == 'number') {
+      existingUserFeed.itemDisplayCount = data.itemDisplayCount;
+    }
+
+    // Check if pageID is changing using the original value
+    if (typeof data.pageID == 'number' && originalPageID !== data.pageID) {
+      // Remove UserFeed from old page
+      const oldPage = this.pages.find(p => p.pageID === originalPageID);
+      if (oldPage) {
+        oldPage.userFeeds = oldPage.userFeeds.filter(uf => uf.userFeedID !== userFeedID);
+      }
+      // Update the pageID on the UserFeed object
+      existingUserFeed.pageID = data.pageID;
+      // Add UserFeed to new page
+      const newPage = this.pages.find(p => p.pageID === data.pageID);
+      if (newPage) {
+        newPage.userFeeds.push(existingUserFeed);
+      }
+    }
   }
 
-  deleteUserFeed(feedSourceID: number, pageID: number): void {
-    const page: PageModel | undefined = this.pages.find((page) => page.pageID === pageID);
-    if (page)
-      page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.feedSourceID !== feedSourceID);
+  deleteUserFeed(userFeedID: number): void {
+    this.pages.map((page) => {
+      page.userFeeds = page.userFeeds.filter((userFeed) => userFeed.userFeedID !== userFeedID);
+      return page;
+    })
   }
 
 }

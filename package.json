@@ -12,6 +12,7 @@
     "build-server": "tsc -p tsconfig.server.json",
     "startbackend": "node dist/server/server.js",
     "startbackendwindows": "set SEQUELIZE_CONNECT=src/server/models/sequelize-sqlite.yaml&& node dist/server/server.js",
+    "startbackendwindowsdebug": "set SEQUELIZE_CONNECT=src/server/models/sequelize-sqlite.yaml&& set DEBUG=nffyi-rest:*&& node dist/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker": "node ./bin/www",
     "startclient": "webpack serve --mode development --history-api-fallback --progress --port 3030 --open",

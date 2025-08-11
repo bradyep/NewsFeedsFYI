@@ -41,7 +41,7 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
   }
 
   render() {
-    const { userStore, pageStore } = this.props;    
+    const { userStore, pageStore } = this.props;
     const { currentUser } = userStore;
     const { pages } = pageStore;
 

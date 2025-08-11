@@ -6,7 +6,7 @@ import debug = require('debug');
 const log = debug('nffyi-rest:model-definition');
 const error = debug('nffyi-rest:error');
 
-var sequelize;
+var sequelize: Sequelize;
 type ModelKeys = 'SQRole' | 'SQUser' | 'SQLink' | 'SQPage' | 'SQUserFeed' | 'SQFeedSource' | 'SQCachedNewsItem';
 type ModelsType = {
   SQRole: any,
@@ -86,8 +86,9 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
       }); // /SQFeedSource
 
       models.SQUserFeed = sequelize.define('UserFeed', {
+        userFeedID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         column: DataTypes.INTEGER,
-        displayOrder: DataTypes.INTEGER,
+        row: DataTypes.INTEGER,
         name: DataTypes.STRING,
         itemDisplayCount: DataTypes.INTEGER
       }); // /SQUserFeed
@@ -445,7 +446,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           pageID: 1, Name: 'BBC World News'
         },
         defaults: { // set the default properties if it doesn't exist
-          pageID: 1, feedSourceID: 1, name: 'BBC World News', column: 1, displayOrder: 1, itemDisplayCount: 3
+          pageID: 1, feedSourceID: 1, name: 'BBC World News', column: 1, row: 1, itemDisplayCount: 3
         }
       })
     })
@@ -459,7 +460,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           pageID: 1, Name: 'NYTimes US News'
         },
         defaults: { // set the default properties if it doesn't exist
-          pageID: 1, feedSourceID: 2, name: 'NYTimes US News', column: 2, displayOrder: 1, itemDisplayCount: 3
+          pageID: 1, feedSourceID: 2, name: 'NYTimes US News', column: 2, row: 1, itemDisplayCount: 3
         }
       })
     })
@@ -473,7 +474,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           pageID: 1, Name: 'ESPN'
         },
         defaults: { // set the default properties if it doesn't exist
-          pageID: 1, feedSourceID: 3, name: 'ESPN', column: 3, displayOrder: 1, itemDisplayCount: 3
+          pageID: 1, feedSourceID: 3, name: 'ESPN', column: 3, row: 1, itemDisplayCount: 3
         }
       })
     })
@@ -487,7 +488,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           pageID: 2, Name: 'Hacker News'
         },
         defaults: { // set the default properties if it doesn't exist
-          pageID: 2, feedSourceID: 4, name: 'Hacker News', column: 1, displayOrder: 1, itemDisplayCount: 3
+          pageID: 2, feedSourceID: 4, name: 'Hacker News', column: 1, row: 1, itemDisplayCount: 3
         }
       })
     })
