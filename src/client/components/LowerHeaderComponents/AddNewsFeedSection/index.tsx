@@ -138,8 +138,19 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
       userFeedModel = await addFeedResponse.json();
       log("Update UserFeed Attempt Returned: " + JSON.stringify(userFeedModel));
 
-      // Use the returned UserFeed to the update PageStore
-      pageStore.editUserFeed(userFeedID, userFeedModel);
+      // Parse the response and convert string values to numbers
+      const updatedFeed: Partial<UserFeedModel> = {
+        userFeedID: userFeedModel.userFeedID,
+        pageID: typeof userFeedModel.pageID === 'string' ? parseInt(userFeedModel.pageID) : userFeedModel.pageID,
+        column: typeof userFeedModel.column === 'string' ? parseInt(userFeedModel.column) : userFeedModel.column,
+        row: typeof userFeedModel.row === 'string' ? parseInt(userFeedModel.row) : userFeedModel.row,
+        name: userFeedModel.name,
+        itemDisplayCount: typeof userFeedModel.itemDisplayCount === 'string' ? parseInt(userFeedModel.itemDisplayCount) : userFeedModel.itemDisplayCount,
+        feedSourceID: userFeedModel.feedSourceID
+      };
+
+      // Use the parsed UserFeed data to update PageStore
+      pageStore.editUserFeed(userFeedID, updatedFeed);
 
       this.closeModal();
     } catch (err) {

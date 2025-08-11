@@ -9,15 +9,8 @@ const log = debug('nffyi-rest:router-userFeeds');
 const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
 import { UserFeedModel, CachedNewsItemModel } from 'common/models';
-import { NUMBER_OF_COLUMNS } from 'common/constants/newsfeeds';
 import pagesModel = require('server/models/pages-sequelize');
 import { FeedSourceModel } from 'server/models/FeedSourceModel';
-import * as mobx from 'mobx';
-
-interface ColumnDescriptor {
-  columnNumber: number,
-  userFeedCount: number
-}
 
 /* GET all UserFeeds for requesting User */
 // NOTE: We probably do not need this
@@ -154,7 +147,7 @@ var authorizeRequest = function (req: any, res: any, next: any, isPost: boolean)
 // GET single UserFeed
 router.get('/:userfeedid', (req, res, next) => {
   // TODO: Add authorization check
-  
+
   userFeedsModel.readByUserFeedIDAsync(+req.params.userfeedid)
     .then(userFeed => {
       if (!userFeed) next();
@@ -166,17 +159,36 @@ router.get('/:userfeedid', (req, res, next) => {
 });
 
 // Update existing UserFeed
-router.put('/:userfeedid', authRouter.ensureAuthenticated, (req, res, next) => {
+router.put('/:userfeedid', authRouter.ensureAuthenticated, async (req, res, next) => {
   log('Attempting to update existing UserFeed');
   log('Request params:', req.params);
   log('Request body:', req.body);
   // TODO: Add authorization check
 
-  let updateUserFeed = new UserFeedModel(req.body.column, req.body.row, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID, undefined, undefined, +req.params.userfeedid);
+  // Get the existing UserFeed to check if pageID is changing
+  const existingUserFeed = await userFeedsModel.readByUserFeedIDAsync(+req.params.userfeedid);
+  if (!existingUserFeed) {
+    return next();
+  }
+
+  let column = req.body.column;
+  let row = req.body.row;
+
+  // Only calculate new position if moving to a different page AND no specific position provided
+  if (existingUserFeed.pageID !== req.body.pageID && (!req.body.column || !req.body.row)) {
+    const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
+    const nextPosition = UserFeedModel.getNextAvailableColumnAndRow(userFeeds);
+    column = nextPosition.column;
+    row = nextPosition.row;
+  }
+
+  let updateUserFeed = new UserFeedModel(column, row, req.body.name, req.body.itemDisplayCount, req.body.pageID, req.body.feedSourceID, undefined, undefined, +req.params.userfeedid);
   userFeedsModel.update(updateUserFeed)
     .then(userFeed => {
-      if (!userFeed) next();
-      else res.json(userFeed);
+      if (!userFeed) {
+        log('Failed to update UserFeed - did not get a UserFeed back in response');
+        next();
+      } else res.json(userFeed);
     })
     .catch(err => { next(err); });
 });
@@ -229,7 +241,7 @@ async function findFeedSourceID(url: string): Promise<number> {
   return await createFeedSource(url);
 } // /function findFeedSourceID(): Promise<number> {
 
-// POST new UserFeed
+/*** Creates and returns new UserFeed */
 router.post('/', authRouter.ensureAuthenticated, async function (req, res, next) {
   log('Attempting to create new UserFeed');
   authorizeRequest(req, res, next, true);
@@ -237,19 +249,7 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
 
   // Figure out what the column and row are going to be
   const userFeeds: UserFeedModel[] = await getUserFeeds(req.body.pageID);
-  let columnDescriptors = new Array<ColumnDescriptor>();
-  for (let i = 0; i < NUMBER_OF_COLUMNS; i++) {
-    const currentColumnNumber: number = i + 1;
-    const userFeedsInColumn = userFeeds.filter(uf => uf.column === currentColumnNumber);
-    const numberOfUserFeedsInColumn = userFeedsInColumn ? userFeedsInColumn.length : 0;
-    columnDescriptors.push({ columnNumber: currentColumnNumber, userFeedCount: numberOfUserFeedsInColumn });
-  }
-  if (columnDescriptors.length !== NUMBER_OF_COLUMNS) {
-    error('ERROR: columnDescriptors.length = ' + columnDescriptors.length + ', NUMBER_OF_COLUMNS = ' + NUMBER_OF_COLUMNS + '. They should be the same.');
-  }
-  columnDescriptors.sort((a, b) => a.userFeedCount - b.userFeedCount);
-  const columnID = columnDescriptors[0].columnNumber;
-  const row = columnDescriptors[0].userFeedCount + 1;
+  const { column, row } = UserFeedModel.getNextAvailableColumnAndRow(userFeeds);
 
   // Figure out what the feedSourceID is going to be
   const feedSourceID = await findFeedSourceID(req.body.feedURL);
@@ -260,7 +260,7 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
   const cachedNewsItems: CachedNewsItemModel[] = await getCachedNewsItems([feedSourceID]);
 
   // It's confusing as hell, but we need to stick the newsItems in the userFeed.dataValues property
-  userFeedsModel.create(new UserFeedModel(columnID, row, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
+  userFeedsModel.create(new UserFeedModel(column, row, req.body.name, req.body.itemDisplayCount, req.body.pageID, feedSourceID))
     .then((userFeed: any) => {
       // userFeed.newsItems = cachedNewsItems;
       userFeed.dataValues.newsItems = new Array<CachedNewsItemModel>();

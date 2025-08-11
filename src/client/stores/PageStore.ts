@@ -109,29 +109,43 @@ export class PageStore {
   }
 
   editUserFeed(userFeedID: number, data: Partial<UserFeedModel>): void {
-    this.pages.map((page) => {
-      page.userFeeds.map(userFeed => {
-        if (userFeed.userFeedID === userFeedID) {
-          if (typeof data.column == 'number') {
-            userFeed.column = data.column;
-          }
-          if (typeof data.row == 'number') {
-            userFeed.row = data.row;
-          }
-          if (typeof data.name == 'string') {
-            userFeed.name = data.name;
-          }
-          if (typeof data.itemDisplayCount == 'number') {
-            userFeed.itemDisplayCount = data.itemDisplayCount;
-          }
-          if (typeof data.pageID == 'number') {
-            userFeed.pageID = data.pageID;
-          }
-        } // /if (userFeed.userFeedID === userFeedID) {
-        return userFeed;
-      })
-      return page;
-    })
+    const existingUserFeed = this.pages.flatMap(page => page.userFeeds).find(uf => uf.userFeedID === userFeedID);
+    if (!existingUserFeed) {
+      log('Failed to update UserFeed - userFeed not found');
+      return;
+    }
+
+    // Store the original pageID before making any changes
+    const originalPageID = existingUserFeed.pageID;
+
+    if (typeof data.column == 'number') {
+      existingUserFeed.column = data.column;
+    }
+    if (typeof data.row == 'number') {
+      existingUserFeed.row = data.row;
+    }
+    if (typeof data.name == 'string') {
+      existingUserFeed.name = data.name;
+    }
+    if (typeof data.itemDisplayCount == 'number') {
+      existingUserFeed.itemDisplayCount = data.itemDisplayCount;
+    }
+
+    // Check if pageID is changing using the original value
+    if (typeof data.pageID == 'number' && originalPageID !== data.pageID) {
+      // Remove UserFeed from old page
+      const oldPage = this.pages.find(p => p.pageID === originalPageID);
+      if (oldPage) {
+        oldPage.userFeeds = oldPage.userFeeds.filter(uf => uf.userFeedID !== userFeedID);
+      }
+      // Update the pageID on the UserFeed object
+      existingUserFeed.pageID = data.pageID;
+      // Add UserFeed to new page
+      const newPage = this.pages.find(p => p.pageID === data.pageID);
+      if (newPage) {
+        newPage.userFeeds.push(existingUserFeed);
+      }
+    }
   }
 
   deleteUserFeed(userFeedID: number): void {
