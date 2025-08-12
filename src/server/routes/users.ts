@@ -78,9 +78,9 @@ router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
 });
 
 // POST new users
-router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
-  // We should authorize this action in order to prevent new user spam
-  // usersModel.create(req.body.username, req.body.password, req.body.email)
+router.post('/', function(req, res, next) {
+  // This isn't authenticated since new users will use this to sign up, but we should prevent new user spam
+  // TODO: password hashing, session management
   usersModel.create(new UserModel(req.body.username, req.body.password, req.body.email, 3))
   .then(user => {
     log('Attempted to create User: ' + util.inspect(user));
@@ -100,5 +100,4 @@ router.delete('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
   .catch(err => { next(err); });
 });
 
-// module.exports = router;
 export = router;

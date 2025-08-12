@@ -16,11 +16,13 @@ export interface ProfileSectionProps {
 }
 
 export interface ProfileSectionState {
-  showModal: boolean;
-  username: string;
-  password: string;
-  confirmPassword: string;
+  showModal: boolean
+  username: string
+  password: string
+  confirmPassword: string
   errorAuthenticating: boolean
+  isSignIn: boolean
+  isSignUp: boolean
 }
 
 @observer
@@ -29,12 +31,14 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   constructor(props: ProfileSectionProps) {
     super(props);
     this.state = {
-      showModal: false, username: "", password: "", confirmPassword: "", errorAuthenticating: false
+      showModal: false, username: "", password: "", confirmPassword: "", errorAuthenticating: false, isSignIn: false, isSignUp: false
     };
     this.close = this.close.bind(this);
-    this.open = this.open.bind(this);
+    this.openModalForSignUp = this.openModalForSignUp.bind(this);
+    this.openModalForSignIn = this.openModalForSignIn.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.attemptSignIn = this.attemptSignIn.bind(this);
+    this.attemptSignUp = this.attemptSignUp.bind(this);
     this.attemptSignOut = this.attemptSignOut.bind(this);
     this.renderForGuest = this.renderForGuest.bind(this);
     this.renderForUser = this.renderForUser.bind(this);
@@ -44,14 +48,48 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     this.setState({ showModal: false });
   }
 
-  open() {
-    this.setState({ showModal: true });
+  openModalForSignUp() {
+    this.setState({ showModal: true, isSignUp: true, isSignIn: false });
+  }
+
+  openModalForSignIn() {
+    this.setState({ showModal: true, isSignIn: true, isSignUp: false });
   }
 
   handleChange(e: any) {
     log("Need to change: " + e.currentTarget.id + " to: " + e.currentTarget.value);
     const id = e.currentTarget.id as keyof ProfileSectionState;
     this.setState({ [id]: e.currentTarget.value } as Pick<ProfileSectionState, keyof ProfileSectionState>);
+  }
+
+  async attemptSignUp() {
+    try {
+      const url = REST_DOMAIN + '/users';
+      let headers = new Headers();
+      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+      const signUpResponse = await fetch(url, {
+        credentials: "include",
+        method: "post",
+        headers: headers,
+        // TODO: Add email
+        body: "username=" + this.state.username + "&password=" + this.state.password + "&email=" + ""
+      });
+
+      // TODO: Input validation, required fields, confirm password check, race conditions, CSRF token, UI feedback during async operations, error state management
+      const userData: UserModel = await signUpResponse.json();
+      if (!signUpResponse.ok) {
+        throw new Error(`Signup failed: ${signUpResponse.status}`);
+      }
+      log("Sign up Attempt Returned: ");
+      log(userData);
+      // Now try to sign them in
+      this.setState({ username: this.state.username, password: this.state.password });
+      this.attemptSignIn();
+      this.setState({ errorAuthenticating: false });
+    } catch (err) {
+      error("Error while trying to sign up: " + err);
+      this.setState({ errorAuthenticating: true });
+    }
   }
 
   async attemptSignIn() {
@@ -63,17 +101,12 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
         credentials: "include",
         method: "post",
         headers: headers,
-        // headers: {
-        // "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-        // },
         body: "username=" + this.state.username + "&password=" + this.state.password
       });
 
       const userData: UserModel = await authenticationResponse.json();
-      // const text: string = await authenticationResponse.text();
       log("Authentication Attempt Returned: ");
       log(userData);
-      // log("Authentication Attempt Returned: " + text);
       this.props.changeCurrentUser();
       this.close();
       this.setState({ errorAuthenticating: false });
@@ -92,16 +125,11 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
         credentials: "include",
         method: "get",
         headers: headers
-        /*         headers: {
-                  "Content-type": "application/x-www-form-urlencoded; charset=UTF-8"
-                } */
       });
 
-      // const userData: UserModel = await logOutResponse.json();
       const text: string = await logOutResponse.text();
       log("Log Out Attempt Returned: ");
       log(text);
-      // log("Authentication Attempt Returned: " + text);
       this.props.changeCurrentUser();
     } catch (err) {
       error("Error while trying to log out: " + err);
@@ -120,11 +148,11 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
         keyboard={true}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Sign In to newsfeeds.fyi</Modal.Title>
+          <Modal.Title>{this.state.isSignIn ? "Sign In to newsfeeds.fyi" : "Sign Up for newsfeeds.fyi"}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          <form onSubmit={(e) => { e.preventDefault(); this.attemptSignIn(); }}>
+          <form onSubmit={(e) => { e.preventDefault(); this.state.isSignIn ? this.attemptSignIn() : this.attemptSignUp(); }}>
             <FormGroup controlId="username">
               <FormLabel>Username: </FormLabel>
               <FormControl
@@ -143,20 +171,22 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
                 isInvalid={errorAuthenticating === true}
               />
             </FormGroup>
-            <FormGroup controlId="confirmPassword">
-              <FormLabel>Confirm Password: </FormLabel>
-              <FormControl
-                onChange={this.handleChange}
-                type="password"
-                placeholder="Confirm Password"
-              />
-            </FormGroup>
+            {this.state.isSignUp && (
+              <FormGroup controlId="confirmPassword">
+                <FormLabel>Confirm Password: </FormLabel>
+                <FormControl
+                  onChange={this.handleChange}
+                  type="password"
+                  placeholder="Confirm Password"
+                />
+              </FormGroup>
+            )}
           </form>
         </Modal.Body>
 
         <Modal.Footer>
           <Button type="button" onClick={this.close}>Cancel</Button>
-          <Button type="button" variant="primary" onClick={this.attemptSignIn}>Sign In</Button>
+          <Button type="button" variant="primary" onClick={this.state.isSignIn ? this.attemptSignIn : this.attemptSignUp}>{this.state.isSignIn ? "Sign In" : "Sign Up"}</Button>
         </Modal.Footer>
 
       </Modal>
@@ -167,11 +197,17 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
     const debugStyle = process.env.DEBUG_LAYOUT === 'true' ? { backgroundColor: '#e8f5e8', padding: '8px' } : {};
 
     return (
-      <div className={styles.profileSection} onClick={this.open} style={debugStyle}>
-        <Button variant="outline-primary">
-          <i className="fa fa-user fa-2x" aria-hidden="true"></i>
+      <div className={styles.profileSection} style={debugStyle}>
+        <Button variant="outline-primary" onClick={this.openModalForSignIn}>
+          <i aria-hidden="true"></i>
           <p className={styles['sign-in-text']}>
-            Sign In To Customize
+            Sign In
+          </p>
+        </Button>
+        <Button variant="outline-primary" className={styles['sign-up-button']} onClick={this.openModalForSignUp}>
+          <i className="fa fa-user" aria-hidden="true"></i>
+          <p className={styles['sign-in-text']}>
+            Sign Up
           </p>
         </Button>
       </div>
