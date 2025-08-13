@@ -5,11 +5,9 @@ const log = debug('webapp:UserStore');
 
 export class UserStore {
 
-  // The Primary User
   public currentUser: UserModel;
 
   constructor(user: UserModel) {
-    // Make properties observable using makeObservable for MobX v6+
     makeObservable(this, {
       currentUser: observable,
       changeCurrentUser: action
@@ -24,7 +22,6 @@ export class UserStore {
   public users: Array<UserModel>;
  */
 
-  /** Change Primary User in User Store. Used when a User creates an account. */
   changeCurrentUser(user:UserModel): void {
     log('UserStore.changeCurrentUser called with:', user);
     log('Previous user:', this.currentUser);
