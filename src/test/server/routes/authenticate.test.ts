@@ -5,9 +5,9 @@ import session from 'express-session';
 import { router as authRouter, initPassport, ensureAuthenticated } from '../../../server/routes/authenticate';
 
 // Mock the database models
-jest.mock('../../../server/models/users-sequelize');
+jest.mock('../../../server/sequelize/users-sequelize');
 
-const mockUsersModel = require('../../../server/models/users-sequelize');
+const mockUsersModel = require('../../../server/sequelize/users-sequelize');
 
 describe('Authentication Routes', () => {
   let app: express.Application;

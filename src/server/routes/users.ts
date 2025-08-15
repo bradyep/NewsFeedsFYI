@@ -1,8 +1,8 @@
 import * as express from "express";
 var router = express.Router();
 import * as util from 'util';
-import * as usersModel from 'server/models/users-sequelize';
-import pagesModel = require('../models/pages-sequelize');
+import * as usersModel from 'server/sequelize/users-sequelize';
+import pagesModel = require('../sequelize/pages-sequelize');
 import debug = require('debug');
 const log = debug('nffyi-rest:router-users');
 const error = debug('nffyi-rest:error');

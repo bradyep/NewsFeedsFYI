@@ -4,7 +4,7 @@ import debug from 'debug';
 process.env.DEBUG = process.env.DEBUG || '';
 
 // Mock Sequelize database connection for tests
-jest.mock('server/models/nffyi-sequelize', () => ({
+jest.mock('server/sequelize/nffyi-sequelize', () => ({
   connectDB: jest.fn().mockResolvedValue({
     create: jest.fn(),
     findOne: jest.fn(),

@@ -74,7 +74,7 @@
       },
       "options": {
         "env": {
-          "SEQUELIZE_CONNECT": "src/server/models/sequelize-sqlite.yaml"
+          "SEQUELIZE_CONNECT": "src/server/sequelize/sequelize-sqlite.yaml"
         }
       }
     },

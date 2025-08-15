@@ -4,15 +4,15 @@ import userFeedsRouter from '../../../server/routes/user-feeds';
 import { UserFeedModel } from '../../../common/models';
 
 // Mock the database models
-jest.mock('../../../server/models/userfeeds-sequelize');
-jest.mock('../../../server/models/cached-newsitems-sequelize');
-jest.mock('../../../server/models/feedsources-sequelize');
-jest.mock('../../../server/models/pages-sequelize');
+jest.mock('../../../server/sequelize/userfeeds-sequelize');
+jest.mock('../../../server/sequelize/cached-newsitems-sequelize');
+jest.mock('../../../server/sequelize/feedsources-sequelize');
+jest.mock('../../../server/sequelize/pages-sequelize');
 
-const mockUserFeedsModel = require('../../../server/models/userfeeds-sequelize');
-const mockCachedNewsItemsModel = require('../../../server/models/cached-newsitems-sequelize');
-const mockFeedSourcesModel = require('../../../server/models/feedsources-sequelize');
-const mockPagesModel = require('../../../server/models/pages-sequelize');
+const mockUserFeedsModel = require('../../../server/sequelize/userfeeds-sequelize');
+const mockCachedNewsItemsModel = require('../../../server/sequelize/cached-newsitems-sequelize');
+const mockFeedSourcesModel = require('../../../server/sequelize/feedsources-sequelize');
+const mockPagesModel = require('../../../server/sequelize/pages-sequelize');
 
 describe('UserFeeds API Routes', () => {
   let app: express.Application;

@@ -4,11 +4,11 @@ import usersRouter from '../../../server/routes/users';
 import { UserModel, PageModel } from '../../../common/models';
 
 // Mock the database models
-jest.mock('../../../server/models/users-sequelize');
-jest.mock('../../../server/models/pages-sequelize');
+jest.mock('../../../server/sequelize/users-sequelize');
+jest.mock('../../../server/sequelize/pages-sequelize');
 
-const mockUsersModel = require('../../../server/models/users-sequelize');
-const mockPagesModel = require('../../../server/models/pages-sequelize');
+const mockUsersModel = require('../../../server/sequelize/users-sequelize');
+const mockPagesModel = require('../../../server/sequelize/pages-sequelize');
 
 describe('Users API Routes', () => {
   let app: express.Application;

@@ -4,9 +4,9 @@ import pagesRouter from '../../../server/routes/pages';
 import { PageModel } from '../../../common/models';
 
 // Mock the database models
-jest.mock('../../../server/models/pages-sequelize');
+jest.mock('../../../server/sequelize/pages-sequelize');
 
-const mockPagesModel = require('../../../server/models/pages-sequelize');
+const mockPagesModel = require('../../../server/sequelize/pages-sequelize');
 
 describe('Pages API Routes', () => {
   let app: express.Application;

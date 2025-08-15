@@ -1,9 +1,9 @@
 import debug = require('debug');
 const log = debug('nffyi-rest:userFeeds-model');
 const error = debug('nffyi-rest:error');
-import FeedHandler from './FeedHandler';
-import feedSourcesModel = require('server/models/feedsources-sequelize');
-import cachedNewsItemModel = require('server/models/cached-newsitems-sequelize');
+import FeedHandler from '../models/FeedHandler';
+import feedSourcesModel = require('server/sequelize/feedsources-sequelize');
+import cachedNewsItemModel = require('server/sequelize/cached-newsitems-sequelize');
 import { FeedSourceModel } from 'server/models/FeedSourceModel';
 import modelDef = require('./nffyi-sequelize');
 import { UserFeedModel, CachedNewsItemModel } from 'common/models';

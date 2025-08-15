@@ -14,7 +14,7 @@
       "cwd": "${workspaceRoot}",
       "sourceMaps": true,
       "env": {
-        "SEQUELIZE_CONNECT": "models/sequelize-sqlite.yaml",
+        "SEQUELIZE_CONNECT": "sequelize/sequelize-sqlite.yaml",
         // "DEBUG": "nffyi-rest:*",
         "DEBUG": "nffyi-rest:router-userFeeds,nffyi-rest:error,nffyi-rest:userFeeds-model",
         "PORT": "3000"
@@ -48,7 +48,7 @@
       "skipFiles": ["<node_internals>/**"],
       "console": "integratedTerminal",
       "env": {
-        "SEQUELIZE_CONNECT": "src/server/models/sequelize-sqlite.yaml",
+        "SEQUELIZE_CONNECT": "src/server/sequelize/sequelize-sqlite.yaml",
         "DEBUG": "nffyi-rest:*"
       },
       "preLaunchTask": "Build Server"
