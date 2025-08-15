@@ -4,7 +4,7 @@ module.exports = {
   projects: [
     {
       displayName: 'client',
-      testMatch: ['<rootDir>/src/client/**/*.{test,spec}.{js,ts,tsx}'],
+      testMatch: ['<rootDir>/src/test/client/**/*.{test,spec}.{js,ts,tsx}'],
       testEnvironment: 'jsdom',
       preset: 'ts-jest',
       moduleNameMapper: {
@@ -28,7 +28,7 @@ module.exports = {
     },
     {
       displayName: 'server',
-      testMatch: ['<rootDir>/src/server/**/*.{test,spec}.{js,ts}'],
+      testMatch: ['<rootDir>/src/test/server/**/*.{test,spec}.{js,ts}'],
       testEnvironment: 'node',
       preset: 'ts-jest',
       moduleNameMapper: {
@@ -50,7 +50,7 @@ module.exports = {
     },
     {
       displayName: 'common',
-      testMatch: ['<rootDir>/src/common/**/*.{test,spec}.{js,ts}'],
+      testMatch: ['<rootDir>/src/test/common/**/*.{test,spec}.{js,ts}'],
       testEnvironment: 'node',
       preset: 'ts-jest',
       moduleNameMapper: {
@@ -67,24 +67,6 @@ module.exports = {
         'src/common/**/*.ts',
         '!src/common/**/*.d.ts'
       ]
-    },
-    {
-      displayName: 'general',
-      testMatch: ['<rootDir>/src/test/**/*.{test,spec}.{js,ts}'],
-      testPathIgnorePatterns: ['<rootDir>/src/test/e2e/'],
-      testEnvironment: 'node',
-      preset: 'ts-jest',
-      moduleNameMapper: {
-        '^client/(.*)$': '<rootDir>/src/client/$1',
-        '^common/(.*)$': '<rootDir>/src/common/$1',
-        '^server/(.*)$': '<rootDir>/src/server/$1'
-      },
-      transform: {
-        '^.+\\.ts$': ['ts-jest', {
-          tsconfig: 'tsconfig.test.json'
-        }]
-      },
-      moduleFileExtensions: ['ts', 'js', 'json']
     }
   ],
   // Global settings

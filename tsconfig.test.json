@@ -7,7 +7,8 @@
             "common/*": ["common/*"],
             "server/*": ["server/*"]
         },
-        "types": ["jest", "@types/testing-library__jest-dom"],
+        "types": ["jest", "@types/testing-library__jest-dom", "node"],
+        "typeRoots": ["./types", "./node_modules/@types"],
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "jsx": "react-jsx"
@@ -16,7 +17,8 @@
         "src/test/**/*",
         "src/client/**/*",
         "src/common/**/*",
-        "src/server/**/*"
+        "src/server/**/*",
+        "types/**/*"
     ],
     "exclude": [
         "node_modules",
