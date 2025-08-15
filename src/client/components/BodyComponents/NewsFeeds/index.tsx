@@ -17,13 +17,6 @@ export interface NewsFeedsState { }
 @observer
 export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
-  /*
-  constructor(props: NewsFeedsProps) {
-    super(props);
-    // this.handleSave = this.handleSave.bind(this);
-  }
-  */
-
   renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
     const { userStore } = this.props;
     const { pageStore } = this.props;
