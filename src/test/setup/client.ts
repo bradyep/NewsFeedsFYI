@@ -10,17 +10,17 @@ configure({
   disableErrorBoundaries: true
 });
 
-// Mock window.location if needed
-Object.defineProperty(window, 'location', {
-  value: {
-    origin: 'http://localhost:3000',
-    href: 'http://localhost:3000',
-    pathname: '/',
-    search: '',
-    hash: ''
-  },
-  writable: true
-});
+// Mock window.location if needed (commented out for now as stores don't use it)
+// (window as any).location = {
+//   origin: 'http://localhost:3000',
+//   href: 'http://localhost:3000',
+//   pathname: '/',
+//   search: '',
+//   hash: '',
+//   assign: jest.fn(),
+//   replace: jest.fn(),
+//   reload: jest.fn()
+// };
 
 // Mock fetch if needed for tests
 global.fetch = jest.fn();

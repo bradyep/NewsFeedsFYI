@@ -34,7 +34,7 @@ export class PageStore {
     this.pages = fixtures;
     // Set active page
     const sortedPages = this.pages.sort((a, b) => a.displayOrder - b.displayOrder);
-    this.currentlyDisplayedPageID = sortedPages[0].pageID || -1;
+    this.currentlyDisplayedPageID = sortedPages.length > 0 ? (sortedPages[0].pageID || -1) : -1;
 
     this.addPage = this.addPage.bind(this);
     this.editPage = this.editPage.bind(this);
