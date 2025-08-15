@@ -1,0 +1,25 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "client/*": ["client/*"],
+            "common/*": ["common/*"],
+            "server/*": ["server/*"]
+        },
+        "types": ["jest", "@types/testing-library__jest-dom"],
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react-jsx"
+    },
+    "include": [
+        "src/test/**/*",
+        "src/client/**/*",
+        "src/common/**/*",
+        "src/server/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "src/test/e2e/**/*"
+    ]
+}
