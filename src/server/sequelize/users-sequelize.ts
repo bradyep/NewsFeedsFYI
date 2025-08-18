@@ -102,12 +102,11 @@ export function userPasswordCheck(username: string, password: string) {
         return SQUser['findOne']({ where: { username } })
     })
     .then(user => {
-        // log('userPasswordCheck query:'+ username +'/'+ password +'|user:'+ user.username +', password:'+ user.password);
         log('userPasswordCheck query: ' + username + '/' + password);
         if (!user) {
             return { check: false, userid: 0, username, message: "Could not find user" };
         } else if (user.username === username && user.password === password) {
-            return { check: true, userid: user.userID, username: user.username };
+            return { check: true, userid: user.userID, username: user.username, roleid: user.roleID };
         } else {
             return { check: false, userid: 0, username: username, message: "Incorrect password" };
         }

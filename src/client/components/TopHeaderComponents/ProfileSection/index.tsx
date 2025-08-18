@@ -3,7 +3,7 @@ import styles from './styles.css';
 import { Modal, Button, FormGroup, FormLabel, FormControl, OverlayTrigger, Popover } from "react-bootstrap";
 import { REST_DOMAIN } from 'client/constants/network';
 import { UserModel } from 'common/models';
-import { Roles, ROLE_DB_NAMES } from 'common/constants';
+import { Roles } from 'common/constants';
 import debug from 'debug';
 const log = debug('webapp:ProfileSection');
 const error = debug('webapp:error');

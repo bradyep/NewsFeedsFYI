@@ -7,10 +7,11 @@ const log = debug('nffyi-rest:router-links');
 const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
 import { LinkModel, UserModel } from 'common/models';
+import { Roles, DBUsers } from 'common/constants';
 
-/* GET all Links for requesting User - Admin gets all Links */
+/* GET all Links for requesting User. Admins (Roles.ADMIN) get Guest (DBUsers.GUEST) Links. */
 router.get('/', function(req, res, next) {
-  let userID: number = req.user ? req.user.userID : 1;
+  let userID: number = req.user && req.user.roleID !== Roles.ADMIN ? req.user.userID : DBUsers.GUEST;
   getKeyList(userID)
   .then(linkList => {
       res.json(linkList);
@@ -36,27 +37,11 @@ var getKeyList = function(userID: number) {
     });
 };
 
-/*
-// GET single Link
-// We may never need this 
-router.get('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
-  // Must be Admin to see another Link's data
-
-
-  linksModel.read(req.params.linkid)
-  .then(link => {
-    if (!link) next();
-    else res.json(link);
-  })
-  .catch(err => { next(err); });
-});
-*/
-
 // Update existing Link
 router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
-  let userID:number = req.user ? req.user.userID : 1;
+  let userID: number = req.user?.userID || DBUsers.GUEST;
   // Authorize
-  if (userID === req.body.userID || req.user?.userID === 2) {
+  if (userID === req.body.userID || req.user?.roleID === Roles.ADMIN) {
     let updateLink = new LinkModel(req.body.url, req.body.name, req.body.displayOrder, +req.params.linkid, req.body.userID);
     linksModel.update(updateLink)
     .then(link => {
@@ -74,9 +59,9 @@ router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
 
 // POST new Link
 router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
-  let userID:number = req.user ? req.user.userID : 1;
+  let userID: number = req.user?.userID || DBUsers.GUEST;
   // Authorize
-  if (userID === req.body.userID || req.user?.userID === 2) {
+  if (userID === req.body.userID || req.user?.roleID === Roles.ADMIN) {
     linksModel.create(new LinkModel(req.body.url, req.body.name, req.body.displayOrder, undefined, userID))
     .then(link => {
       log('Attempted to create Link: ' + util.inspect(link));

@@ -1,3 +1,4 @@
+// Ignore the fact that this is grayed out in VSCode, we need this import
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
 // Import Bootstrap CSS
@@ -27,9 +28,6 @@ configure({
   disableErrorBoundaries: true
 });
 
-// Window Object for Debugging
-(window as any).NFYI = (window as any).NFYI || {};
-
 (async () => {
   const getUserURL = REST_DOMAIN + '/users';
   const getLinksURL = REST_DOMAIN + '/links';
@@ -41,6 +39,7 @@ configure({
   let pagesWithfirstPopulated: PageModel[] | undefined;
 
   try {
+    log("Attempting to get current User");
     [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
   } catch (err) {
     error("Problem Getting Data For Stores: " + err.toString());
@@ -50,7 +49,6 @@ configure({
 
   if (currentUser) {
     const userStore = new UserStore(currentUser);
-    (window as any).NFYI.userStore = userStore;
     rootStores = { ...rootStores, [STORE_USER]: userStore };
   } else {
     throw new Error("Could Not Get Current User");
@@ -58,12 +56,10 @@ configure({
 
   const linkStore = new LinkStore();
   if (links) links.map((link) => linkStore.addLink(link));
-  (window as any).NFYI.linkStore = linkStore;
   rootStores = { ...rootStores, [STORE_LINK]: linkStore };
 
   if (pagesWithfirstPopulated) {
     const pageStore = new PageStore(pagesWithfirstPopulated);
-    (window as any).NFYI.pageStore = pageStore;
     rootStores = { ...rootStores, [STORE_PAGE]: pageStore };    
   } else {
     throw new Error("Could Not Get First Page");    
