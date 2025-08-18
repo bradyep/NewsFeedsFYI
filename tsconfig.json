@@ -29,6 +29,9 @@
         "node_modules",
         "bower_components",
         "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "src/test/**/*",
         "dist",
         "build",
     ]

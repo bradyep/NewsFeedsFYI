@@ -1,15 +1,15 @@
 import * as express from 'express';
 const router = express.Router();
 import * as util from 'util'
-import userFeedsModel = require('server/models/userfeeds-sequelize');
-import cachedNewsItemsModel = require('server/models/cached-newsitems-sequelize');
-import feedSourcesModel = require('server/models/feedsources-sequelize');
+import userFeedsModel = require('server/sequelize/userfeeds-sequelize');
+import cachedNewsItemsModel = require('server/sequelize/cached-newsitems-sequelize');
+import feedSourcesModel = require('server/sequelize/feedsources-sequelize');
 import debug = require('debug');
 const log = debug('nffyi-rest:router-userFeeds');
 const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
 import { UserFeedModel, CachedNewsItemModel } from 'common/models';
-import pagesModel = require('server/models/pages-sequelize');
+import pagesModel = require('server/sequelize/pages-sequelize');
 import { FeedSourceModel } from 'server/models/FeedSourceModel';
 
 /* GET all UserFeeds for requesting User */

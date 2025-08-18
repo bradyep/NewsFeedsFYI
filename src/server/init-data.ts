@@ -1,9 +1,9 @@
 import util = require('util');
-import usersModel = require('./models/users-sequelize');
+import usersModel = require('./sequelize/users-sequelize');
 import { UserModel } from '../common/models';
 
 // May need to set up environment variables
-// $env:SEQUELIZE_CONNECT='models/sequelize-sqlite.yaml'
+// $env:SEQUELIZE_CONNECT='sequelize/sequelize-sqlite.yaml'
 // $env:DEBUG='nffyi-rest:*'
 // $env:PORT='3000'
 // Get-ChildItem env:
