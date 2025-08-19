@@ -36,7 +36,6 @@ router.post('/',
   function (req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
-    // res.redirect('/users/' + req.user.id);
     res.redirect('/users/' + req.user?.userID);
   });
 
@@ -44,33 +43,33 @@ passport.use(new LocalStrategy(
   function (username, password, done) {
     debug('passport used: ' + username + '/' + password);
     usersModel.userPasswordCheck(username, password)
-      .then(check => {
-        if (check.check) {
+      .then(checkReturn => {
+        if (checkReturn.check) {
           debug('******Supplied Credentials are Valid*********');
-          const user: User = { userID: check.userid, username: check.username };
+          const user: User = { userID: checkReturn.userid, username: checkReturn.username };
           done(null, user);
         } else {
-          done(null, false, { message: check.message ?? "Authentication failed" });
+          done(null, false, { message: checkReturn.message ?? "Authentication failed" });
         }
-        return check;
+        return checkReturn;
       })
       .catch(err => done(err));
   }
 ));
 
+/*** Store user object in session */
 passport.serializeUser(function (user, done) {
   debug('serializeUser: ' + util.inspect(user));
   done(null, user);
 });
 
-// passport.deserializeUser(function(id, done) {
+/*** On subsequent requests Passport calls this to reconstruct the user object from the session data by grabbing it from the database */
 passport.deserializeUser(function (user: any, done) {
   debug('deserializeUser: ' + util.inspect(user));
   usersModel.read(user.userID)
-    .then(user => {
-      debug('... found user ' + util.inspect(user));
-      done(null, user);
+    .then(userFromDb => {
+      debug('... found user ' + util.inspect(userFromDb));
+      done(null, userFromDb);
     })
     .catch(err => done(err, user));
 });
-// export var router = express.Router();

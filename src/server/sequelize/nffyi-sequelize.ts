@@ -413,10 +413,10 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
       log('--Creating Initial Data: FeedSource(ESPN)--');
       return models.SQFeedSource.findOrCreate({
         where: {
-          url: 'http://sports-ak.espn.go.com/espn/rss/news', feedSourceID: 3
+          url: 'https://www.espn.com/espn/rss/news', feedSourceID: 3
         },
         defaults: { // set the default properties if it doesn't exist
-          cachedTitle: 'ESPN', url: 'http://sports-ak.espn.go.com/espn/rss/news', cachedWebsiteURL: 'http://www.espn.com/', lastCachedDate: new Date('2017-09-15 16:43:08.669 +00:00')
+          cachedTitle: 'ESPN', url: 'https://www.espn.com/espn/rss/news', cachedWebsiteURL: 'https://www.espn.com/', lastCachedDate: new Date('2025-08-18 16:43:08.669 +00:00')
         }
       })
     })

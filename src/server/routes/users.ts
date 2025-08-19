@@ -8,28 +8,31 @@ const log = debug('nffyi-rest:router-users');
 const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
 import { UserModel, PageModel } from 'common/models';
-import { GUEST_ID, ADMIN_ID } from 'server/constants/users';
+import { DBUsers } from 'common/constants';
 
 /* GET users listing. */
 // router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
 router.get('/', function (req, res, next) {
   // Must be an admin for full User listing, otherwise display User data for requesting User
-
   if (!req.user) {
     // Return guest user
-    usersModel.read(GUEST_ID)
+    usersModel.read(DBUsers.GUEST)
       .then(user => {
         if (!user) next();
         else res.json(user);
       })
       .catch(err => { next(err); });
   } else {
-    if (req.user.userID === ADMIN_ID) {
+    if (req.user.roleID === DBUsers.ADMIN) {
+      // Just treat admin as a normal user for now
+      res.redirect('/users/' + req.user.userID);
+      /*
       getKeyList()
         .then(userlist => {
           res.json(userlist);
         })
         .catch(err => { error('test page ' + err); next(err); });
+        */
     } else {
       // Normal user
       res.redirect('/users/' + req.user.userID);
@@ -91,7 +94,7 @@ router.post('/', function (req, res, next) {
           log('Attempted to create Page: ' + util.inspect(page));
           res.json(user);
         })
-        .catch(err => { 
+        .catch(err => {
           error('Failed to create initial page for user: ' + err);
           res.json(user);
         });

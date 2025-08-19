@@ -1,8 +1,8 @@
 import * as React from "react";
-import { UserFeedModel, PageModel } from "common/models";
-import { Roles, ROLE_DB_NAMES, MAX_NEWS_ITEMS } from "common/constants";
+import { UserFeedModel } from "common/models";
+import { Roles, MAX_NEWS_ITEMS } from "common/constants";
 import { UserStore, PageStore } from "client/stores";
-import { FormGroup, InputGroup, Button, Modal, FormLabel, FormControl, DropdownButton, Dropdown } from "react-bootstrap";
+import { FormGroup, Button, Modal, FormLabel, FormControl, DropdownButton, Dropdown } from "react-bootstrap";
 import { observer } from 'mobx-react';
 import { REST_DOMAIN } from 'client/constants/network';
 import debug from 'debug';

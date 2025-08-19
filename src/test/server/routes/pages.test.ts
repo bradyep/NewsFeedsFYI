@@ -2,6 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import pagesRouter from '../../../server/routes/pages';
 import { PageModel } from '../../../common/models';
+import { Roles } from '../../../common/constants';
 
 // Mock the database models
 jest.mock('../../../server/sequelize/pages-sequelize');
@@ -73,6 +74,30 @@ describe('Pages API Routes', () => {
         .expect(200);
 
       expect(mockPagesModel.keylist).toHaveBeenCalledWith(1); // Default to userID 1 for guests
+    });
+
+    it('should return pages for guest user when called by an admin user', async () => {
+      // Override the middleware for this test
+      const guestApp = express();
+      guestApp.use(express.json());
+      guestApp.use((req, res, next) => {
+        req.user = { userID: 2, roleID: Roles.ADMIN }; // Admin user
+        next();
+      });
+      guestApp.use('/pages', pagesRouter);
+
+      const mockPages = [
+        { pageID: 1, name: 'Guest Page', displayOrder: 1, userID: 1 }
+      ];
+
+      mockPagesModel.keylist.mockResolvedValue([1]);
+      mockPagesModel.read.mockResolvedValue(mockPages[0]);
+
+      const response = await request(guestApp)
+        .get('/pages')
+        .expect(200);
+
+      expect(mockPagesModel.keylist).toHaveBeenCalledWith(1); // Default to userID 1 for admin
     });
 
     it('should handle errors when fetching pages', async () => {
