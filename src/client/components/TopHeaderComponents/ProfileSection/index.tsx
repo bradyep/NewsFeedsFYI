@@ -105,8 +105,7 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
       });
 
       const userData: UserModel = await authenticationResponse.json();
-      log("Authentication Attempt Returned: ");
-      log(userData);
+      log("Authentication Attempt Returned: ", userData);
       this.props.changeCurrentUser();
       this.close();
       this.setState({ errorAuthenticating: false });
