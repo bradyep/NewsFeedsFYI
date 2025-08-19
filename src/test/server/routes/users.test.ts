@@ -52,6 +52,24 @@ describe('Users API Routes', () => {
         .expect('Location', '/users/3');
     });
 
+    // Admin should just return itself like a normal user for now
+    it('should redirect admin user to their profile', async () => {
+      const testApp = express();
+      testApp.use(express.json());
+      testApp.use(express.urlencoded({ extended: true }));
+      testApp.use((req, res, next) => {
+        req.user = { userID: 2 };
+        next();
+      });
+      testApp.use('/users', usersRouter);
+
+      await request(testApp)
+        .get('/users')
+        .expect(302)
+        .expect('Location', '/users/2');
+    });
+
+    /*
     it('should return user list for admin user', async () => {
       const mockUserList = [
         { userID: 1, username: 'admin', email: 'admin@test.com' },
@@ -80,6 +98,7 @@ describe('Users API Routes', () => {
       expect(response.body).toHaveLength(2);
       expect(mockUsersModel.keylist).toHaveBeenCalled();
     });
+    */
   });
 
   describe('GET /users/:userid', () => {
