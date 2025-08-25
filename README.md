@@ -2,16 +2,14 @@
 
 newsfeeds.fyi - All Your News, at a Glance!
 
-## Deployment
+## Production Deployment
 
-1. `npm run build-server`
-2. `npm run buildclient`
-3. Put together the new container with `docker build -t bradyep/nffyi .`
-4. Push the new container to docker hub with: `docker push bradyep/nffyi`
-5. Log on to the remove server: `ssh bradyep@66.228.49.247`
-6. Get the newly updated image: `sudo docker pull bradyep/nffyi`
-7. Stop the currently running nffyi container: `sudo docker stop [pid]`
-8. Start up the the new container: `sudo docker run -d -p 127.0.0.1:3000:3000 -it --mount source=nffyi-data,target=/var/lib/nffyi-data bradyep/nffyi`
+1. Put together the new container with `docker build -t bradyep/nffyi .`
+2. Push the new container to docker hub with: `docker push bradyep/nffyi`
+3. Log on to the remove server: `ssh bradyep@66.228.49.247`
+4. Get the newly updated image: `sudo docker pull bradyep/nffyi`
+5. Stop the currently running nffyi container: `sudo docker stop [pid]`
+6. Start up the the new container: `sudo docker run -d -p 127.0.0.1:3000:3000 -it --mount source=nffyi-data,target=/var/lib/nffyi-data bradyep/nffyi`
 
 ## Environmental Variables
 
