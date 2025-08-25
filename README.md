@@ -7,9 +7,11 @@ newsfeeds.fyi - All Your News, at a Glance!
 1. Put together the new container with `docker build -t bradyep/nffyi .`
 2. Push the new container to docker hub with: `docker push bradyep/nffyi`
 3. Log on to the remove server: `ssh bradyep@66.228.49.247`
-4. Get the newly updated image: `sudo docker pull bradyep/nffyi`
-5. Stop the currently running nffyi container: `sudo docker stop [pid]`
-6. Start up the the new container: `sudo docker run -d -p 127.0.0.1:3000:3000 -it --mount source=nffyi-data,target=/var/lib/nffyi-data bradyep/nffyi`
+4. Stop the currently running nffyi container: `sudo docker stop [id]`
+5. Remove the old docker container: `sudo docker rm [id]`
+6. Remove the old docker image to save space: `sudo docker rmi [id]`
+7. Get the newly updated image: `sudo docker pull bradyep/nffyi`
+8. Start up the the new container: `sudo docker run -d -p 127.0.0.1:3000:3000 -it --mount source=nffyi-data,target=/var/lib/nffyi-data bradyep/nffyi`
 
 ## Environmental Variables
 
@@ -19,8 +21,9 @@ newsfeeds.fyi - All Your News, at a Glance!
 
 ## Server
 
-* The data directory in the docker image is /var/lib/nffyi-data
 * The transpiled entry point is `dist/server/server.js`
+* The data directory on the doker host is: `/var/lib/docker/volumes/nffyi-data`
+* The data directory in the docker image is `/var/lib/nffyi-data`
 
 ## Client
 
