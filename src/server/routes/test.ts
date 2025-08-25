@@ -4,7 +4,7 @@
 // var express = require('express');
 import express = require("express");
 var router = express.Router();
-import usersModel = require('../models/users-sequelize');
+import usersModel = require('../sequelize/users-sequelize');
 import logModule = require('debug');
   const log = logModule('nffyi-rest:router-test');
 import errorModule = require('debug');

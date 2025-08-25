@@ -16,6 +16,7 @@ export class PageModel {
         this.displayOrder = displayOrder;
         this.userID = userID;
         this.pageID = pageID;
+        this.userFeeds = []; // Initialize empty array
     }
 
     @action

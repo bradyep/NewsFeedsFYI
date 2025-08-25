@@ -18,7 +18,7 @@ RUN NODE_ENV=production npm run build:prod
 FROM node:18-slim
 
 # Set environment values
-ENV SEQUELIZE_CONNECT="src/server/models/sequelize-sqlite-docker.yaml"
+ENV SEQUELIZE_CONNECT="src/server/sequelize/sequelize-sqlite-docker.yaml"
 ENV DEBUG="nffyi-rest:*"
 ENV PORT="3000"
 ENV NODE_ENV="production"
@@ -36,7 +36,7 @@ RUN npm install --omit=dev
 # Copy built application from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist
 # Copy production-necessary files
-COPY --from=builder /usr/src/app/src/server/models/sequelize-sqlite-docker.yaml ./src/server/models/sequelize-sqlite-docker.yaml
+COPY --from=builder /usr/src/app/src/server/sequelize/sequelize-sqlite-docker.yaml ./src/server/sequelize/sequelize-sqlite-docker.yaml
 
 # Expose the port the app runs on
 EXPOSE 3000

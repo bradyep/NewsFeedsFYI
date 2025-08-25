@@ -1,16 +1,17 @@
 import express = require("express");
 var router = express.Router();
 import util = require('util');
-import pagesModel = require('../models/pages-sequelize');
+import pagesModel = require('../sequelize/pages-sequelize');
 import debug = require('debug');
 const log = debug('nffyi-rest:router-pages');
 const error = debug('nffyi-rest:error');
 import authRouter = require('./authenticate');
 import { PageModel, UserModel } from '../../common/models';
+import { DBUsers, Roles } from "common/constants";
 
-/* GET all Pages for requesting User */
+/* GET all Pages for requesting User. Admins (Roles.ADMIN) get Guest (DBUsers.GUEST) Pages. */
 router.get('/', function(req, res, next) {
-  let userID: number = req.user ? req.user.userID : 1;
+  let userID: number = req.user && req.user.roleID !== Roles.ADMIN ? req.user.userID : DBUsers.GUEST;
   getKeyList(userID)
   .then(pageList => {
       res.json(pageList);

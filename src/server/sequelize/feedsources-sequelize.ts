@@ -2,7 +2,7 @@ import debug = require('debug');
 const log = debug('nffyi-rest:feedSources-model');
 const error = debug('nffyi-rest:error');
 import modelDef = require('./nffyi-sequelize');
-import { FeedSourceModel } from './FeedSourceModel';
+import { FeedSourceModel } from '../models/FeedSourceModel';
 
 // TODO: See if the sequelize stuff can be typed instead of using 'any'
 

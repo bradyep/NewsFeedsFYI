@@ -8,7 +8,7 @@ i {
 }
 
 .profileSection {
-  cursor: pointer;
+  text-align: right;
 }
 
 /* .popover { */
@@ -21,4 +21,9 @@ i {
 
 .sign-in-text {
   margin-bottom: 0.3rem;
+}
+
+.sign-up-button {
+  margin-left: 1rem;
+  margin-top: 0.2rem;
 }

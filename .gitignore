@@ -1,7 +1,5 @@
 node_modules
-bower_components
 logs*
-.vscode
 .DS_STORE
 .module-cache
 *.log*
@@ -12,3 +10,17 @@ dist
 public
 public/main.bundle.js
 cookies.txt
+
+# Test artifacts and coverage
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Test databases
+*.test.db
+*.test.sqlite
+*.test.sqlite3
+
+# Jest cache
+.jest/

@@ -11,6 +11,7 @@ declare namespace Express {
     user?: { // Or your specific User type
       userID: number; // Or number, depending on your userID type
       // Other user properties if applicable
+      roleID?: number;
     };
   }
 }

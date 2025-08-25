@@ -6,7 +6,6 @@ export class LinkStore {
   public links: Array<LinkModel>;
 
   constructor(fixtures?: LinkModel[]) {
-    // Make properties observable using makeObservable for MobX v6+
     makeObservable(this, {
       links: observable,
       addLink: action,
