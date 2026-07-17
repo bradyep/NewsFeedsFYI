@@ -50,7 +50,7 @@ npm run startclient:debug-layout
 
 # Technical Overview
 
-Built on TypeScript using node on the backend and react on the frontend. Easily deployable using Docker.
+Built on TypeScript using node on the backend and react on the frontend with MobX for state management. Currently using sqlite as the database. Easily deployable using Docker. Module bundling via webpack. Tests handled by Jest. CSS modules via PostCSS. 
 
 ## Source Code Organization
 
@@ -93,7 +93,26 @@ See the [testing documentation](docs/testing.md) for an overview on the testing 
 
 You can enable all of this application's logs by typing this in the browser's console: `localStorage.debug = 'webapp:*'`
 
+## Key Dependencies
+
+* Express
+* Bootstrap
+* Feedparser
+* MobX
+* React
+* Sequelize
+
 # Future Plans
 
+* Upgrade to TypeScript 7
 * newsfeeds.fyi app available on mobile platforms
 * Additional sources of news: Discord, screen scraping, email, etc.
+* PostgreSQL as the database instead of sqlite
+* Linting/style guides for source code
+* Redux Toolkit instead of MobX for state management
+* OpenAPI/Swagger page
+
+# Known Issues
+
+* Needs better logging and error handling
+* Header does not scroll correctly on mobile devices and can overlap newsfeeds
