@@ -1,6 +1,60 @@
 # General
 
-newsfeeds.fyi - All Your News, at a Glance!
+newsfeeds.fyi is a web-based, flexible, easily customizable, open source, news aggregation platform. Stay up to date on everything that interests you by having it in one place. Organize your information however you see fit. Currently supports RSS feeds with the intention of adding screen scraping and additional news source types later.
+
+## Setup
+
+```bash
+git clone https://github.com/bradyep/NewsFeedsFYI.git
+npm install
+```
+
+## Building
+
+#### Build everything
+
+```bash
+npm run build
+```
+
+### Server
+
+```bash
+npm run build-server
+```
+
+### Client
+
+```bash
+npm run buildclient
+npm run build:prod
+```
+
+## Running
+
+### Server
+
+```bash
+npm run startbackend
+npm run startbackendwindows
+npm run startbackendwindowsdebug
+```
+
+### Client
+
+```bash
+npm run startclient
+npm run startclient:debug-layout
+```
+
+
+# Technical Overview
+
+Built on TypeScript using node on the backend and react on the frontend. Easily deployable using Docker.
+
+## Source Code Organization
+
+Source code is broken up by server, client and common (used by both server and client) in the `src` folder. 
 
 ## Production Deployment
 
@@ -12,6 +66,10 @@ newsfeeds.fyi - All Your News, at a Glance!
 6. Remove the old docker image to save space: `sudo docker rmi [id]`
 7. Get the newly updated image: `sudo docker pull bradyep/nffyi`
 8. Start up the the new container: `sudo docker run -d -p 127.0.0.1:3000:3000 -it --mount source=nffyi-data,target=/var/lib/nffyi-data bradyep/nffyi`
+
+## Tests
+
+See the [testing documentation](docs/testing.md) for an overview on the testing setup. 
 
 ## Environmental Variables
 
@@ -34,3 +92,8 @@ newsfeeds.fyi - All Your News, at a Glance!
 ## Logging
 
 You can enable all of this application's logs by typing this in the browser's console: `localStorage.debug = 'webapp:*'`
+
+# Future Plans
+
+* newsfeeds.fyi app available on mobile platforms
+* Additional sources of news: Discord, screen scraping, email, etc.
