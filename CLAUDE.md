@@ -69,9 +69,6 @@ React app rooted at `src/client/containers/Root` → `NewsFeedsFYIApp`, composed
 
 CSS is per-component via CSS Modules (`styles.css` next to each component's `index.tsx`), bundled by webpack with `postcss-loader`.
 
-### Duplicate `.js`/`.js.map` files under `src/`
-Many directories under `src/` (e.g. `src/common/models/*.js`, `src/server/**/*.js.map`) contain compiled JS/sourcemaps checked in alongside the `.ts` sources — leftovers from a prior build configuration. Always edit the `.ts` source files; ignore the `.js`/`.js.map` siblings.
-
 ## Deployment
 
 Dockerized: `docker build -t bradyep/nffyi .` then push to Docker Hub, pull and run on the remote host, mounting a persistent volume at `/var/lib/nffyi-data` (host: `/var/lib/docker/volumes/nffyi-data`). See README.md for the full step-by-step production deploy sequence — it involves manually stopping/removing the old container on the remote server, so don't run any of those steps without explicit confirmation.
