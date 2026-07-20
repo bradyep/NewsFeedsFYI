@@ -55,14 +55,13 @@ npm run startclient
 npm run startclient:debug-layout
 ```
 
-
 # Technical Overview
 
 Built on TypeScript using node on the backend and react on the frontend with MobX for state management. Currently using sqlite as the database. Easily deployable using Docker. Module bundling via webpack. Tests handled by Jest. CSS modules via PostCSS. 
 
 ## Source Code Organization
 
-Source code is broken up by server, client and common (used by both server and client) in the `src` folder. 
+Source code is broken up by server, client and common (used by both server and client) in the `src` folder. Assets such as fonts and images that get bundled and sent out with the app can be found at `src/assets`.
 
 ### Server
 

@@ -42,8 +42,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-// Serve static files from the public directory (legacy assets)
-app.use(express.static(path.join(__dirname, '../../public')));
 
 // Serve built client files from dist directory (for production)
 app.use(express.static(path.join(__dirname, '../')));
