@@ -8,7 +8,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:prod",
     "build-server": "tsc -p tsconfig.server.json",
     "startbackend": "node dist/server/server.js",
     "startbackendwindows": "set SEQUELIZE_CONNECT=src/server/sequelize/sequelize-sqlite.yaml&& node dist/server/server.js",
@@ -40,7 +40,7 @@
     "start",
     "page"
   ],
-  "author": "Syntonic Studios",
+  "author": "Brady Prigge/Syntonic Studios",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/bradyep/NewsFeedsFYI/issues"
