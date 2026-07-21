@@ -2,7 +2,7 @@
     "compilerOptions": {
         "skipLibCheck": true,
         "module": "commonjs",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "sourceMap": true,
         "allowJs": false,
         "target": "es2015",
@@ -14,7 +14,12 @@
         "esModuleInterop": true,
         "useDefineForClassFields": true,
         "jsx": "react",
-        "baseUrl": "src",
+        "paths": {
+            "common/*": ["./src/common/*"],
+            "server/*": ["./src/server/*"],
+            "client/*": ["./src/client/*"]
+        },
+        "types": ["node"],
         "outDir": "build",
         "lib": [
           "es6",

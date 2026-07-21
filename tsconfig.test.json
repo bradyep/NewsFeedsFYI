@@ -1,11 +1,10 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "baseUrl": "src",
         "paths": {
-            "client/*": ["client/*"],
-            "common/*": ["common/*"],
-            "server/*": ["server/*"]
+            "client/*": ["./src/client/*"],
+            "common/*": ["./src/common/*"],
+            "server/*": ["./src/server/*"]
         },
         "types": ["jest", "@types/testing-library__jest-dom", "node"],
         "typeRoots": ["./types", "./node_modules/@types"],

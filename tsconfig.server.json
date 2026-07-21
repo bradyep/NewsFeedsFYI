@@ -2,7 +2,7 @@
     "compilerOptions": {
         "skipLibCheck": true,
         "module": "commonjs",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "sourceMap": true,
         "allowJs": true,
         "target": "es2015",
@@ -12,17 +12,18 @@
         "noImplicitReturns": true,
         "removeComments": true,
         "esModuleInterop": true,
-        "baseUrl": ".",
+        "rootDir": "src",
         "outDir": "dist",
         "paths": {
-            "common/*": ["src/common/*"],
-            "server/*": ["src/server/*"],
-            "client/*": ["src/client/*"]
+            "common/*": ["./src/common/*"],
+            "server/*": ["./src/server/*"],
+            "client/*": ["./src/client/*"]
         },
         "typeRoots": [
             "./node_modules/@types",
             "./types"
         ],
+        "types": ["node"],
         "lib": [
           "es6",
           "es7"
