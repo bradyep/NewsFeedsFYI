@@ -22,6 +22,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
+    "test:e2e:smoke": "powershell -ExecutionPolicy Bypass -File scripts/e2e-smoke.ps1",
     "test:all": "npm run test && npm run test:e2e",
     "docker": "node ./bin/www",
     "startclient": "webpack serve --mode development --history-api-fallback --progress --port 3030 --open",
