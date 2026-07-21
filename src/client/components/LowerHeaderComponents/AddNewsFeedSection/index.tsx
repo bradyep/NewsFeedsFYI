@@ -22,8 +22,7 @@ export interface AddNewsFeedSectionState {
   errorCreatingNewFeed: boolean
 }
 
-@observer
-export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNewsFeedSectionState> {
+class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNewsFeedSectionState> {
 
   constructor(props: AddNewsFeedSectionProps) {
     super(props);
@@ -283,4 +282,6 @@ export class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps,
   }
 }
 
-export default AddNewsFeedSection;
+const ObservedAddNewsFeedSection = observer(AddNewsFeedSection);
+export { ObservedAddNewsFeedSection as AddNewsFeedSection };
+export default ObservedAddNewsFeedSection;

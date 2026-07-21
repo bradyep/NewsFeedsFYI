@@ -32,7 +32,7 @@ describe('UserFeedModel', () => {
       expect(userFeed.feedSourceID).toBe(456);
       expect(userFeed.userFeedID).toBe(789);
       expect(userFeed.titleURL).toBe('http://title.com');
-      expect(userFeed.newsItems).toBe(newsItems);
+      expect(userFeed.newsItems).toEqual(newsItems);
     });
 
     it('should handle undefined titleURL', () => {

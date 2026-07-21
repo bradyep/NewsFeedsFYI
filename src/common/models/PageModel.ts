@@ -1,15 +1,15 @@
 import debug from 'debug';
 const log = debug('common:Page');
 const error = debug('common:error');
-import { observable, action } from 'mobx';
+import { observable, action, makeObservable } from 'mobx';
 import { UserFeedModel } from './';
 
 export class PageModel {
     pageID: number | undefined; // PK
     userID: number; // FK
-    @observable public name: string;
-    @observable public displayOrder: number;
-    @observable public userFeeds: UserFeedModel[];
+    public name: string;
+    public displayOrder: number;
+    public userFeeds: UserFeedModel[];
 
     constructor(name: string, displayOrder: number, userID: number, pageID?: number) {
         this.name = name;
@@ -17,9 +17,15 @@ export class PageModel {
         this.userID = userID;
         this.pageID = pageID;
         this.userFeeds = []; // Initialize empty array
+
+        makeObservable(this, {
+            name: observable,
+            displayOrder: observable,
+            userFeeds: observable,
+            addUserFeed: action
+        });
     }
 
-    @action
     addUserFeed(userFeed: UserFeedModel): void {
       this.userFeeds.push(userFeed);
     }

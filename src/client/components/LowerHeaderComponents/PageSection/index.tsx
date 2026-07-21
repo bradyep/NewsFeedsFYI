@@ -17,8 +17,7 @@ export interface PageSectionProps {
 
 export interface PageSectionState { }
 
-@observer
-export class PageSection extends React.Component<PageSectionProps, PageSectionState> {
+class PageSection extends React.Component<PageSectionProps, PageSectionState> {
   constructor(props: PageSectionProps) {
     super(props);
     this.handleSelectPage = this.handleSelectPage.bind(this);
@@ -65,4 +64,6 @@ export class PageSection extends React.Component<PageSectionProps, PageSectionSt
   }
 }
 
-export default PageSection;
+const ObservedPageSection = observer(PageSection);
+export { ObservedPageSection as PageSection };
+export default ObservedPageSection;

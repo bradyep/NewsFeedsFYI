@@ -7,8 +7,6 @@
         "allowJs": false,
         "target": "es2015",
         "alwaysStrict": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "declaration": false,
         "noImplicitAny": true,
         "noImplicitReturns": true,

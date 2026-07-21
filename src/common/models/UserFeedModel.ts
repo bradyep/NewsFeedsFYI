@@ -1,7 +1,7 @@
 import debug from 'debug';
 const log = debug('common:UserFeed');
 const error = debug('common:error');
-import { observable } from 'mobx';
+import { observable, makeObservable } from 'mobx';
 import { CachedNewsItemModel } from './';
 import { NUMBER_OF_COLUMNS } from 'common/constants/newsfeeds';
 
@@ -13,15 +13,14 @@ interface ColumnDescriptor {
 export class UserFeedModel {
     readonly userFeedID?: number; // PK
     readonly feedSourceID?: number; // FK
-    @observable public pageID?: number; // FK
-    @observable public column: number;
-    @observable public row: number;
-    @observable public name: string;
-    @observable public itemDisplayCount: number;
-    
-    @observable public titleURL: string;
+    public pageID?: number; // FK
+    public column: number;
+    public row: number;
+    public name: string;
+    public itemDisplayCount: number;
 
-    @observable
+    public titleURL: string;
+
     public newsItems: Array<CachedNewsItemModel>;
 
     constructor(column: number, row: number, name: string, itemDisplayCount: number, pageID?: number, feedSourceID?: number, titleURL?: string, newsItems?: CachedNewsItemModel[], userFeedID?: number) {
@@ -35,6 +34,16 @@ export class UserFeedModel {
 
         this.newsItems = newsItems || [];
         this.titleURL = titleURL || "";
+
+        makeObservable(this, {
+            pageID: observable,
+            column: observable,
+            row: observable,
+            name: observable,
+            itemDisplayCount: observable,
+            titleURL: observable,
+            newsItems: observable
+        });
     }
     
     get JSON() {

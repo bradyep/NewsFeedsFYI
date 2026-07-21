@@ -1,18 +1,22 @@
 import debug from 'debug';
 const log = debug('common:Link');
-import { observable } from 'mobx';
+import { observable, makeObservable } from 'mobx';
 
 export class LinkModel {
-    @observable public displayOrder: number;
+    public displayOrder: number;
 
     constructor(
-        public url: string, 
-        public name: string, 
-        displayOrder: number, 
+        public url: string,
+        public name: string,
+        displayOrder: number,
         public linkID?: number,  // PK
         public userID?: number // FK
     ) {
         this.displayOrder = displayOrder;
+
+        makeObservable(this, {
+            displayOrder: observable
+        });
     }
     
     get JSON() {
