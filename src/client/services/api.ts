@@ -12,7 +12,7 @@ export async function getCurrentUser(url: string): Promise<UserModel | undefined
 
     return userData;
   } catch (err) {
-    error("Problem Getting current User: " + err.toString());
+    error("Problem Getting current User: " + err);
     return undefined;
   }
 }
@@ -26,7 +26,7 @@ export async function getLinks(url: string): Promise<LinkModel[] | undefined> {
 
     return linksData;
   } catch (err) {
-    error("Problem Getting Links: " + err.toString());
+    error("Problem Getting Links: " + err);
     return undefined;
   }
 }
@@ -49,7 +49,7 @@ export async function getUsersPagesWithFirstPopulated(pagesURL: string, pageURL:
 
     return pagesData;
   } catch (err) {
-    error("Problem Getting First Page: " + err.toString());
+    error("Problem Getting First Page: " + err);
     return undefined;
   }
 }
@@ -63,7 +63,7 @@ export async function getUserPageFeeds(pageURL: string, pageId: number): Promise
 
     return userFeedsData;
   } catch (err) {
-    error(`Problem Getting UserFeeds for PageId : ${pageId} | ` + err.toString());
+    error(`Problem Getting UserFeeds for PageId : ${pageId} | ` + err);
     return [];
   }
 }

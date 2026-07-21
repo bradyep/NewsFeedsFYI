@@ -104,7 +104,7 @@ export class PageStore {
       // page.addUserFeed(userFeed);
       page.userFeeds.push(userFeed);
     } catch (err) {
-      throw new Error('Error calling PageStore.addUserFeed: ' + err.toString());
+      throw new Error('Error calling PageStore.addUserFeed: ' + err);
     }
   }
 

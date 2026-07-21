@@ -57,7 +57,7 @@ class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYI
     try {
       [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
     } catch (err) {
-      error("Problem Getting Data For Stores For User Change: " + err.toString());
+      error("Problem Getting Data For Stores For User Change: " + err);
     }
 
     if (currentUser) {

@@ -12,8 +12,8 @@ export class UserStore {
       currentUser: observable,
       changeCurrentUser: action
     });
-    
-    if (user) this.currentUser = user;
+
+    this.currentUser = user;
   }
 
   changeCurrentUser(user:UserModel): void {

@@ -99,7 +99,7 @@ class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNew
       this.closeModal();
       log('Done Creating new UserFeed');
     } catch (err) {
-      error("Error while trying add feed: " + err.toString());
+      error("Error while trying add feed: " + err);
       this.setState({ errorCreatingNewFeed: true });
       throw new Error('--Error while trying add feed--');
     }
@@ -107,7 +107,7 @@ class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNew
     try {
       pageStore.addUserFeed(pageIDToUse, userFeedModel);
     } catch (err) {
-      error("[webpack error we may be able to ignore] Error while trying add feed to pageStore: " + err.toString());
+      error("[webpack error we may be able to ignore] Error while trying add feed to pageStore: " + err);
     }
 
     this.setState({ errorCreatingNewFeed: false });
@@ -153,7 +153,7 @@ class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNew
 
       this.closeModal();
     } catch (err) {
-      error("Error while trying update feed: " + err.toString());
+      error("Error while trying update feed: " + err);
       this.setState({ errorCreatingNewFeed: true });
       throw new Error('--Error while trying update feed--');
     }
@@ -190,7 +190,7 @@ class AddNewsFeedSection extends React.Component<AddNewsFeedSectionProps, AddNew
       pageStore.deleteUserFeed(userFeedID);
       this.closeModal();
     } catch (err) {
-      error("Error while trying delete feed: " + err.toString());
+      error("Error while trying delete feed: " + err);
       this.setState({ errorCreatingNewFeed: true });
       throw new Error('--Error while trying delete feed--');
     }

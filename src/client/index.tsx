@@ -42,7 +42,7 @@ configure({
     log("Attempting to get current User");
     [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
   } catch (err) {
-    error("Problem Getting Data For Stores: " + err.toString());
+    error("Problem Getting Data For Stores: " + err);
   }
 
   let rootStores = { };
