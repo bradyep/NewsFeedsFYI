@@ -28,9 +28,7 @@ interface InjectedProps extends NewsFeedsFYIAppProps {
 
 export interface NewsFeedsFYIAppState { }
 
-@inject(STORE_USER, STORE_LINK, STORE_PAGE)
-@observer
-export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYIAppState> {
+class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsFeedsFYIAppState> {
 
   constructor(props: NewsFeedsFYIAppProps) {
     super(props);
@@ -59,7 +57,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     try {
       [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
     } catch (err) {
-      error("Problem Getting Data For Stores For User Change: " + err.toString());
+      error("Problem Getting Data For Stores For User Change: " + err);
     }
 
     if (currentUser) {
@@ -119,3 +117,7 @@ export class NewsFeedsFYIApp extends React.Component<NewsFeedsFYIAppProps, NewsF
     );
   }
 };
+
+const WrappedNewsFeedsFYIApp = inject(STORE_USER, STORE_LINK, STORE_PAGE)(observer(NewsFeedsFYIApp));
+export { WrappedNewsFeedsFYIApp as NewsFeedsFYIApp };
+export default WrappedNewsFeedsFYIApp;

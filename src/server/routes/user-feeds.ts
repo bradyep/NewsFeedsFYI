@@ -217,7 +217,7 @@ async function createFeedSource(url: string): Promise<number> {
     }
     return newFeedSourceModel.feedSourceID;
   } catch (err) {
-    error('[user-feeds.findFeedSourceID] Problem creating new FeedSourceModel: ' + err.toString());
+    error('[user-feeds.findFeedSourceID] Problem creating new FeedSourceModel: ' + err);
 
     return 0;
   }
@@ -235,7 +235,7 @@ async function findFeedSourceID(url: string): Promise<number> {
       return existingFeedSourceModel.feedSourceID ?? 0;
     }
   } catch (err) {
-    error('[user-feeds.findFeedSourceID] Problem getting existing FeedSourceModel: ' + err.toString());
+    error('[user-feeds.findFeedSourceID] Problem getting existing FeedSourceModel: ' + err);
   }
 
   return await createFeedSource(url);

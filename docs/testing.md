@@ -70,6 +70,12 @@ npx playwright test --list
 
 **Note**: E2E tests are completely separate from Jest. They require your client application to be running on `localhost:3030`. Start your client with `npm run startclient` before running E2E tests.
 
+#### One-command smoke test
+```bash
+npm run test:e2e:smoke
+```
+Runs `scripts/e2e-smoke.ps1`, which builds the app, starts the backend, runs the Playwright suite (Playwright's own `webServer` config starts/stops the client dev server), then stops the backend and prints the result and HTML report path. Useful as a quick end-to-end smoke check without manually juggling servers.
+
 ### Run All Tests
 ```bash
 npm run test:all  # Runs both Jest and Playwright

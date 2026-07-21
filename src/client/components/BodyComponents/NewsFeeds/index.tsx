@@ -14,8 +14,7 @@ export interface NewsFeedsProps {
 
 export interface NewsFeedsState { }
 
-@observer
-export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
+class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
 
   renderNewsFeed(userFeedModel: UserFeedModel, key: number) {
     const { userStore } = this.props;
@@ -86,4 +85,6 @@ export class NewsFeeds extends React.Component<NewsFeedsProps, NewsFeedsState> {
   }
 }
 
-export default NewsFeeds;
+const ObservedNewsFeeds = observer(NewsFeeds);
+export { ObservedNewsFeeds as NewsFeeds };
+export default ObservedNewsFeeds;

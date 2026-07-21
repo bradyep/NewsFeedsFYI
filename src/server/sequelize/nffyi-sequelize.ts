@@ -39,8 +39,8 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
       else resolve(data);
     });
   })
-    .then((yamltext: string) => {
-      return jsyaml.load(yamltext);
+    .then((yamltext) => {
+      return jsyaml.load(yamltext as string);
     })
     .then((params: any) => {
       sequelize = new Sequelize(params.dbname, params.username, params.password, params.params);

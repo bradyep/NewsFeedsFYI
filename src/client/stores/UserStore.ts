@@ -12,15 +12,9 @@ export class UserStore {
       currentUser: observable,
       changeCurrentUser: action
     });
-    
-    if (user) this.currentUser = user;
-  }
 
-  // All Users, Not Implemented Yet
-/* 
-  @observable
-  public users: Array<UserModel>;
- */
+    this.currentUser = user;
+  }
 
   changeCurrentUser(user:UserModel): void {
     log('UserStore.changeCurrentUser called with:', user);

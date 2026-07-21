@@ -25,8 +25,7 @@ export interface ProfileSectionState {
   isSignUp: boolean
 }
 
-@observer
-export class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
+class ProfileSection extends React.Component<ProfileSectionProps, ProfileSectionState> {
 
   constructor(props: ProfileSectionProps) {
     super(props);
@@ -255,4 +254,6 @@ export class ProfileSection extends React.Component<ProfileSectionProps, Profile
   }
 }
 
-export default ProfileSection;
+const ObservedProfileSection = observer(ProfileSection);
+export { ObservedProfileSection as ProfileSection };
+export default ObservedProfileSection;

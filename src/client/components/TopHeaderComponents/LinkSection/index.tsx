@@ -12,8 +12,7 @@ export interface LinkSectionProps {
 
 export interface LinkSectionState { }
 
-@observer
-export class LinkSection extends React.Component<LinkSectionProps, LinkSectionState> {
+class LinkSection extends React.Component<LinkSectionProps, LinkSectionState> {
 
   constructor(props: LinkSectionProps) {
     super(props);
@@ -46,4 +45,6 @@ export class LinkSection extends React.Component<LinkSectionProps, LinkSectionSt
   }
 }
 
-export default LinkSection;
+const ObservedLinkSection = observer(LinkSection);
+export { ObservedLinkSection as LinkSection };
+export default ObservedLinkSection;
