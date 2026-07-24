@@ -1,7 +1,9 @@
 import request from 'supertest';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import linksRouter from '../../../server/routes/links';
 import { Roles, DBUsers } from '../../../common/constants';
+import { makeAuthCookie } from '../helpers/auth';
 
 // Mock the database models
 jest.mock('../../../server/sequelize/links-sequelize');
@@ -15,6 +17,7 @@ describe('Links API Routes', () => {
     app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
     app.use('/links', linksRouter);
 
     // Reset all mocks
@@ -102,15 +105,6 @@ describe('Links API Routes', () => {
 
   describe('PUT /links/:linkid', () => {
     it('should update link if user owns it', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 3, roleID: Roles.USER };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const updatedLink = {
         url: 'http://updated.com',
         name: 'Updated Link',
@@ -128,8 +122,9 @@ describe('Links API Routes', () => {
         userID: 3
       };
 
-      const response = await request(testApp)
+      const response = await request(app)
         .put('/links/1')
+        .set('Cookie', [makeAuthCookie({ userID: 3, username: 'owner', roleID: Roles.USER })])
         .send(updateData)
         .expect(200);
 
@@ -146,15 +141,6 @@ describe('Links API Routes', () => {
     });
 
     it('should update link if user is admin', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 2, roleID: Roles.ADMIN };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const updatedLink = {
         url: 'http://updated.com',
         name: 'Updated Link',
@@ -172,8 +158,9 @@ describe('Links API Routes', () => {
         userID: 3
       };
 
-      const response = await request(testApp)
+      const response = await request(app)
         .put('/links/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
         .send(updateData)
         .expect(200);
 
@@ -181,15 +168,6 @@ describe('Links API Routes', () => {
     });
 
     it('should return 403 if user does not own link and is not admin', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 4, roleID: Roles.USER };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const updateData = {
         url: 'http://updated.com',
         name: 'Updated Link',
@@ -197,24 +175,23 @@ describe('Links API Routes', () => {
         userID: 3
       };
 
-      await request(testApp)
+      await request(app)
         .put('/links/1')
+        .set('Cookie', [makeAuthCookie({ userID: 4, username: 'other', roleID: Roles.USER })])
         .send(updateData)
         .expect(403);
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .put('/links/1')
+        .send({ url: 'http://updated.com', name: 'x', displayOrder: 1, userID: 3 })
+        .expect(401);
     });
   });
 
   describe('POST /links', () => {
     it('should create link for authorized user', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 3, roleID: Roles.USER };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const newLink = {
         url: 'http://new.com',
         name: 'New Link',
@@ -232,8 +209,9 @@ describe('Links API Routes', () => {
         userID: 3
       };
 
-      const response = await request(testApp)
+      const response = await request(app)
         .post('/links')
+        .set('Cookie', [makeAuthCookie({ userID: 3, username: 'owner', roleID: Roles.USER })])
         .send(createData)
         .expect(200);
 
@@ -249,15 +227,6 @@ describe('Links API Routes', () => {
     });
 
     it('should allow admin to create link for other user', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 2, roleID: Roles.ADMIN };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const newLink = {
         url: 'http://new.com',
         name: 'New Link',
@@ -275,8 +244,9 @@ describe('Links API Routes', () => {
         userID: 3
       };
 
-      const response = await request(testApp)
+      const response = await request(app)
         .post('/links')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
         .send(createData)
         .expect(200);
 
@@ -284,15 +254,6 @@ describe('Links API Routes', () => {
     });
 
     it('should return 403 if user tries to create link for another user', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 4, roleID: Roles.USER };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const createData = {
         url: 'http://new.com',
         name: 'New Link',
@@ -300,8 +261,9 @@ describe('Links API Routes', () => {
         userID: 3
       };
 
-      await request(testApp)
+      await request(app)
         .post('/links')
+        .set('Cookie', [makeAuthCookie({ userID: 4, username: 'other', roleID: Roles.USER })])
         .send(createData)
         .expect(403);
     });
@@ -309,20 +271,13 @@ describe('Links API Routes', () => {
 
   describe('DELETE /links/:linkid', () => {
     it('should delete link if user owns it', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 3, roleID: Roles.USER };
-        next();
-      });
-      testApp.use('/links', linksRouter);
-
       const deletedLink = { linkID: 1 };
+      mockLinksModel.read.mockResolvedValue({ linkID: 1, userID: 3 });
       mockLinksModel.destroy.mockResolvedValue(deletedLink);
 
-      const response = await request(testApp)
+      const response = await request(app)
         .delete('/links/1')
+        .set('Cookie', [makeAuthCookie({ userID: 3, username: 'owner', roleID: Roles.USER })])
         .send({ userID: 3 })
         .expect(200);
 
@@ -330,20 +285,37 @@ describe('Links API Routes', () => {
       expect(mockLinksModel.destroy).toHaveBeenCalledWith('1');
     });
 
-    it('should return 404 when link not found', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 3, roleID: Roles.USER };
-        next();
-      });
-      testApp.use('/links', linksRouter);
+    it('should return 403 when a non-owner, non-admin tries to delete (regression: was hardcoded to userID === 2)', async () => {
+      mockLinksModel.read.mockResolvedValue({ linkID: 1, userID: 3 });
 
+      // userID 2 used to bypass ownership entirely due to a hardcoded check; it must not anymore.
+      await request(app)
+        .delete('/links/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'not-admin', roleID: Roles.USER })])
+        .send({ userID: 3 })
+        .expect(403);
+
+      expect(mockLinksModel.destroy).not.toHaveBeenCalled();
+    });
+
+    it('should allow an admin to delete a link they do not own', async () => {
+      mockLinksModel.read.mockResolvedValue({ linkID: 1, userID: 3 });
+      mockLinksModel.destroy.mockResolvedValue({ linkID: 1 });
+
+      await request(app)
+        .delete('/links/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
+        .send({ userID: 3 })
+        .expect(200);
+    });
+
+    it('should return 404 when link not found', async () => {
+      mockLinksModel.read.mockResolvedValue({ linkID: 999, userID: 3 });
       mockLinksModel.destroy.mockResolvedValue(null);
 
-      await request(testApp)
+      await request(app)
         .delete('/links/999')
+        .set('Cookie', [makeAuthCookie({ userID: 3, username: 'owner', roleID: Roles.USER })])
         .send({ userID: 3 })
         .expect(404);
     });

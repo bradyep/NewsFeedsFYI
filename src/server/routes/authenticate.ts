@@ -1,75 +1,50 @@
-import util = require('util');
 import express = require("express");
 export var router = express.Router();
 import usersModel = require('server/sequelize/users-sequelize');
 import logModule = require('debug');
 const debug = logModule('nffyi-rest:router-authenticate');
 const error = debug('nffyi-rest:error');
-import passport = require('passport');
-import LocalStrategyModule = require('passport-local');
-const LocalStrategy = LocalStrategyModule.Strategy;
+import { signToken } from 'server/lib/jwt';
+import { JWT_COOKIE_NAME, JWT_EXPIRY_MS } from 'server/constants/auth-config';
+import { authRateLimiter } from 'server/middleware/rate-limit';
+import { generateCsrfToken } from 'server/middleware/csrf';
 
-// Define the User type to match Express.User interface
-type User = {
-  userID: number;
-  username: string;
-  [key: string]: any;
-};
+function cookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // dev over http://localhost is fine with secure:false
+    sameSite: 'lax' as const,                       // survives top-level nav + same-site XHR; CSRF risk is covered separately
+    maxAge: JWT_EXPIRY_MS,
+    path: '/'
+  };
+}
 
-export function initPassport(app: any) {
-  app.use(passport.initialize());
-  app.use(passport.session());
-};
-
-export function ensureAuthenticated(req: any, res: any, next: any) {
-  debug('*****Attempting Authentication with: ' + req.user);
-  // req.user is set by Passport in the deserialize function
-  if (req.user) next();
-  else {
-    // If not authenticated, redirect to login
-    res.redirect('/users/login');
+router.post('/', authRateLimiter, async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+    const checkReturn = await usersModel.userPasswordCheck(username, password);
+    if (!checkReturn.check) {
+      return res.status(401).json({ message: checkReturn.message ?? 'Authentication failed' });
+    }
+    const token = signToken({ userID: checkReturn.userid, username: checkReturn.username, roleID: checkReturn.roleid });
+    res.cookie(JWT_COOKIE_NAME, token, cookieOptions());
+    return res.status(200).json({ userID: checkReturn.userid, username: checkReturn.username, roleID: checkReturn.roleid });
+  } catch (err) {
+    return next(err);
   }
-};
-
-router.post('/',
-  passport.authenticate('local'),
-  function (req, res) {
-    // If this function gets called, authentication was successful.
-    // `req.user` contains the authenticated user.
-    res.redirect('/users/' + req.user?.userID);
-  });
-
-passport.use(new LocalStrategy(
-  function (username, password, done) {
-    debug('passport used: ' + username + '/' + password);
-    usersModel.userPasswordCheck(username, password)
-      .then(checkReturn => {
-        if (checkReturn.check) {
-          debug('******Supplied Credentials are Valid*********');
-          const user: User = { userID: checkReturn.userid, username: checkReturn.username };
-          done(null, user);
-        } else {
-          done(null, false, { message: checkReturn.message ?? "Authentication failed" });
-        }
-        return checkReturn;
-      })
-      .catch(err => done(err));
-  }
-));
-
-/*** Store user object in session */
-passport.serializeUser(function (user, done) {
-  debug('serializeUser: ' + util.inspect(user));
-  done(null, user);
 });
 
-/*** On subsequent requests Passport calls this to reconstruct the user object from the session data by grabbing it from the database */
-passport.deserializeUser(function (user: any, done) {
-  debug('deserializeUser: ' + util.inspect(user));
-  usersModel.read(user.userID)
-    .then(userFromDb => {
-      debug('... found user ' + util.inspect(userFromDb));
-      done(null, userFromDb);
-    })
-    .catch(err => done(err, user));
+router.post('/logout', (_req, res) => {
+  res.clearCookie(JWT_COOKIE_NAME, { path: '/' });
+  res.status(200).json({ message: 'Logged out' });
+});
+
+/** Bootstrap endpoint - client fetches this once at boot to obtain the CSRF token it must
+ *  echo back (via the X-CSRF-Token header) on every mutating request, including login/signup. */
+router.get('/csrf-token', (req, res) => {
+  const token = generateCsrfToken(req, res);
+  res.status(200).json({ csrfToken: token });
 });

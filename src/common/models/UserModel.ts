@@ -19,6 +19,17 @@ export class UserModel {
     });
   }
 
+  /** Returns a plain object safe to send to the client - omits the password hash. */
+  toSafeObject() {
+    return {
+      userID: this.userID,
+      username: this.username,
+      email: this.email,
+      roleID: this.roleID,
+      lastAccessDate: this.lastAccessDate
+    };
+  }
+
   static fromJSON(json: string) {
     var data = JSON.parse(json);
     var user = new UserModel(data.username, data.password, data.email, data.role, data.userID, data.lastAccessDate);

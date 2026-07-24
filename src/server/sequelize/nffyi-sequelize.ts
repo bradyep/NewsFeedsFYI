@@ -1,12 +1,15 @@
 import util = require('util');
 import fs = require('fs-extra');
 import jsyaml = require('js-yaml');
+import bcrypt = require('bcryptjs');
 import { Sequelize, DataTypes } from "sequelize";
 import debug = require('debug');
 const log = debug('nffyi-rest:model-definition');
 const error = debug('nffyi-rest:error');
+import { BCRYPT_SALT_ROUNDS } from '../constants/auth-config';
 
 var sequelize: Sequelize;
+let seedPasswordHash: string;
 type ModelKeys = 'SQRole' | 'SQUser' | 'SQLink' | 'SQPage' | 'SQUserFeed' | 'SQFeedSource' | 'SQCachedNewsItem';
 type ModelsType = {
   SQRole: any,
@@ -52,9 +55,9 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
 
       models.SQUser = sequelize.define('User', {
         userID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        username: DataTypes.STRING,
+        username: { type: DataTypes.STRING, unique: true },
         password: DataTypes.STRING,
-        email: DataTypes.STRING,
+        email: { type: DataTypes.STRING, unique: true },
         lastAccessDate: DataTypes.DATE
       }); // /SQUser
       models.SQUser.belongsTo(models.SQRole, { foreignKey: 'roleID' });
@@ -111,6 +114,11 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
       return sequelize.sync();
     }) // /params Promise
     .then(() => {
+      // Hash the shared seed-user password once up front, reused by all seed users below.
+      return bcrypt.hash('Passw0rd', BCRYPT_SALT_ROUNDS);
+    })
+    .then((hash) => {
+      seedPasswordHash = hash;
       // Auto-Populate Database with Roles
       log('--Creating Initial Data: Admin Role--');
 
@@ -171,7 +179,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           username: 'guest'
         },
         defaults: { // set the default properties if it doesn't exist
-          username: 'guest', password: 'Passw0rd', email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), roleID: 4, createdAt: Date(), updatedAt: Date()
+          username: 'guest', password: seedPasswordHash, email: 'guest@newsfeeds.fyi', lastAccessDate: Date(), roleID: 4, createdAt: Date(), updatedAt: Date()
         }
       })
     })
@@ -186,7 +194,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           username: 'admin'
         },
         defaults: { // set the default properties if it doesn't exist
-          username: 'admin', password: 'Passw0rd', email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), roleID: 1, createdAt: Date(), updatedAt: Date()
+          username: 'admin', password: seedPasswordHash, email: 'admin@newsfeeds.fyi', lastAccessDate: Date(), roleID: 1, createdAt: Date(), updatedAt: Date()
         }
       })
     })
@@ -201,7 +209,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           username: 'bradyep'
         },
         defaults: { // set the default properties if it doesn't exist
-          username: 'bradyep', password: 'Passw0rd', email: 'bradyep@newsfeeds.fyi', lastAccessDate: Date(), roleID: 2, createdAt: Date(), updatedAt: Date()
+          username: 'bradyep', password: seedPasswordHash, email: 'bradyep@newsfeeds.fyi', lastAccessDate: Date(), roleID: 2, createdAt: Date(), updatedAt: Date()
         }
       })
     })
@@ -216,7 +224,7 @@ export function connectDB(modelRequested: ModelKeys): Promise<any> {
           username: 'joeuser'
         },
         defaults: { // set the default properties if it doesn't exist
-          username: 'joeuser', password: 'Passw0rd', email: 'joeuser@newsfeeds.fyi', lastAccessDate: Date(), roleID: 3, createdAt: Date(), updatedAt: Date()
+          username: 'joeuser', password: seedPasswordHash, email: 'joeuser@newsfeeds.fyi', lastAccessDate: Date(), roleID: 3, createdAt: Date(), updatedAt: Date()
         }
       })
     })

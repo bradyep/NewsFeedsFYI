@@ -5,6 +5,9 @@
  * It is the entry point for the backend of the application.
  */
 
+// Load environment variables from .env BEFORE anything else needs them
+import 'dotenv/config';
+
 // Register module aliases BEFORE importing any modules
 import 'module-alias/register';
 
@@ -14,7 +17,10 @@ import path from 'path';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import session = require('express-session');
+import helmet from 'helmet';
+
+import { corsMiddleware } from './middleware/cors';
+import { ensureCsrfSessionId, doubleCsrfProtection, invalidCsrfTokenError } from './middleware/csrf';
 
 // Import route modules
 import usersRouter = require('./routes/users');
@@ -28,14 +34,8 @@ import authenticateRouter = require('./routes/authenticate');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// CORS middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3030");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
+app.use(helmet());
+app.use(corsMiddleware);
 
 // Basic middleware setup
 app.use(logger('dev'));
@@ -46,13 +46,9 @@ app.use(cookieParser());
 // Serve built client files from dist directory (for production)
 app.use(express.static(path.join(__dirname, '../')));
 
-app.use(session({ 
-  secret: 'this is a picture', 
-  resave: true,
-  saveUninitialized: true
- }));
-
-authenticateRouter.initPassport(app);
+// CSRF protection (double-submit cookie) - applies to all non-GET/HEAD/OPTIONS requests below
+app.use(ensureCsrfSessionId);
+app.use(doubleCsrfProtection);
 
 // Route handlers
 app.use('/', indexRouter);
@@ -74,8 +70,11 @@ app.get('*', (req: Request, res: Response) => {
 
 // Error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err === invalidCsrfTokenError || err?.code === 'EBADCSRFTOKEN') {
+    return res.status(403).json({ message: 'Invalid CSRF token' });
+  }
   res.status(err.status || 500);
-  res.json({
+  return res.json({
     message: err.message,
     error: req.app.get('env') === 'development' ? err : {}
   });

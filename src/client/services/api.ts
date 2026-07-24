@@ -67,3 +67,67 @@ export async function getUserPageFeeds(pageURL: string, pageId: number): Promise
     return [];
   }
 }
+
+let cachedCsrfToken: string | undefined;
+
+/** Fetches (and caches) the CSRF token needed on all mutating requests. Call once at app boot
+ *  and again if a mutating request ever comes back 403 with an invalid-token error. */
+export async function fetchCsrfToken(url: string): Promise<string | undefined> {
+  try {
+    const response = await fetch(url, { credentials: "include" });
+    const data = await response.json();
+    cachedCsrfToken = data.csrfToken;
+    return cachedCsrfToken;
+  } catch (err) {
+    error("Problem fetching CSRF token: " + err);
+    return undefined;
+  }
+}
+
+function csrfHeaders(extra: Record<string, string> = {}): Headers {
+  const headers = new Headers(extra);
+  if (cachedCsrfToken) headers.append("X-CSRF-Token", cachedCsrfToken);
+  return headers;
+}
+
+export interface AuthResult {
+  ok: boolean;
+  status: number;
+  user?: { userID: number; username: string; roleID: number };
+  message?: string;
+}
+
+export async function login(url: string, username: string, password: string): Promise<AuthResult> {
+  const headers = csrfHeaders({ "Content-Type": "application/json" });
+  const response = await fetch(url, {
+    credentials: "include",
+    method: "POST",
+    headers,
+    body: JSON.stringify({ username, password })
+  });
+  const data = await response.json().catch(() => ({}));
+  return { ok: response.ok, status: response.status, user: response.ok ? data : undefined, message: data.message };
+}
+
+export async function register(url: string, username: string, password: string, email: string): Promise<AuthResult> {
+  const headers = csrfHeaders({ "Content-Type": "application/json" });
+  const response = await fetch(url, {
+    credentials: "include",
+    method: "POST",
+    headers,
+    body: JSON.stringify({ username, password, email })
+  });
+  const data = await response.json().catch(() => ({}));
+  return { ok: response.ok, status: response.status, user: response.ok ? data : undefined, message: data.message };
+}
+
+export async function logout(url: string): Promise<boolean> {
+  try {
+    const headers = csrfHeaders();
+    const response = await fetch(url, { credentials: "include", method: "POST", headers });
+    return response.ok;
+  } catch (err) {
+    error("Problem logging out: " + err);
+    return false;
+  }
+}

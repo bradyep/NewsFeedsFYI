@@ -5,12 +5,13 @@ import linksModel = require('server/sequelize/links-sequelize');
 import debug = require('debug');
 const log = debug('nffyi-rest:router-links');
 const error = debug('nffyi-rest:error');
-import authRouter = require('./authenticate');
+import authenticateJwt = require('server/middleware/authenticate-jwt');
+import { isOwnerOrAdmin } from 'server/middleware/authorize';
 import { LinkModel, UserModel } from 'common/models';
 import { Roles, DBUsers } from 'common/constants';
 
 /* GET all Links for requesting User. Admins (Roles.ADMIN) get Guest (DBUsers.GUEST) Links. */
-router.get('/', function(req, res, next) {
+router.get('/', authenticateJwt.populateUserIfPresent, function(req, res, next) {
   let userID: number = req.user && req.user.roleID !== Roles.ADMIN ? req.user.userID : DBUsers.GUEST;
   getKeyList(userID)
   .then(linkList => {
@@ -24,8 +25,8 @@ var getKeyList = function(userID: number) {
     .then(keylist => {
         var keyPromises = keylist.map((key: any) => {
             return linksModel.read(key).then(link => {
-                return new LinkModel ( 
-                  link.url, 
+                return new LinkModel (
+                  link.url,
                   link.name,
                   link.displayOrder,
                   link.linkID,
@@ -38,7 +39,7 @@ var getKeyList = function(userID: number) {
 };
 
 // Update existing Link
-router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
+router.put('/:linkid', authenticateJwt.ensureAuthenticated, (req, res, next) => {
   let userID: number = req.user?.userID || DBUsers.GUEST;
   // Authorize
   if (userID === req.body.userID || req.user?.roleID === Roles.ADMIN) {
@@ -58,7 +59,7 @@ router.put('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
 });
 
 // POST new Link
-router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
+router.post('/', authenticateJwt.ensureAuthenticated, function(req, res, next) {
   let userID: number = req.user?.userID || DBUsers.GUEST;
   // Authorize
   if (userID === req.body.userID || req.user?.roleID === Roles.ADMIN) {
@@ -77,22 +78,18 @@ router.post('/', authRouter.ensureAuthenticated, function(req, res, next) {
 });
 
 // DELETE existing Link
-router.delete('/:linkid', authRouter.ensureAuthenticated, (req, res, next) => {
-  let userID:number = req.user ? req.user.userID : 1;
-  // Authorize
-  if (userID === req.body.userID || req.user?.userID === 2) {
+router.delete('/:linkid', authenticateJwt.ensureAuthenticated,
+  isOwnerOrAdmin(async (req) => {
+    const link = await linksModel.read(+req.params.linkid);
+    return link ? link.userID : undefined;
+  }),
+  (req, res, next) => {
     linksModel.destroy(req.params.linkid)
-    .then(link => {
-      if (!link) next();
-      else res.json(link);
-    })
-    .catch(err => { next(err); });
-  } else {
-    let err:any;
-    err = new Error('Not Authenticated');
-    err.status = 403;
-    next(err);
-  }
-});
+      .then(link => {
+        if (!link) next();
+        else res.json(link);
+      })
+      .catch(err => { next(err); });
+  });
 
 export = router;

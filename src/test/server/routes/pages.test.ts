@@ -1,8 +1,10 @@
 import request from 'supertest';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import pagesRouter from '../../../server/routes/pages';
 import { PageModel } from '../../../common/models';
 import { Roles } from '../../../common/constants';
+import { makeAuthCookie } from '../helpers/auth';
 
 // Mock the database models
 jest.mock('../../../server/sequelize/pages-sequelize');
@@ -16,13 +18,15 @@ describe('Pages API Routes', () => {
     app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    
-    // Mock authenticated user
+    app.use(cookieParser());
+
+    // Mock authenticated user (used directly by the soft-auth GET routes; PUT/POST/DELETE
+    // require a real signed JWT cookie via makeAuthCookie, added per-request below).
     app.use((req, res, next) => {
-      req.user = { userID: 1 };
+      req.user = { userID: 1, roleID: Roles.USER };
       next();
     });
-    
+
     app.use('/pages', pagesRouter);
 
     // Reset all mocks
@@ -69,7 +73,7 @@ describe('Pages API Routes', () => {
       mockPagesModel.keylist.mockResolvedValue([1]);
       mockPagesModel.read.mockResolvedValue(mockPages[0]);
 
-      const response = await request(guestApp)
+      await request(guestApp)
         .get('/pages')
         .expect(200);
 
@@ -93,7 +97,7 @@ describe('Pages API Routes', () => {
       mockPagesModel.keylist.mockResolvedValue([1]);
       mockPagesModel.read.mockResolvedValue(mockPages[0]);
 
-      const response = await request(guestApp)
+      await request(guestApp)
         .get('/pages')
         .expect(200);
 
@@ -143,11 +147,27 @@ describe('Pages API Routes', () => {
         .expect(403);
     });
 
-    it('should allow admin (userID 2) to access any page', async () => {
+    it('should return 403 for a non-admin, non-owner even at userID 2 (regression: was hardcoded to userID === 2)', async () => {
+      const adjacentApp = express();
+      adjacentApp.use(express.json());
+      adjacentApp.use((req, res, next) => {
+        req.user = { userID: 2, roleID: Roles.USER }; // userID 2, but NOT admin
+        next();
+      });
+      adjacentApp.use('/pages', pagesRouter);
+
+      mockPagesModel.read.mockResolvedValue({ pageID: 1, name: 'Someone Else Page', displayOrder: 1, userID: 3 });
+
+      await request(adjacentApp)
+        .get('/pages/1')
+        .expect(403);
+    });
+
+    it('should allow an admin to access any page', async () => {
       const adminApp = express();
       adminApp.use(express.json());
       adminApp.use((req, res, next) => {
-        req.user = { userID: 2 }; // Admin user
+        req.user = { userID: 2, roleID: Roles.ADMIN };
         next();
       });
       adminApp.use('/pages', pagesRouter);
@@ -196,6 +216,7 @@ describe('Pages API Routes', () => {
 
       const response = await request(app)
         .put('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(updateData)
         .expect(200);
 
@@ -219,19 +240,22 @@ describe('Pages API Routes', () => {
 
       await request(app)
         .put('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(updateData)
         .expect(403);
     });
 
-    it('should allow admin to update any page', async () => {
-      const adminApp = express();
-      adminApp.use(express.json());
-      adminApp.use((req, res, next) => {
-        req.user = { userID: 2 }; // Admin user
-        next();
-      });
-      adminApp.use('/pages', pagesRouter);
+    it('should return 403 for a non-admin, non-owner even at userID 2 (regression: was hardcoded to userID === 2)', async () => {
+      await request(app)
+        .put('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'not-admin', roleID: Roles.USER })])
+        .send({ name: 'Hijacked', displayOrder: 1, userID: 3 })
+        .expect(403);
 
+      expect(mockPagesModel.update).not.toHaveBeenCalled();
+    });
+
+    it('should allow admin to update any page', async () => {
       const updatedPage = {
         pageID: 1,
         name: 'Admin Updated Page',
@@ -247,12 +271,20 @@ describe('Pages API Routes', () => {
         userID: 3
       };
 
-      const response = await request(adminApp)
+      const response = await request(app)
         .put('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
         .send(updateData)
         .expect(200);
 
       expect(response.body).toMatchObject(updatedPage);
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .put('/pages/1')
+        .send({ name: 'x', displayOrder: 1, userID: 1 })
+        .expect(401);
     });
 
     it('should return 404 when page not found', async () => {
@@ -266,6 +298,7 @@ describe('Pages API Routes', () => {
 
       await request(app)
         .put('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(updateData)
         .expect(404);
     });
@@ -285,6 +318,7 @@ describe('Pages API Routes', () => {
 
       const response = await request(app)
         .post('/pages')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(createData)
         .expect(200);
 
@@ -311,19 +345,12 @@ describe('Pages API Routes', () => {
 
       await request(app)
         .post('/pages')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(createData)
         .expect(403);
     });
 
     it('should allow admin to create page for any user', async () => {
-      const adminApp = express();
-      adminApp.use(express.json());
-      adminApp.use((req, res, next) => {
-        req.user = { userID: 2 }; // Admin user
-        next();
-      });
-      adminApp.use('/pages', pagesRouter);
-
       const newPage = new PageModel('Admin Created Page', 1, 3, 124);
 
       mockPagesModel.create.mockResolvedValue(newPage);
@@ -334,8 +361,9 @@ describe('Pages API Routes', () => {
         userID: 3
       };
 
-      const response = await request(adminApp)
+      await request(app)
         .post('/pages')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
         .send(createData)
         .expect(200);
 
@@ -353,6 +381,7 @@ describe('Pages API Routes', () => {
 
       await request(app)
         .post('/pages')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(createData)
         .expect(500);
     });
@@ -367,6 +396,7 @@ describe('Pages API Routes', () => {
       // Note: The route expects userID in request body for authorization
       const response = await request(app)
         .delete('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send({ userID: 1 })
         .expect(200);
 
@@ -377,25 +407,29 @@ describe('Pages API Routes', () => {
     it('should return 403 when user tries to delete page they do not own', async () => {
       await request(app)
         .delete('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send({ userID: 2 }) // Different user
         .expect(403);
     });
 
-    it('should allow admin to delete any page', async () => {
-      const adminApp = express();
-      adminApp.use(express.json());
-      adminApp.use((req, res, next) => {
-        req.user = { userID: 2 }; // Admin user
-        next();
-      });
-      adminApp.use('/pages', pagesRouter);
+    it('should return 403 for a non-admin, non-owner even at userID 2 (regression: was hardcoded to userID === 2)', async () => {
+      await request(app)
+        .delete('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'not-admin', roleID: Roles.USER })])
+        .send({ userID: 3 })
+        .expect(403);
 
+      expect(mockPagesModel.destroy).not.toHaveBeenCalled();
+    });
+
+    it('should allow admin to delete any page', async () => {
       const deletedPage = { pageID: 1, name: 'Admin Deleted Page' };
 
       mockPagesModel.destroy.mockResolvedValue(deletedPage);
 
-      const response = await request(adminApp)
+      const response = await request(app)
         .delete('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
         .send({ userID: 3 })
         .expect(200);
 
@@ -407,6 +441,7 @@ describe('Pages API Routes', () => {
 
       await request(app)
         .delete('/pages/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send({ userID: 1 })
         .expect(404);
     });

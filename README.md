@@ -9,6 +9,8 @@ git clone https://github.com/bradyep/NewsFeedsFYI.git
 npm install
 ```
 
+TODO: Mention `.env` file setup
+
 ## Building
 
 #### Build everything
@@ -100,6 +102,10 @@ CSS is per-component via CSS Modules (`styles.css` next to each component's `ind
 
 See the [testing documentation](docs/testing.md) for an overview on the testing setup. 
 
+## Auth
+
+See the [auth documentation](docs/auth.md). 
+
 ## Environmental Variables
 
 * `SEQUELIZE_CONNECT`: Points to the yaml file needed to initialize the sqlite3 database
@@ -121,9 +127,13 @@ You can enable all of this application's logs by typing this in the browser's co
 
 # Future Plans
 
-* Upgrade to TypeScript 7
+* Upgrade to TypeScript 7 when possible (currently on 6)
 * newsfeeds.fyi app available on mobile platforms
-* Additional sources of news: Discord, screen scraping, email, etc.
+* Additional source types: 
+  * Discord
+  * Screen scraping
+  * Email
+  * Social media (Twitter, BlueSky, etc.)
 * PostgreSQL as the database instead of sqlite
 * Linting/style guides for source code
 * Redux Toolkit instead of MobX for state management

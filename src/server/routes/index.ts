@@ -9,15 +9,7 @@ const error = debug('nffyi-rest:error');
 //   res.render('index', { title: 'Express' });
 // });
 
-router.get('/logout', function (req, res, next) {
-
-  req.logout(function (err) {
-    if (err) {
-      error(err);
-      return next(err);
-    }
-    res.redirect('/');
-  });
-});
+// Logout now lives at POST /authenticate/logout (see src/server/routes/authenticate.ts) -
+// it clears the JWT cookie directly rather than relying on Passport's req.logout().
 
 export = router;

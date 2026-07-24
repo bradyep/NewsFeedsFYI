@@ -7,7 +7,8 @@ import feedSourcesModel = require('server/sequelize/feedsources-sequelize');
 import debug = require('debug');
 const log = debug('nffyi-rest:router-userFeeds');
 const error = debug('nffyi-rest:error');
-import authRouter = require('./authenticate');
+import authenticateJwt = require('server/middleware/authenticate-jwt');
+import { isOwnerOrAdmin } from 'server/middleware/authorize';
 import { UserFeedModel, CachedNewsItemModel } from 'common/models';
 import pagesModel = require('server/sequelize/pages-sequelize');
 import { FeedSourceModel } from 'server/models/FeedSourceModel';
@@ -124,30 +125,24 @@ const getFeedSources = (feedSourceIDs: Array<number>): Promise<FeedSourceModel[]
   return Promise.all(keyPromises);
 };
 
-var authorizeRequest = function (req: any, res: any, next: any, isPost: boolean) {
-  // Authorize - Page should be associated with current User
-  let userID: number = req.user ? req.user.userID : 1;
-  let pageKeys: Array<number>;
-  let pageIDToUse = isPost ? req.body.pageID : req.params.pageid;
+// Resolves ownership for an existing UserFeed via the Page it belongs to (used for GET/PUT/DELETE).
+const isOwnerOrAdminOfUserFeed = isOwnerOrAdmin(async (req) => {
+  const existing = await userFeedsModel.readByUserFeedIDAsync(+req.params.userfeedid);
+  if (!existing) return undefined;
+  const page = await pagesModel.read(existing.pageID);
+  return page ? page.userID : undefined;
+});
 
-  pagesModel.keylist(userID)
-    .then(keylist => {
-      pageKeys = keylist;
-      if (pageKeys.indexOf(+pageIDToUse) < 0) {
-        let err: any = new Error('Not Authorized');
-        err.status = 403;
-        next(err);
-      }
-    })
-    .catch(err => { error('router-user-feeds/authorization ' + err); next(err); });
-
-  // /Authorize
-};
+// Resolves ownership via the target Page a new UserFeed is being created under (used for POST).
+const isOwnerOrAdminOfPage = isOwnerOrAdmin(async (req) => {
+  const pageID = req.body.pageID;
+  if (!pageID) return undefined;
+  const page = await pagesModel.read(+pageID);
+  return page ? page.userID : undefined;
+});
 
 // GET single UserFeed
-router.get('/:userfeedid', (req, res, next) => {
-  // TODO: Add authorization check
-
+router.get('/:userfeedid', authenticateJwt.populateUserIfPresent, isOwnerOrAdminOfUserFeed, (req, res, next) => {
   userFeedsModel.readByUserFeedIDAsync(+req.params.userfeedid)
     .then(userFeed => {
       if (!userFeed) next();
@@ -159,11 +154,10 @@ router.get('/:userfeedid', (req, res, next) => {
 });
 
 // Update existing UserFeed
-router.put('/:userfeedid', authRouter.ensureAuthenticated, async (req, res, next) => {
+router.put('/:userfeedid', authenticateJwt.ensureAuthenticated, isOwnerOrAdminOfUserFeed, async (req, res, next) => {
   log('Attempting to update existing UserFeed');
   log('Request params:', req.params);
   log('Request body:', req.body);
-  // TODO: Add authorization check
 
   // Get the existing UserFeed to check if pageID is changing
   const existingUserFeed = await userFeedsModel.readByUserFeedIDAsync(+req.params.userfeedid);
@@ -242,9 +236,8 @@ async function findFeedSourceID(url: string): Promise<number> {
 } // /function findFeedSourceID(): Promise<number> {
 
 /*** Creates and returns new UserFeed */
-router.post('/', authRouter.ensureAuthenticated, async function (req, res, next) {
+router.post('/', authenticateJwt.ensureAuthenticated, isOwnerOrAdminOfPage, async function (req, res, next) {
   log('Attempting to create new UserFeed');
-  authorizeRequest(req, res, next, true);
   // body: "name=" + this.state.feedName + "&itemDisplayCount=" + this.state.itemsToDisplay + "&pageID=" + this.state.selectedPageID + "&feedURL=" + this.state.feedURL
 
   // Figure out what the column and row are going to be
@@ -270,11 +263,10 @@ router.post('/', authRouter.ensureAuthenticated, async function (req, res, next)
       res.json(userFeed);
     })
     .catch(err => { next(err); });
-}); // /router.post('/', authRouter.ensureAuthenticated, function (req, res, next) {
+}); // /router.post('/', authenticateJwt.ensureAuthenticated, isOwnerOrAdminOfPage, function (req, res, next) {
 
 // DELETE existing UserFeed
-router.delete('/:userfeedid', authRouter.ensureAuthenticated, (req, res, next) => {
-  // TODO: Add authorization check
+router.delete('/:userfeedid', authenticateJwt.ensureAuthenticated, isOwnerOrAdminOfUserFeed, (req, res, next) => {
   log('Attempting to delete existing UserFeed');
   log('Request params:', req.params);
 
