@@ -1,7 +1,10 @@
 import request from 'supertest';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import usersRouter from '../../../server/routes/users';
 import { UserModel, PageModel } from '../../../common/models';
+import { Roles } from '../../../common/constants';
+import { makeAuthCookie } from '../helpers/auth';
 
 // Mock the database models
 jest.mock('../../../server/sequelize/users-sequelize');
@@ -17,6 +20,7 @@ describe('Users API Routes', () => {
     app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
     app.use('/users', usersRouter);
 
     // Reset all mocks
@@ -33,111 +37,75 @@ describe('Users API Routes', () => {
         .expect(200);
 
       expect(response.body.username).toBe('guest');
+      expect(response.body.password).toBeUndefined();
       expect(mockUsersModel.read).toHaveBeenCalledWith(1); // GUEST_ID
     });
 
     it('should redirect normal user to their profile', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 3 };
-        next();
-      });
-      testApp.use('/users', usersRouter);
-
-      await request(testApp)
+      await request(app)
         .get('/users')
+        .set('Cookie', [makeAuthCookie({ userID: 3, username: 'normal', roleID: Roles.USER })])
         .expect(302)
         .expect('Location', '/users/3');
     });
 
     // Admin should just return itself like a normal user for now
     it('should redirect admin user to their profile', async () => {
-      const testApp = express();
-      testApp.use(express.json());
-      testApp.use(express.urlencoded({ extended: true }));
-      testApp.use((req, res, next) => {
-        req.user = { userID: 2 };
-        next();
-      });
-      testApp.use('/users', usersRouter);
-
-      await request(testApp)
+      await request(app)
         .get('/users')
+        .set('Cookie', [makeAuthCookie({ userID: 2, username: 'admin', roleID: Roles.ADMIN })])
         .expect(302)
         .expect('Location', '/users/2');
     });
-
-    /*
-    it('should return user list for admin user', async () => {
-      const mockUserList = [
-        { userID: 1, username: 'admin', email: 'admin@test.com' },
-        { userID: 3, username: 'user1', email: 'user1@test.com' }
-      ];
-
-      const adminApp = express();
-      adminApp.use(express.json());
-      adminApp.use(express.urlencoded({ extended: true }));
-      adminApp.use((req, res, next) => {
-        req.user = { userID: 2 }; // ADMIN_ID = 2
-        next();
-      });
-      adminApp.use('/users', usersRouter);
-
-      mockUsersModel.keylist.mockResolvedValue([1, 3]);
-      mockUsersModel.read.mockImplementation((id: number) => {
-        const user = mockUserList.find(u => u.userID === id);
-        return Promise.resolve(user);
-      });
-
-      const response = await request(adminApp)
-        .get('/users')
-        .expect(200);
-
-      expect(response.body).toHaveLength(2);
-      expect(mockUsersModel.keylist).toHaveBeenCalled();
-    });
-    */
   });
 
   describe('GET /users/:userid', () => {
-    it('should return specific user data', async () => {
+    it('should return specific user data for the owning user', async () => {
       const mockUser = new UserModel('testuser', 'password', 'test@test.com', 3, 1);
       mockUsersModel.read.mockResolvedValue(mockUser);
 
-      const authApp = express();
-      authApp.use(express.json());
-      authApp.use(express.urlencoded({ extended: true }));
-      authApp.use((req, res, next) => {
-        req.user = { userID: 1 };
-        next();
-      });
-      authApp.use('/users', usersRouter);
-
-      const response = await request(authApp)
+      const response = await request(app)
         .get('/users/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'testuser', roleID: Roles.USER })])
         .expect(200);
 
       expect(response.body.username).toBe('testuser');
       expect(response.body.email).toBe('test@test.com');
+      expect(response.body.password).toBeUndefined();
       expect(mockUsersModel.read).toHaveBeenCalledWith(1);
+    });
+
+    it('should return 403 when a non-owner, non-admin requests another user', async () => {
+      await request(app)
+        .get('/users/2')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'testuser', roleID: Roles.USER })])
+        .expect(403);
+
+      expect(mockUsersModel.read).not.toHaveBeenCalled();
+    });
+
+    it('should allow an admin to view another user', async () => {
+      const mockUser = new UserModel('testuser', 'password', 'test@test.com', 3, 2);
+      mockUsersModel.read.mockResolvedValue(mockUser);
+
+      await request(app)
+        .get('/users/2')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'admin', roleID: Roles.ADMIN })])
+        .expect(200);
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .get('/users/1')
+        .expect(401);
     });
 
     it('should return 404 when user not found', async () => {
       mockUsersModel.read.mockResolvedValue(null);
 
-      const authApp = express();
-      authApp.use(express.json());
-      authApp.use(express.urlencoded({ extended: true }));
-      authApp.use((req, res, next) => {
-        req.user = { userID: 1 };
-        next();
-      });
-      authApp.use('/users', usersRouter);
-
-      await request(authApp)
+      await request(app)
         .get('/users/999')
+        .set('Cookie', [makeAuthCookie({ userID: 999, username: 'self', roleID: Roles.USER })])
         .expect(404);
     });
   });
@@ -163,12 +131,13 @@ describe('Users API Routes', () => {
 
       expect(response.body.username).toBe('newuser');
       expect(response.body.email).toBe('new@test.com');
+      expect(response.body.password).toBeUndefined();
       expect(mockUsersModel.create).toHaveBeenCalledWith(
         expect.objectContaining({
           username: 'newuser',
           password: 'password123',
           email: 'new@test.com',
-          roleID: 3
+          roleID: Roles.USER
         })
       );
       expect(mockPagesModel.create).toHaveBeenCalledWith(
@@ -215,10 +184,28 @@ describe('Users API Routes', () => {
         .send(createData)
         .expect(500);
     });
+
+    it('should reject signup with a missing field', async () => {
+      await request(app)
+        .post('/users')
+        .send({ username: 'newuser', password: 'password123' }) // no email
+        .expect(400);
+
+      expect(mockUsersModel.create).not.toHaveBeenCalled();
+    });
+
+    it('should reject signup with a too-short password', async () => {
+      await request(app)
+        .post('/users')
+        .send({ username: 'newuser', password: 'short', email: 'new@test.com' })
+        .expect(400);
+
+      expect(mockUsersModel.create).not.toHaveBeenCalled();
+    });
   });
 
   describe('PUT /users/:userid', () => {
-    it('should update user data', async () => {
+    it('should update user data for the owning user', async () => {
       const updatedUser = new UserModel('updateduser', 'newpassword', 'updated@test.com', 3, 1);
       mockUsersModel.update.mockResolvedValue(updatedUser);
 
@@ -228,27 +215,37 @@ describe('Users API Routes', () => {
         email: 'updated@test.com'
       };
 
-      const authApp = express();
-      authApp.use(express.json());
-      authApp.use(express.urlencoded({ extended: true }));
-      authApp.use((req, res, next) => {
-        req.user = { userID: 1 };
-        next();
-      });
-      authApp.use('/users', usersRouter);
-
-      const response = await request(authApp)
+      const response = await request(app)
         .put('/users/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .send(updateData)
         .expect(200);
 
       expect(response.body.username).toBe('updateduser');
+      expect(response.body.password).toBeUndefined();
       expect(mockUsersModel.update).toHaveBeenCalledWith(
         1,
         'updateduser',
         'newpassword',
         'updated@test.com'
       );
+    });
+
+    it('should return 403 when a non-owner, non-admin tries to update another user', async () => {
+      await request(app)
+        .put('/users/2')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
+        .send({ username: 'x', password: 'y', email: 'z' })
+        .expect(403);
+
+      expect(mockUsersModel.update).not.toHaveBeenCalled();
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .put('/users/1')
+        .send({ username: 'x', password: 'y', email: 'z' })
+        .expect(401);
     });
 
     it('should return 404 when user not found', async () => {
@@ -260,17 +257,9 @@ describe('Users API Routes', () => {
         email: 'updated@test.com'
       };
 
-      const authApp = express();
-      authApp.use(express.json());
-      authApp.use(express.urlencoded({ extended: true }));
-      authApp.use((req, res, next) => {
-        req.user = { userID: 1 };
-        next();
-      });
-      authApp.use('/users', usersRouter);
-
-      await request(authApp)
+      await request(app)
         .put('/users/999')
+        .set('Cookie', [makeAuthCookie({ userID: 999, username: 'self', roleID: Roles.USER })])
         .send(updateData)
         .expect(404);
     });
@@ -281,37 +270,30 @@ describe('Users API Routes', () => {
       const deletedUser = { userID: 1, username: 'deleteduser' };
       mockUsersModel.destroy.mockResolvedValue(deletedUser);
 
-      const authApp = express();
-      authApp.use(express.json());
-      authApp.use(express.urlencoded({ extended: true }));
-      authApp.use((req, res, next) => {
-        req.user = { userID: 1 };
-        next();
-      });
-      authApp.use('/users', usersRouter);
-
-      const response = await request(authApp)
+      const response = await request(app)
         .delete('/users/1')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
         .expect(200);
 
       expect(response.body).toMatchObject(deletedUser);
       expect(mockUsersModel.destroy).toHaveBeenCalledWith(1);
     });
 
+    it('should return 403 when a non-owner, non-admin tries to delete another user', async () => {
+      await request(app)
+        .delete('/users/2')
+        .set('Cookie', [makeAuthCookie({ userID: 1, username: 'owner', roleID: Roles.USER })])
+        .expect(403);
+
+      expect(mockUsersModel.destroy).not.toHaveBeenCalled();
+    });
+
     it('should return 404 when user not found', async () => {
       mockUsersModel.destroy.mockResolvedValue(null);
 
-      const authApp = express();
-      authApp.use(express.json());
-      authApp.use(express.urlencoded({ extended: true }));
-      authApp.use((req, res, next) => {
-        req.user = { userID: 1 };
-        next();
-      });
-      authApp.use('/users', usersRouter);
-
-      await request(authApp)
+      await request(app)
         .delete('/users/999')
+        .set('Cookie', [makeAuthCookie({ userID: 999, username: 'self', roleID: Roles.USER })])
         .expect(404);
     });
   });

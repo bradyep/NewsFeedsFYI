@@ -1,8 +1,9 @@
 import request from 'supertest';
 import express from 'express';
-import passport from 'passport';
-import session from 'express-session';
-import { router as authRouter, initPassport, ensureAuthenticated } from '../../../server/routes/authenticate';
+import cookieParser from 'cookie-parser';
+import { router as authRouter } from '../../../server/routes/authenticate';
+import { ensureAuthenticated } from '../../../server/middleware/authenticate-jwt';
+import { JWT_COOKIE_NAME } from '../../../server/constants/auth-config';
 
 // Mock the database models
 jest.mock('../../../server/sequelize/users-sequelize');
@@ -16,199 +17,117 @@ describe('Authentication Routes', () => {
     app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    
-    // Setup session middleware (required for Passport)
-    app.use(session({
-      secret: 'test-secret',
-      resave: false,
-      saveUninitialized: false
-    }));
+    app.use(cookieParser());
 
-    // Initialize Passport
-    initPassport(app);
-    
     app.use('/authenticate', authRouter);
 
-    // Test route to check authentication
+    // Test route to check authentication via the JWT cookie
     app.get('/protected', ensureAuthenticated, (req, res) => {
       res.json({ message: 'Access granted', user: req.user });
     });
 
-    // Reset all mocks
     jest.clearAllMocks();
   });
 
   describe('POST /authenticate', () => {
-    it('should authenticate user with valid credentials', async () => {
-      const mockAuthCheck = {
-        check: true,
-        userid: 1,
-        username: 'testuser'
-      };
-
-      const mockUser = {
-        userID: 1,
-        username: 'testuser',
-        email: 'test@example.com'
-      };
-
-      mockUsersModel.userPasswordCheck.mockResolvedValue(mockAuthCheck);
-      mockUsersModel.read.mockResolvedValue(mockUser);
-
-      const credentials = {
-        username: 'testuser',
-        password: 'correctpassword'
-      };
+    it('should authenticate user with valid credentials and set the JWT cookie', async () => {
+      mockUsersModel.userPasswordCheck.mockResolvedValue({
+        check: true, userid: 1, username: 'testuser', roleid: 3
+      });
 
       const response = await request(app)
         .post('/authenticate')
-        .send(credentials)
-        .expect(302); // Redirect on successful auth
+        .send({ username: 'testuser', password: 'correctpassword' })
+        .expect(200);
 
-      expect(response.headers.location).toBe('/users/1');
+      expect(response.body).toMatchObject({ userID: 1, username: 'testuser', roleID: 3 });
+      const setCookie = response.headers['set-cookie'] as unknown as string[];
+      expect(setCookie.some(c => c.startsWith(`${JWT_COOKIE_NAME}=`))).toBe(true);
       expect(mockUsersModel.userPasswordCheck).toHaveBeenCalledWith('testuser', 'correctpassword');
     });
 
-    it('should reject user with invalid credentials', async () => {
-      const mockAuthCheck = {
-        check: false,
-        userid: 0,
-        username: 'testuser',
-        message: 'Invalid password'
-      };
-
-      mockUsersModel.userPasswordCheck.mockResolvedValue(mockAuthCheck);
-
-      const credentials = {
-        username: 'testuser',
-        password: 'wrongpassword'
-      };
+    it('should reject user with invalid credentials and not set a cookie', async () => {
+      mockUsersModel.userPasswordCheck.mockResolvedValue({
+        check: false, userid: 0, username: 'testuser', message: 'Incorrect password'
+      });
 
       const response = await request(app)
         .post('/authenticate')
-        .send(credentials)
-        .expect(401); // Unauthorized
+        .send({ username: 'testuser', password: 'wrongpassword' })
+        .expect(401);
 
+      expect(response.headers['set-cookie']).toBeUndefined();
       expect(mockUsersModel.userPasswordCheck).toHaveBeenCalledWith('testuser', 'wrongpassword');
     });
 
-    it('should handle user not found', async () => {
-      const mockAuthCheck = {
-        check: false,
-        userid: 0,
-        username: 'nonexistentuser',
-        message: 'Could not find user'
-      };
-
-      mockUsersModel.userPasswordCheck.mockResolvedValue(mockAuthCheck);
-
-      const credentials = {
-        username: 'nonexistentuser',
-        password: 'anypassword'
-      };
-
+    it('should reject a request missing username or password', async () => {
       await request(app)
         .post('/authenticate')
-        .send(credentials)
-        .expect(401);
+        .send({ username: 'testuser' })
+        .expect(400);
 
-      expect(mockUsersModel.userPasswordCheck).toHaveBeenCalledWith('nonexistentuser', 'anypassword');
+      expect(mockUsersModel.userPasswordCheck).not.toHaveBeenCalled();
     });
 
     it('should handle database errors during authentication', async () => {
       mockUsersModel.userPasswordCheck.mockRejectedValue(new Error('Database connection failed'));
 
-      const credentials = {
-        username: 'testuser',
-        password: 'password'
-      };
-
       await request(app)
         .post('/authenticate')
-        .send(credentials)
+        .send({ username: 'testuser', password: 'password' })
         .expect(500);
     });
   });
 
+  describe('POST /authenticate/logout', () => {
+    it('should clear the JWT cookie', async () => {
+      const response = await request(app)
+        .post('/authenticate/logout')
+        .expect(200);
+
+      const setCookie = response.headers['set-cookie'] as unknown as string[];
+      const tokenCookie = setCookie.find(c => c.startsWith(`${JWT_COOKIE_NAME}=`));
+      expect(tokenCookie).toBeDefined();
+      expect(tokenCookie).toMatch(/Expires=Thu, 01 Jan 1970|Max-Age=0/);
+    });
+  });
+
   describe('ensureAuthenticated middleware', () => {
-    it('should allow access to protected routes when authenticated', async () => {
-      // First authenticate
-      const mockAuthCheck = {
-        check: true,
-        userid: 1,
-        username: 'testuser'
-      };
-
-      const mockUser = {
-        userID: 1,
-        username: 'testuser',
-        email: 'test@example.com'
-      };
-
-      mockUsersModel.userPasswordCheck.mockResolvedValue(mockAuthCheck);
-      mockUsersModel.read.mockResolvedValue(mockUser);
+    it('should allow access to protected routes when a valid session cookie is present', async () => {
+      mockUsersModel.userPasswordCheck.mockResolvedValue({
+        check: true, userid: 1, username: 'testuser', roleid: 3
+      });
 
       const agent = request.agent(app);
 
-      // Login first
       await agent
         .post('/authenticate')
         .send({ username: 'testuser', password: 'password' })
-        .expect(302);
+        .expect(200);
 
-      // Then access protected route
       const response = await agent
         .get('/protected')
         .expect(200);
 
       expect(response.body.message).toBe('Access granted');
+      expect(response.body.user).toMatchObject({ userID: 1, username: 'testuser', roleID: 3 });
     });
 
-    it('should redirect unauthenticated users to login', async () => {
+    it('should reject unauthenticated users with 401', async () => {
       const response = await request(app)
         .get('/protected')
-        .expect(302);
+        .expect(401);
 
-      expect(response.headers.location).toBe('/users/login');
+      expect(response.body.message).toBe('Not authenticated');
     });
-  });
 
-  describe('Passport serialization/deserialization', () => {
-    it('should properly serialize and deserialize user', async () => {
-      const mockUser = {
-        userID: 1,
-        username: 'testuser',
-        email: 'test@example.com'
-      };
-
-      mockUsersModel.read.mockResolvedValue(mockUser);
-
-      // Test serialization by checking if user data persists in session
-      const mockAuthCheck = {
-        check: true,
-        userid: 1,
-        username: 'testuser'
-      };
-
-      mockUsersModel.userPasswordCheck.mockResolvedValue(mockAuthCheck);
-
-      const agent = request.agent(app);
-
-      // Login
-      await agent
-        .post('/authenticate')
-        .send({ username: 'testuser', password: 'password' })
-        .expect(302);
-
-      // Check if user is still authenticated in subsequent requests
-      const response = await agent
+    it('should reject a tampered cookie with 401', async () => {
+      const response = await request(app)
         .get('/protected')
-        .expect(200);
+        .set('Cookie', [`${JWT_COOKIE_NAME}=not-a-valid-jwt`])
+        .expect(401);
 
-      expect(response.body.user).toMatchObject({
-        userID: 1,
-        username: 'testuser'
-      });
+      expect(response.body.message).toBe('Invalid or expired session');
     });
   });
 });

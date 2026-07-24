@@ -6,15 +6,7 @@ declare module '*.css' {
   export default styles;
 }
 
-declare namespace Express {
-  interface Request {
-    user?: { // Or your specific User type
-      userID: number; // Or number, depending on your userID type
-      // Other user properties if applicable
-      roleID?: number;
-    };
-  }
-}
+// Express.Request.user is declared in types/express-user.d.ts
 
 declare module "serve-favicon" {
     import { RequestHandler } from "express";

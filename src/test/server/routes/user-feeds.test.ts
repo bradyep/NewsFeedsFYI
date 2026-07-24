@@ -1,7 +1,10 @@
 import request from 'supertest';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import userFeedsRouter from '../../../server/routes/user-feeds';
 import { UserFeedModel } from '../../../common/models';
+import { Roles } from '../../../common/constants';
+import { makeAuthCookie } from '../helpers/auth';
 
 // Mock the database models
 jest.mock('../../../server/sequelize/userfeeds-sequelize');
@@ -14,6 +17,12 @@ const mockCachedNewsItemsModel = require('../../../server/sequelize/cached-newsi
 const mockFeedSourcesModel = require('../../../server/sequelize/feedsources-sequelize');
 const mockPagesModel = require('../../../server/sequelize/pages-sequelize');
 
+// Most of these tests exercise feature behavior (position calculation, feed-source lookup,
+// etc.), not authorization boundaries, so they authenticate as an admin to bypass the
+// per-resource ownership check without also having to mock the page lookup on every case.
+// The dedicated "authorization" describe blocks below test ownership enforcement directly.
+const adminCookie = makeAuthCookie({ userID: 1, username: 'admin', roleID: Roles.ADMIN });
+
 describe('UserFeeds API Routes', () => {
   let app: express.Application;
 
@@ -21,13 +30,14 @@ describe('UserFeeds API Routes', () => {
     app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    
-    // Mock authenticated user
+    app.use(cookieParser());
+
+    // Mock authenticated user (used directly by the soft-auth GET routes)
     app.use((req, res, next) => {
-      req.user = { userID: 1 };
+      req.user = { userID: 1, roleID: Roles.ADMIN };
       next();
     });
-    
+
     app.use('/userfeeds', userFeedsRouter);
 
     // Reset all mocks
@@ -171,6 +181,7 @@ describe('UserFeeds API Routes', () => {
 
       const response = await request(app)
         .put('/userfeeds/123')
+        .set('Cookie', [adminCookie])
         .send(updateData)
         .expect(200);
 
@@ -213,8 +224,9 @@ describe('UserFeeds API Routes', () => {
         // No column/row specified, should auto-calculate
       };
 
-      const response = await request(app)
+      await request(app)
         .put('/userfeeds/123')
+        .set('Cookie', [adminCookie])
         .send(updateData)
         .expect(200);
 
@@ -233,8 +245,16 @@ describe('UserFeeds API Routes', () => {
 
       await request(app)
         .put('/userfeeds/999')
+        .set('Cookie', [adminCookie])
         .send(updateData)
         .expect(404);
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .put('/userfeeds/123')
+        .send({ name: 'x', itemDisplayCount: 1, pageID: 1 })
+        .expect(401);
     });
   });
 
@@ -265,7 +285,6 @@ describe('UserFeeds API Routes', () => {
       mockUserFeedsModel.updateFeedSourceCachedNewsItemsIfNeeded.mockResolvedValue(true);
       mockCachedNewsItemsModel.getKeysForMultipleFeedSourceID.mockResolvedValue([]);
       mockUserFeedsModel.create.mockResolvedValue(newUserFeed);
-      mockPagesModel.keylist.mockResolvedValue([1]);
 
       const createData = {
         name: 'New Feed',
@@ -276,6 +295,7 @@ describe('UserFeeds API Routes', () => {
 
       const response = await request(app)
         .post('/userfeeds')
+        .set('Cookie', [adminCookie])
         .send(createData)
         .expect(200);
 
@@ -308,7 +328,6 @@ describe('UserFeeds API Routes', () => {
       mockUserFeedsModel.getNewsItemsFromFeedAsync.mockResolvedValue(mockNewsItems);
       mockFeedSourcesModel.create.mockResolvedValue(newFeedSource);
       mockUserFeedsModel.updateCachedNewsItemsAsync.mockResolvedValue(['success']);
-      mockPagesModel.keylist.mockResolvedValue([1]);
 
       const createData = {
         name: 'New Feed from New Source',
@@ -317,7 +336,6 @@ describe('UserFeeds API Routes', () => {
         feedURL: 'https://newsite.com/feed.rss'
       };
 
-      // Mock the create method to return a proper response
       mockUserFeedsModel.create.mockResolvedValue({
         column: 1,
         row: 1,
@@ -331,13 +349,21 @@ describe('UserFeeds API Routes', () => {
         }
       });
 
-      const response = await request(app)
+      await request(app)
         .post('/userfeeds')
+        .set('Cookie', [adminCookie])
         .send(createData)
         .expect(200);
 
       expect(mockFeedSourcesModel.create).toHaveBeenCalled();
       expect(mockUserFeedsModel.updateCachedNewsItemsAsync).toHaveBeenCalled();
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .post('/userfeeds')
+        .send({ name: 'x', itemDisplayCount: 1, pageID: 1, feedURL: 'https://example.com/feed.rss' })
+        .expect(401);
     });
   });
 
@@ -352,6 +378,7 @@ describe('UserFeeds API Routes', () => {
 
       const response = await request(app)
         .delete('/userfeeds/123')
+        .set('Cookie', [adminCookie])
         .expect(200);
 
       expect(response.body).toMatchObject(deletedUserFeed);
@@ -363,7 +390,73 @@ describe('UserFeeds API Routes', () => {
 
       await request(app)
         .delete('/userfeeds/999')
+        .set('Cookie', [adminCookie])
         .expect(404);
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .delete('/userfeeds/123')
+        .expect(401);
+    });
+  });
+
+  // Regression tests for the fixed authorizeRequest bug: it used to run fire-and-forget
+  // (missing `return` after calling next(err)), so the route body kept executing and
+  // mutated data even when authorization failed. These assert the underlying model methods
+  // are genuinely never reached when a non-owner, non-admin tries to mutate someone else's data.
+  describe('authorization', () => {
+    const nonOwnerCookie = makeAuthCookie({ userID: 6, username: 'intruder', roleID: Roles.USER });
+
+    it('POST /userfeeds should 403 and not call create() when the requester does not own the target page', async () => {
+      mockPagesModel.read.mockResolvedValue({ pageID: 1, userID: 5 }); // page owned by userID 5, not 6
+
+      await request(app)
+        .post('/userfeeds')
+        .set('Cookie', [nonOwnerCookie])
+        .send({ name: 'x', itemDisplayCount: 1, pageID: 1, feedURL: 'https://example.com/feed.rss' })
+        .expect(403);
+
+      expect(mockUserFeedsModel.create).not.toHaveBeenCalled();
+    });
+
+    it('PUT /userfeeds/:userfeedid should 403 and not call update() when the requester does not own the underlying page', async () => {
+      mockUserFeedsModel.readByUserFeedIDAsync.mockResolvedValue({ userFeedID: 123, pageID: 1 });
+      mockPagesModel.read.mockResolvedValue({ pageID: 1, userID: 5 }); // page owned by userID 5, not 6
+
+      await request(app)
+        .put('/userfeeds/123')
+        .set('Cookie', [nonOwnerCookie])
+        .send({ name: 'Hijacked', itemDisplayCount: 1, pageID: 1 })
+        .expect(403);
+
+      expect(mockUserFeedsModel.update).not.toHaveBeenCalled();
+    });
+
+    it('DELETE /userfeeds/:userfeedid should 403 and not call destroyByUserFeedID() when the requester does not own the underlying page', async () => {
+      mockUserFeedsModel.readByUserFeedIDAsync.mockResolvedValue({ userFeedID: 123, pageID: 1 });
+      mockPagesModel.read.mockResolvedValue({ pageID: 1, userID: 5 }); // page owned by userID 5, not 6
+
+      await request(app)
+        .delete('/userfeeds/123')
+        .set('Cookie', [nonOwnerCookie])
+        .expect(403);
+
+      expect(mockUserFeedsModel.destroyByUserFeedID).not.toHaveBeenCalled();
+    });
+
+    it('PUT /userfeeds/:userfeedid should succeed for the actual owner', async () => {
+      mockUserFeedsModel.readByUserFeedIDAsync.mockResolvedValue({ userFeedID: 123, pageID: 1 });
+      mockPagesModel.read.mockResolvedValue({ pageID: 1, userID: 6 }); // owned by userID 6
+      mockUserFeedsModel.update.mockResolvedValue({ userFeedID: 123, name: 'Updated' });
+
+      await request(app)
+        .put('/userfeeds/123')
+        .set('Cookie', [nonOwnerCookie]) // userID 6 - now the actual owner
+        .send({ name: 'Updated', itemDisplayCount: 1, pageID: 1 })
+        .expect(200);
+
+      expect(mockUserFeedsModel.update).toHaveBeenCalled();
     });
   });
 });

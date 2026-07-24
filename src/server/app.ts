@@ -4,7 +4,6 @@ import favicon = require("serve-favicon");
 import logger = require("morgan");
 import cookieParser = require("cookie-parser");
 import bodyParser = require("body-parser");
-import session = require('express-session')
 
 // Define Routes
 import index = require('./routes/index');
@@ -37,27 +36,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/*
-// session-file-store is garbage!
-app.use(session({
-  store: new FileStore({
-    path: "sessions",
-    logFn: function(){}
-  }),
-  secret: 'this is a picture',
-  resave: true,
-  saveUninitialized: true,
-  name: 'connect.sid'
-}));
-*/
-
-app.use(session({ 
-  secret: 'this is a picture', 
-  resave: true,
-  saveUninitialized: true
- }));
-
-authenticate.initPassport(app);
+// NOTE: this file is legacy express-generator boilerplate, not wired into any npm script -
+// see CLAUDE.md. Auth is handled by the JWT cookie middleware in src/server/server.ts, the
+// live entry point; this file is kept compiling only, not maintained as a real auth path.
 
 // Use Routes
 // app.use('/', index);

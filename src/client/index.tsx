@@ -13,8 +13,8 @@ import { NewsFeedsFYIApp } from './containers/NewsFeedsFYIApp';
 import { UserModel, LinkModel, PageModel, UserFeedModel } from '../common/models';
 import { UserStore, LinkStore, PageStore } from './stores';
 import { STORE_USER, STORE_LINK, STORE_PAGE } from './constants/stores';
-import { REST_DOMAIN } from './constants/network';
-import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated } from './services/api';
+import { REST_DOMAIN, CSRF_TOKEN_URL } from './constants/network';
+import { getCurrentUser, getLinks, getUsersPagesWithFirstPopulated, fetchCsrfToken } from './services/api';
 import debug from 'debug';
 const log = debug('webapp:app-index');
 const error = debug('webapp:error');
@@ -40,7 +40,12 @@ configure({
 
   try {
     log("Attempting to get current User");
-    [currentUser, links, pagesWithfirstPopulated] = await Promise.all([getCurrentUser(getUserURL), getLinks(getLinksURL), getUsersPagesWithFirstPopulated(getPagesURL, getPageURL)]);
+    [currentUser, links, pagesWithfirstPopulated] = await Promise.all([
+      getCurrentUser(getUserURL),
+      getLinks(getLinksURL),
+      getUsersPagesWithFirstPopulated(getPagesURL, getPageURL),
+      fetchCsrfToken(CSRF_TOKEN_URL)
+    ]);
   } catch (err) {
     error("Problem Getting Data For Stores: " + err);
   }

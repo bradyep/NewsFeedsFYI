@@ -1,5 +1,6 @@
-import { observable, action, makeObservable } from 'mobx';
+import { observable, computed, action, makeObservable } from 'mobx';
 import { UserModel } from 'common/models';
+import { Roles } from 'common/constants';
 import debug from 'debug';
 const log = debug('webapp:UserStore');
 
@@ -10,10 +11,15 @@ export class UserStore {
   constructor(user: UserModel) {
     makeObservable(this, {
       currentUser: observable,
+      isLoggedIn: computed,
       changeCurrentUser: action
     });
 
     this.currentUser = user;
+  }
+
+  get isLoggedIn(): boolean {
+    return this.currentUser.roleID !== Roles.GUEST;
   }
 
   changeCurrentUser(user:UserModel): void {

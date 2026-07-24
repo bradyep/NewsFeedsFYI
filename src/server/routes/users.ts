@@ -6,33 +6,27 @@ import pagesModel = require('../sequelize/pages-sequelize');
 import debug = require('debug');
 const log = debug('nffyi-rest:router-users');
 const error = debug('nffyi-rest:error');
-import authRouter = require('./authenticate');
+import authenticateJwt = require('server/middleware/authenticate-jwt');
+import { isOwnerOrAdmin } from 'server/middleware/authorize';
+import { signupRateLimiter } from 'server/middleware/rate-limit';
 import { UserModel, PageModel } from 'common/models';
-import { DBUsers } from 'common/constants';
+import { DBUsers, Roles, MIN_PASSWORD_LENGTH } from 'common/constants';
 
 /* GET users listing. */
-// router.get('/', authRouter.ensureAuthenticated, function(req, res, next) {
-router.get('/', function (req, res, next) {
+router.get('/', authenticateJwt.populateUserIfPresent, function (req, res, next) {
   // Must be an admin for full User listing, otherwise display User data for requesting User
   if (!req.user) {
     // Return guest user
     usersModel.read(DBUsers.GUEST)
       .then(user => {
         if (!user) next();
-        else res.json(user);
+        else res.json(user.toSafeObject());
       })
       .catch(err => { next(err); });
   } else {
     if (req.user.roleID === DBUsers.ADMIN) {
       // Just treat admin as a normal user for now
       res.redirect('/users/' + req.user.userID);
-      /*
-      getKeyList()
-        .then(userlist => {
-          res.json(userlist);
-        })
-        .catch(err => { error('test page ' + err); next(err); });
-        */
     } else {
       // Normal user
       res.redirect('/users/' + req.user.userID);
@@ -40,77 +34,68 @@ router.get('/', function (req, res, next) {
   }
 });
 
-const getKeyList = function () {
-  return usersModel.keylist()
-    .then(keylist => {
-      var keyPromises = keylist.map((key: any) => {
-        return usersModel.read(key).then(user => {
-          return {
-            userID: user.userID,
-            username: user.username,
-            password: user.password,
-            email: user.email,
-            lastAccessDate: user.lastAccessDate,
-            role: user.role
-          };
-        });
-      });
-      return Promise.all(keyPromises);
-    });
-};
-
 // GET single User
-router.get('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
-  // Must be Admin to see another User's data
-  usersModel.read(+req.params.userid)
-    .then((user: UserModel) => {
-      if (!user) next();
-      else res.json(user);
-    })
-    .catch(err => { next(err); });
-});
+router.get('/:userid', authenticateJwt.ensureAuthenticated,
+  isOwnerOrAdmin((req) => +req.params.userid),
+  (req, res, next) => {
+    usersModel.read(+req.params.userid)
+      .then((user: UserModel) => {
+        if (!user) next();
+        else res.json(user.toSafeObject());
+      })
+      .catch(err => { next(err); });
+  });
 
 // Update existing User
-router.put('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
-  // Must be admin to update any User other than oneself
-  usersModel.update(+req.params.userid, req.body.username, req.body.password, req.body.email)
-    .then(user => {
-      if (!user) next();
-      else res.json(user);
-    })
-    .catch(err => { next(err); });
-});
+router.put('/:userid', authenticateJwt.ensureAuthenticated,
+  isOwnerOrAdmin((req) => +req.params.userid),
+  (req, res, next) => {
+    usersModel.update(+req.params.userid, req.body.username, req.body.password, req.body.email)
+      .then(user => {
+        if (!user) next();
+        else res.json(new UserModel(user.username, '', user.email, user.roleID, user.userID, user.lastAccessDate).toSafeObject());
+      })
+      .catch(err => { next(err); });
+  });
 
 // POST new users
-router.post('/', function (req, res, next) {
-  // This isn't authenticated since new users will use this to sign up, but we should prevent new user spam
-  // TODO: password hashing, session management
-  usersModel.create(new UserModel(req.body.username, req.body.password, req.body.email, 3))
+router.post('/', signupRateLimiter, function (req, res, next) {
+  // This isn't authenticated since new users will use this to sign up.
+  const { username, password, email } = req.body;
+  if (!username || !password || !email) {
+    return res.status(400).json({ message: 'Username, password, and email are required.' });
+  }
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return res.status(400).json({ message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });
+  }
+  return usersModel.create(new UserModel(username, password, email, Roles.USER))
     .then(user => {
       log('Attempted to create User: ' + util.inspect(user));
+      const safeUser = new UserModel(user.username, '', user.email, user.roleID, user.userID, user.lastAccessDate).toSafeObject();
       // Create the first page for the new user in the database
       return pagesModel.create(new PageModel("My First Page", 1, user.userID))
         .then(page => {
           log('Attempted to create Page: ' + util.inspect(page));
-          res.json(user);
+          res.json(safeUser);
         })
         .catch(err => {
           error('Failed to create initial page for user: ' + err);
-          res.json(user);
+          res.json(safeUser);
         });
     })
     .catch(err => { next(err); });
 });
 
 // DELETE existing User
-router.delete('/:userid', authRouter.ensureAuthenticated, (req, res, next) => {
-  // Must be Admin to delete Users other than oneself
-  usersModel.destroy(+req.params.userid)
-    .then(user => {
-      if (!user) next();
-      else res.json(user);
-    })
-    .catch(err => { next(err); });
-});
+router.delete('/:userid', authenticateJwt.ensureAuthenticated,
+  isOwnerOrAdmin((req) => +req.params.userid),
+  (req, res, next) => {
+    usersModel.destroy(+req.params.userid)
+      .then(user => {
+        if (!user) next();
+        else res.json(new UserModel(user.username, '', user.email, user.roleID, user.userID, user.lastAccessDate).toSafeObject());
+      })
+      .catch(err => { next(err); });
+  });
 
 export = router;

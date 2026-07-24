@@ -2,6 +2,7 @@
 import { Roles } from './roles';
 import { DBUsers } from './db-users';
 import { MINUTES_TO_CACHE_FEED, MAX_NEWS_ITEMS, NUMBER_OF_COLUMNS } from './newsfeeds';
+import { MIN_PASSWORD_LENGTH } from './auth';
 
-export { Roles, DBUsers, MINUTES_TO_CACHE_FEED, MAX_NEWS_ITEMS, NUMBER_OF_COLUMNS };
+export { Roles, DBUsers, MINUTES_TO_CACHE_FEED, MAX_NEWS_ITEMS, NUMBER_OF_COLUMNS, MIN_PASSWORD_LENGTH };
   

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import styles from './styles.css';
 import { Modal, Button, FormGroup, FormLabel, FormControl, OverlayTrigger, Popover } from "react-bootstrap";
-import { REST_DOMAIN } from 'client/constants/network';
-import { UserModel } from 'common/models';
-import { Roles } from 'common/constants';
+import { LOGIN_URL, LOGOUT_URL, REGISTER_URL } from 'client/constants/network';
+import { login, register, logout } from 'client/services/api';
+import { MIN_PASSWORD_LENGTH } from 'common/constants';
 import debug from 'debug';
 const log = debug('webapp:ProfileSection');
 const error = debug('webapp:error');
@@ -20,7 +20,9 @@ export interface ProfileSectionState {
   username: string
   password: string
   confirmPassword: string
+  email: string
   errorAuthenticating: boolean
+  errorMessage: string
   isSignIn: boolean
   isSignUp: boolean
 }
@@ -30,7 +32,8 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
   constructor(props: ProfileSectionProps) {
     super(props);
     this.state = {
-      showModal: false, username: "", password: "", confirmPassword: "", errorAuthenticating: false, isSignIn: false, isSignUp: false
+      showModal: false, username: "", password: "", confirmPassword: "", email: "",
+      errorAuthenticating: false, errorMessage: "", isSignIn: false, isSignUp: false
     };
     this.close = this.close.bind(this);
     this.openModalForSignUp = this.openModalForSignUp.bind(this);
@@ -61,73 +64,61 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
     this.setState({ [id]: e.currentTarget.value } as Pick<ProfileSectionState, keyof ProfileSectionState>);
   }
 
-  async attemptSignUp() {
-    try {
-      const url = REST_DOMAIN + '/users';
-      let headers = new Headers();
-      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-      const signUpResponse = await fetch(url, {
-        credentials: "include",
-        method: "post",
-        headers: headers,
-        // TODO: Add email
-        body: "username=" + this.state.username + "&password=" + this.state.password + "&email=" + ""
-      });
+  validateSignUp(): string | undefined {
+    const { username, password, confirmPassword, email } = this.state;
+    if (!username.trim()) return 'Username is required.';
+    if (!email.trim()) return 'Email is required.';
+    if (!password) return 'Password is required.';
+    if (password.length < MIN_PASSWORD_LENGTH) return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+    if (password !== confirmPassword) return 'Passwords do not match.';
+    return undefined;
+  }
 
-      // TODO: Input validation, required fields, confirm password check, race conditions, CSRF token, UI feedback during async operations, error state management
-      const userData: UserModel = await signUpResponse.json();
-      if (!signUpResponse.ok) {
-        throw new Error(`Signup failed: ${signUpResponse.status}`);
+  async attemptSignUp() {
+    const validationError = this.validateSignUp();
+    if (validationError) {
+      this.setState({ errorAuthenticating: true, errorMessage: validationError });
+      return;
+    }
+    try {
+      const result = await register(REGISTER_URL, this.state.username, this.state.password, this.state.email);
+      if (!result.ok) {
+        this.setState({ errorAuthenticating: true, errorMessage: result.message ?? 'Sign up failed.' });
+        return;
       }
-      log("Sign up Attempt Returned: ");
-      log(userData);
+      log("Sign up Attempt Returned: ", result.user);
       // Now try to sign them in
-      this.setState({ username: this.state.username, password: this.state.password });
-      this.attemptSignIn();
-      this.setState({ errorAuthenticating: false });
+      await this.attemptSignIn();
     } catch (err) {
       error("Error while trying to sign up: " + err);
-      this.setState({ errorAuthenticating: true });
+      this.setState({ errorAuthenticating: true, errorMessage: 'Sign up failed.' });
     }
   }
 
   async attemptSignIn() {
+    if (!this.state.username || !this.state.password) {
+      this.setState({ errorAuthenticating: true, errorMessage: 'Username and password are required.' });
+      return;
+    }
     try {
-      const url = REST_DOMAIN + '/authenticate';
-      let headers = new Headers();
-      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-      const authenticationResponse = await fetch(url, {
-        credentials: "include",
-        method: "post",
-        headers: headers,
-        body: "username=" + this.state.username + "&password=" + this.state.password
-      });
-
-      const userData: UserModel = await authenticationResponse.json();
-      log("Authentication Attempt Returned: ", userData);
+      const result = await login(LOGIN_URL, this.state.username, this.state.password);
+      if (!result.ok) {
+        this.setState({ errorAuthenticating: true, errorMessage: result.message ?? 'Sign in failed.' });
+        return;
+      }
+      log("Authentication Attempt Returned: ", result.user);
+      this.setState({ errorAuthenticating: false, errorMessage: '' });
       this.props.changeCurrentUser();
       this.close();
-      this.setState({ errorAuthenticating: false });
     } catch (err) {
       error("Error while trying to authenticate: " + err);
-      this.setState({ errorAuthenticating: true });
+      this.setState({ errorAuthenticating: true, errorMessage: 'Sign in failed.' });
     }
   }
 
   async attemptSignOut() {
     try {
-      const url = REST_DOMAIN + '/logout';
-      let headers = new Headers();
-      headers.append("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-      const logOutResponse = await fetch(url, {
-        credentials: "include",
-        method: "get",
-        headers: headers
-      });
-
-      const text: string = await logOutResponse.text();
-      log("Log Out Attempt Returned: ");
-      log(text);
+      await logout(LOGOUT_URL);
       this.props.changeCurrentUser();
     } catch (err) {
       error("Error while trying to log out: " + err);
@@ -135,8 +126,7 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
   }
 
   renderSignInModal() {
-    const { errorAuthenticating } = this.state;
-    const validationState = errorAuthenticating === true ? "error" : null;
+    const { errorAuthenticating, errorMessage } = this.state;
 
     return (
       <Modal
@@ -150,6 +140,9 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
         </Modal.Header>
 
         <Modal.Body>
+          {errorAuthenticating && errorMessage && (
+            <div className={styles.errorMessage}>{errorMessage}</div>
+          )}
           <form onSubmit={(e) => { e.preventDefault(); this.state.isSignIn ? this.attemptSignIn() : this.attemptSignUp(); }}>
             <FormGroup controlId="username">
               <FormLabel>Username: </FormLabel>
@@ -160,6 +153,17 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
                 isInvalid={errorAuthenticating === true}
               />
             </FormGroup>
+            {this.state.isSignUp && (
+              <FormGroup controlId="email">
+                <FormLabel>Email: </FormLabel>
+                <FormControl
+                  onChange={this.handleChange}
+                  type="email"
+                  placeholder="Email"
+                  isInvalid={errorAuthenticating === true}
+                />
+              </FormGroup>
+            )}
             <FormGroup controlId="password">
               <FormLabel>Password: </FormLabel>
               <FormControl
@@ -176,6 +180,7 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
                   onChange={this.handleChange}
                   type="password"
                   placeholder="Confirm Password"
+                  isInvalid={errorAuthenticating === true}
                 />
               </FormGroup>
             )}
@@ -184,7 +189,7 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
 
         <Modal.Footer>
           <Button type="button" onClick={this.close}>Cancel</Button>
-          <Button type="button" variant="primary" onClick={this.state.isSignIn ? this.attemptSignIn : this.attemptSignUp}>{this.state.isSignIn ? "Sign In" : "Sign Up"}</Button>
+          <Button type="button" variant="primary" data-testid="submit-auth" onClick={this.state.isSignIn ? this.attemptSignIn : this.attemptSignUp}>{this.state.isSignIn ? "Sign In" : "Sign Up"}</Button>
         </Modal.Footer>
 
       </Modal>
@@ -196,13 +201,13 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
 
     return (
       <div className={styles.profileSection} style={debugStyle}>
-        <Button variant="outline-primary" onClick={this.openModalForSignIn}>
+        <Button variant="outline-primary" onClick={this.openModalForSignIn} data-testid="open-signin">
           <i aria-hidden="true"></i>
           <p className={styles['sign-in-text']}>
             Sign In
           </p>
         </Button>
-        <Button variant="outline-primary" className={styles['sign-up-button']} onClick={this.openModalForSignUp}>
+        <Button variant="outline-primary" className={styles['sign-up-button']} onClick={this.openModalForSignUp} data-testid="open-signup">
           <i className="fa fa-user" aria-hidden="true"></i>
           <p className={styles['sign-in-text']}>
             Sign Up
@@ -241,8 +246,7 @@ class ProfileSection extends React.Component<ProfileSectionProps, ProfileSection
 
   render() {
     const { userStore } = this.props;
-    const { currentUser } = userStore;
-    const isGuest: boolean = currentUser.roleID === Roles.GUEST;
+    const isGuest: boolean = !userStore.isLoggedIn;
     const renderMethod: Function = isGuest ? this.renderForGuest : this.renderForUser;
 
     return (
